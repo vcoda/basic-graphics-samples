@@ -1,0 +1,4 @@
+[submodule "third-party/magma"]
+	path = third-party/magma
+	url = https://github.com/vcoda/magma.git
+	branch = master
