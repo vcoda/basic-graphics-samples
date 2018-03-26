@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\rapid">
+      <UniqueIdentifier>{d828ebaa-860f-4d8d-b663-c980a5b3a644}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="winApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debugOutputStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bezierMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cubeMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\matrix.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\rapid.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\vector.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\vector2.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\vector3.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\vector4.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\quaternion.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="planeMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\rapid\plane.h">
+      <Filter>Header Files\rapid</Filter>
+    </ClInclude>
+    <ClInclude Include="alignedAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="knotMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="winApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vulkanApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bezierMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cubeMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="planeMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="knotMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\third-party\rapid\matrix.inl">
+      <Filter>Header Files\rapid</Filter>
+    </None>
+    <None Include="..\third-party\rapid\vector.inl">
+      <Filter>Header Files\rapid</Filter>
+    </None>
+    <None Include="..\third-party\rapid\quaternion.inl">
+      <Filter>Header Files\rapid</Filter>
+    </None>
+    <None Include="..\third-party\rapid\sincos.inl">
+      <Filter>Header Files\rapid</Filter>
+    </None>
+  </ItemGroup>
+</Project>

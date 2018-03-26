@@ -1,0 +1,83 @@
+#pragma once
+#include <cstdint>
+#include <iostream>
+#include <memory>
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#define NOMINMAX
+#include <windows.h>
+#endif
+#include <xmmintrin.h>
+#include "platform.h"
+
+template<size_t alignment>
+struct alignas(alignment) Aligned
+{
+    void *operator new(size_t size) noexcept 
+        { return _mm_malloc(size, alignment); }
+    void operator delete(void *p) noexcept 
+        { _mm_free(p); }
+};
+
+class IApplication : public Aligned<16>
+{
+public:
+    virtual void setWindowCaption(String caption) = 0;
+    virtual void show() const = 0;
+    virtual void run() = 0;
+    virtual void close() = 0;
+    virtual void onIdle() = 0;
+    virtual void onPaint() = 0;
+    virtual void onKeyDown(char key, int repeat, uint32_t flags) = 0;
+    virtual void onKeyUp(char key, int repeat, uint32_t flags) = 0;
+    virtual void onMouseMove(int x, int y) = 0;
+    virtual void onMouseLButton(bool down, int x, int y) = 0;
+    virtual void onMouseRButton(bool down, int x, int y) = 0;
+    virtual void onMouseMButton(bool down, int x, int y) = 0;
+    virtual void onMouseWheel(float distance) = 0;
+
+protected:
+    virtual char translateKey(int code) const = 0;
+};
+
+enum AppKey { Null = '\0', Tab = '\t', Enter = '\r', Escape = '\033', Space = ' ',
+    Left = 0xA, Right = 0xB, Up = 0xC, Down = 0xD,
+    Home = 0x11, End = 0x12, PgUp = 0x13, PgDn = 0x14
+};
+
+struct AppEntry
+{
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    HINSTANCE hInstance;
+    HINSTANCE hPrevInstance;
+    LPSTR lpCmdLine;
+    int nCmdShow;
+#else
+    int argc;
+    char **argv;
+#endif
+};
+
+class BaseApp : public IApplication
+{
+protected:
+    BaseApp(String caption, uint32_t width, uint32_t height):
+        caption(caption), width(width), height(height) {}
+    virtual void close() override { quit = true; }
+    virtual void onKeyDown(char key, int repeat, uint32_t flags) override
+    {
+        if (AppKey::Escape == key)
+            close();
+    }
+
+protected:
+    String caption;
+    uint32_t width, height;
+    bool mousing = false;
+    float spinX = 0.f;
+    float spinY = 0.f;
+    bool quit = false;
+};
+
+std::unique_ptr<IApplication> appFactory(const AppEntry&);
