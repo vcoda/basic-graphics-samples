@@ -1,0 +1,19 @@
+.vs/
+Debug/
+Release/
+x64/
+
+# Visual Studio project files
+*.suo
+*.user
+*.vcxproj.user
+
+# MSC build output
+*.obj
+*.pch
+*.ipch
+*.pdb
+
+# GCC objects and dependency files
+*.o
+*.d
