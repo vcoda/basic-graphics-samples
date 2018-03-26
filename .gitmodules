@@ -6,3 +6,7 @@
 	path = third-party/rapid
 	url = https://github.com/vcoda/rapid.git
 	branch = master
+[submodule "third-party/gliml"]
+	path = third-party/gliml
+	url = https://github.com/floooh/gliml.git
+	branch = master
