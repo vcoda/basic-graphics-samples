@@ -2,3 +2,7 @@
 	path = third-party/magma
 	url = https://github.com/vcoda/magma.git
 	branch = master
+[submodule "third-party/rapid"]
+	path = third-party/rapid
+	url = https://github.com/vcoda/rapid.git
+	branch = master
