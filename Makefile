@@ -27,6 +27,7 @@ TARGET12=12-pushconstants
 TARGET13=13-specialization
 TARGET14=14-particles
 TARGET15=15-compute
+TARGET16=16-immediate
 
 # Magma object files
 
@@ -175,6 +176,9 @@ $(TARGET14)/$(TARGET14): $(BUILD)/$(TARGET14)/$(TARGET14).o $(OBJS) $(BUILD)/$(T
 $(TARGET15)/$(TARGET15): $(BUILD)/$(TARGET15)/$(TARGET15).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+$(TARGET16)/$(TARGET16): $(BUILD)/$(TARGET16)/$(TARGET16).o $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
 # Create build directories
 
 mkbuilddir:
@@ -200,6 +204,7 @@ mkbuilddir:
 	@mkdir -p $(BUILD)/$(TARGET13)
 	@mkdir -p $(BUILD)/$(TARGET14)
 	@mkdir -p $(BUILD)/$(TARGET15)
+	@mkdir -p $(BUILD)/$(TARGET16)
 
 # Sample app shaders
 
@@ -245,6 +250,7 @@ shaders-15: $(TARGET15)/sum.o $(TARGET15)/mul.o $(TARGET15)/power.o
 13-specialization:		mkbuilddir $(TARGET13)/$(TARGET13) shaders-13
 14-particles:			mkbuilddir $(TARGET14)/$(TARGET14) shaders-14
 15-compute:				mkbuilddir $(TARGET15)/$(TARGET15) shaders-15
+16-immediate:			mkbuilddir $(TARGET16)/$(TARGET16)
 
 # Build all samples
 
@@ -262,7 +268,8 @@ all:$(TARGET01) \
 	$(TARGET12) \
 	$(TARGET13) \
 	$(TARGET14) \
-	$(TARGET15)
+	$(TARGET15) \
+	$(TARGET16)
 
 # Remove build stuff
 
@@ -283,5 +290,6 @@ clean:
 	$(TARGET12)/$(TARGET12) \
 	$(TARGET13)/$(TARGET13) \
 	$(TARGET14)/$(TARGET14) \
-	$(TARGET15)/$(TARGET15)
+	$(TARGET15)/$(TARGET15) \
+	$(TARGET16)/$(TARGET16)
 	@rm -rf $(BUILD)
