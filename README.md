@@ -196,6 +196,12 @@ Particle engine initially implemented by Kevin Harris and adopted by me for rend
 Compute shaders are core part of Vulkan. This sample performs arithmetic computations on two set of numbers using GPU compute shader.
 <br><br>
 
+### [16 - Immediate mode](16-immediate/)
+<img src="./screenshots/16.jpg" height="128px" align="left">
+Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was useful to (quickly) draw something on the screen.
+This sample shows how to use Magma helper to draw different primitives without VB mapping, data copy, state management etc.
+<br><br>
+
 ## Credits
 This framework uses a few third-party libraries:
 
