@@ -32,8 +32,12 @@ TARGET15=15-compute
 
 MAGMA=/third-party/magma
 MAGMA_OBJS= \
+	$(BUILD)$(MAGMA)/allocator/allocator.o \
+	\
 	$(BUILD)$(MAGMA)/descriptors/attachment.o \
 	$(BUILD)$(MAGMA)/descriptors/subpass.o \
+	\
+	$(BUILD)$(MAGMA)/helpers/immediateRender.o \
 	\
 	$(BUILD)$(MAGMA)/misc/bufferMemoryBarrier.o \
 	$(BUILD)$(MAGMA)/misc/debugMarker.o \

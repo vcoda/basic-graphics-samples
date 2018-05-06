@@ -173,7 +173,7 @@ public:
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
-                cmdBuffer->pushConstantBlock(pipelineLayout, pushConstants, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+                cmdBuffer->pushConstantBlock(pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, pushConstants);
                 cmdBuffer->bindPipeline(pipeline);
                 particles->draw(cmdBuffer);
             }
