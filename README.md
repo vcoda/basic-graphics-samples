@@ -200,7 +200,7 @@ Compute shaders are core part of Vulkan. This sample performs arithmetic computa
 <img src="./screenshots/16.jpg" height="128px" align="left">
 Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was useful to (quickly) draw something on the screen.
 This sample shows how to use Magma helper to draw different primitives without VB mapping, data copy, state management etc.
-<br><br>
+<br><br><br><br>
 
 ## Credits
 This framework uses a few third-party libraries:
