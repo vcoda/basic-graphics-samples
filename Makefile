@@ -183,6 +183,7 @@ $(TARGET16)/$(TARGET16): $(BUILD)/$(TARGET16)/$(TARGET16).o $(OBJS)
 
 mkbuilddir:
 	@mkdir -p $(BUILD)
+	@mkdir -p $(BUILD)$(MAGMA)/allocator
 	@mkdir -p $(BUILD)$(MAGMA)/descriptors
 	@mkdir -p $(BUILD)$(MAGMA)/helpers
 	@mkdir -p $(BUILD)$(MAGMA)/misc
