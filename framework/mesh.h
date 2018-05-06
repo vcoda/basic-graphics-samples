@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "nonCopyable.h"
 
 namespace magma
 {
@@ -8,7 +9,7 @@ namespace magma
     class IndexBuffer;
 }
 
-class Mesh
+class Mesh : public NonCopyable
 {
 public:
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const = 0;

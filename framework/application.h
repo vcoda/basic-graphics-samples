@@ -10,6 +10,7 @@
 #endif
 #include <xmmintrin.h>
 #include "platform.h"
+#include "nonCopyable.h"
 
 template<size_t alignment>
 struct alignas(alignment) Aligned
@@ -20,7 +21,7 @@ struct alignas(alignment) Aligned
         { _mm_free(p); }
 };
 
-class IApplication : public Aligned<16>
+class IApplication : public NonCopyable, public Aligned<16>
 {
 public:
     virtual void setWindowCaption(String caption) = 0;
