@@ -51,14 +51,18 @@ void Win32App::show() const
     const HWND hDesktopWnd = GetDesktopWindow();
     RECT desktopRect;
     GetWindowRect(hDesktopWnd, &desktopRect);
+    // Get window size
+    RECT rc;
+    GetWindowRect(hWnd, &rc);
+    const int cx = static_cast<int>(rc.right - rc.left);
+    const int cy = static_cast<int>(rc.bottom - rc.top);
     int x, y;
-    if (width < static_cast<uint32_t>(desktopRect.right) && 
-        height < static_cast<uint32_t>(desktopRect.bottom))
+    if (cx < desktopRect.right && cy < desktopRect.bottom)
     {   // Place window in the center of the desktop
-        x = (desktopRect.right - width) / 2;
-        y = (desktopRect.bottom - height) / 2;
+        x = (desktopRect.right - cx) / 2;
+        y = (desktopRect.bottom - cy) / 2;
     }
-    SetWindowPos(hWnd, HWND_TOP, x, y, width, height, SWP_SHOWWINDOW);
+    SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW);
 }
 
 void Win32App::run()
