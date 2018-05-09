@@ -202,6 +202,9 @@ Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was us
 This sample shows how to use Magma helper to draw different primitives without VB mapping, data copy, state management etc.
 <br><br><br><br>
 
+## Known issues
+Negative viewport height may not work on Intel integrated GPU's despite support of VK_KHR_maintenance1 extension.
+
 ## Credits
 This framework uses a few third-party libraries:
 
