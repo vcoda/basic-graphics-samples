@@ -11,8 +11,8 @@ class OcclusionQueryApp : public VulkanApp
     magma::VertexInputState vertexInput;
 
     std::shared_ptr<magma::QueryPool> occlusionQuery;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> transformUniforms;
-    std::shared_ptr<magma::UniformBuffer<rapid::vector4>> colorUniforms;
+    std::shared_ptr<magma::DynamicUniformBuffer<rapid::matrix>> transformUniforms;
+    std::shared_ptr<magma::DynamicUniformBuffer<rapid::vector4>> colorUniforms;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayouts[2];
     std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
@@ -80,7 +80,8 @@ public:
         const rapid::matrix transMesh = rapid::translation(0.f, -2.f, 0.f);
         const rapid::matrix worldPlane = transPlane * pitch * yaw;
         const rapid::matrix worldMesh = transMesh * pitch * yaw;
-        magma::helpers::mapScoped<rapid::matrix>(transformUniforms, true, [this, &worldPlane, &worldMesh](auto *transforms)
+        magma::helpers::mapScoped<rapid::matrix>(transformUniforms, true, 
+            [this, &worldPlane, &worldMesh](magma::helpers::AlignedUniformArray<rapid::matrix>& transforms)
         {
             transforms[0] = worldPlane * viewProj;
             transforms[1] = worldMesh * viewProj;
@@ -112,11 +113,12 @@ public:
 
     void createUniformBuffer()
     {
-        transformUniforms.reset(new magma::UniformBuffer<rapid::matrix>(device, 2));
+        transformUniforms.reset(new magma::DynamicUniformBuffer<rapid::matrix>(device, 2));
         updatePerspectiveTransform();
-        colorUniforms.reset(new magma::UniformBuffer<rapid::vector4>(device, 2));
+        colorUniforms.reset(new magma::DynamicUniformBuffer<rapid::vector4>(device, 2));
         // Update only once
-        magma::helpers::mapScoped<rapid::vector4>(colorUniforms, false, [](auto *colors)
+        magma::helpers::mapScoped<rapid::vector4>(colorUniforms, false, 
+            [](magma::helpers::AlignedUniformArray<rapid::vector4>& colors)
         {
             colors[0] = rapid::vector4(0.f, 0.f, 1.f, 1.f);
             colors[1] = rapid::vector4(1.f, 0.f, 0.f, 1.f);
@@ -181,7 +183,11 @@ public:
                 cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, {0, 0});
                 plane->draw(cmdBuffer);
                 // Occludee
-                cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, {sizeof(rapid::matrix), sizeof(rapid::vector)});
+                cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, 
+                    {
+                        transformUniforms->getDynamicOffset(1),
+                        colorUniforms->getDynamicOffset(1)
+                    });
                 /* Not setting precise bit may be more efficient on some implementations, 
                    and should be used where it is sufficient to know a boolean result 
                    on whether any samples passed the per-fragment tests.
