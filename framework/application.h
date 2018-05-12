@@ -8,18 +8,8 @@
 #define NOMINMAX
 #include <windows.h>
 #endif
-#include <xmmintrin.h>
 #include "platform.h"
 #include "nonCopyable.h"
-
-template<size_t alignment>
-struct alignas(alignment) Aligned
-{
-    void *operator new(size_t size) noexcept 
-        { return _mm_malloc(size, alignment); }
-    void operator delete(void *p) noexcept 
-        { _mm_free(p); }
-};
 
 class IApplication : public NonCopyable, public Aligned<16>
 {
