@@ -17,6 +17,7 @@ Math and logic of original code is preserved.
 #include <random>
 #include "../third-party/magma/magma.h"
 #include "../third-party/rapid/rapid.h"
+#include "../framework/platform.h"
 
 enum class ClassifyPoint
 {
@@ -32,7 +33,7 @@ enum class CollisionResult
     RECYCLE
 };
 
-class ParticleSystem
+class ParticleSystem : public Aligned<16>
 {
 public:
     struct ParticleVertex
