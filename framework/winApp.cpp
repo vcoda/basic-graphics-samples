@@ -134,35 +134,35 @@ LRESULT WINAPI Win32App::wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
     {
     case WM_KEYDOWN:
         {
-            const char key = Win32App::self->translateKey((int)wParam);
-            Win32App::self->onKeyDown(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
+            const char key = self->translateKey((int)wParam);
+            self->onKeyDown(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
         }
         break;
     case WM_KEYUP:
         {
-            const char key = Win32App::self->translateKey((int)wParam);
-            Win32App::self->onKeyUp(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
+            const char key = self->translateKey((int)wParam);
+            self->onKeyUp(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
         }
         break;
     case WM_MOUSEMOVE:
-        Win32App::self->onMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam));
+        self->onMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
-        Win32App::self->onMouseLButton((WM_LBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
+        self->onMouseLButton((WM_LBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONUP:
-        Win32App::self->onMouseRButton((WM_RBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
+        self->onMouseRButton((WM_RBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONUP:
-        Win32App::self->onMouseMButton((WM_MBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
+        self->onMouseMButton((WM_MBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_MOUSEWHEEL:
         {
             short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-            Win32App::self->onMouseWheel(delta/(float)WHEEL_DELTA);
+            self->onMouseWheel(delta/(float)WHEEL_DELTA);
         }
         break;
 #ifndef _DEBUG
@@ -171,7 +171,7 @@ LRESULT WINAPI Win32App::wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
         break;
 #endif
     case WM_CLOSE:
-        Win32App::self->close();
+        self->close();
         break;
     case WM_DESTROY:
         return 0;
