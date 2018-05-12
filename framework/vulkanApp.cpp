@@ -3,7 +3,7 @@
 #include <sstream>
 #include "vulkanApp.h"
 
-VulkanApp::VulkanApp(const AppEntry& entry, String caption, uint32_t width, uint32_t height,
+VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
     PlatformApp(entry, caption, width, height),
     timer(new Timer()),
@@ -77,12 +77,12 @@ void VulkanApp::createInstance()
         VK_EXT_DEBUG_REPORT_EXTENSION_NAME
 #endif
     };
-	char appName[1024];
+    MAGMA_STACK_ARRAY(char, appName, caption.length() + 1);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     size_t count = 0;
-    wcstombs_s(&count, appName, caption, sizeof(appName));
+    wcstombs_s(&count, appName, appName.size(), caption.c_str(), appName.size());
 #else
-    strcpy(appName, caption);
+    strcpy(appName, caption.c_str());
 #endif
 
     instance.reset(new magma::Instance(

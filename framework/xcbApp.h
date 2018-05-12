@@ -5,9 +5,9 @@
 class XcbApp : public BaseApp
 {
 public:
-    XcbApp(const AppEntry& entry, String caption, uint32_t width, uint32_t height);
+    XcbApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height);
     virtual ~XcbApp();
-    virtual void setWindowCaption(String caption) override;
+    virtual void setWindowCaption(const std::tstring& caption) override;
     virtual void show() const override;
     virtual void run() override;
     virtual void onKeyUp(char key, int repeat, uint32_t flags) override {};

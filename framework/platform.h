@@ -9,12 +9,6 @@
 #endif
 #endif // !TEXT
 
-#ifdef UNICODE
-typedef const wchar_t *String;
-#else
-typedef const char *String;
-#endif
-
 namespace std
 {
 #ifdef UNICODE
@@ -32,4 +26,3 @@ namespace std
 #endif
     }
 }
-

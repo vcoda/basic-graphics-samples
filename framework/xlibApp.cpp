@@ -1,6 +1,6 @@
 #include "xlibApp.h"
 
-XlibApp::XlibApp(const AppEntry& entry, String caption, uint32_t width, uint32_t height):
+XlibApp::XlibApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height):
     BaseApp(caption, width, height)
 {
     std::cout << "Platform: Xlib" << std::endl;
@@ -65,9 +65,9 @@ XlibApp::~XlibApp()
     XCloseDisplay(dpy);
 }
 
-void XlibApp::setWindowCaption(String caption)
+void XlibApp::setWindowCaption(const std::tstring& caption)
 {
-    XStoreName(dpy, window, caption);
+    XStoreName(dpy, window, caption.c_str());
 }
 
 void XlibApp::show() const

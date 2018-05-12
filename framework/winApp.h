@@ -5,9 +5,9 @@
 class Win32App : public BaseApp
 {
 public:
-    Win32App(const AppEntry& entry, const String caption, uint32_t width, uint32_t height);
+    Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height);
     virtual ~Win32App();
-    virtual void setWindowCaption(const String caption);
+    virtual void setWindowCaption(const std::tstring& caption) override;
     virtual void show() const override;
     virtual void run() override;
     virtual void onKeyUp(char key, int repeat, uint32_t flags) override {}

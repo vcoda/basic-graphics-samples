@@ -17,7 +17,7 @@ typedef XcbApp PlatformApp;
 class VulkanApp : public PlatformApp
 {
 public:
-    VulkanApp(const AppEntry& entry, String caption, uint32_t width, uint32_t height,
+    VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
         bool depthBuffer = false);
     ~VulkanApp();
     virtual void render(uint32_t bufferIndex) = 0;

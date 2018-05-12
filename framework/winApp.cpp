@@ -3,7 +3,7 @@
 Win32App *Win32App::self;
 DebugOutputStream Win32App::dostream;
 
-Win32App::Win32App(const AppEntry& entry, const String caption, uint32_t width, uint32_t height):
+Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height):
     BaseApp(caption, width, height),
     hInstance(entry.hInstance),
     hWnd(NULL)
@@ -20,7 +20,7 @@ Win32App::Win32App(const AppEntry& entry, const String caption, uint32_t width, 
 
     // Create window
     const DWORD style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-    hWnd = CreateWindow(wc.lpszClassName, caption, style, 
+    hWnd = CreateWindow(wc.lpszClassName, caption.c_str(), style, 
         0, 0, width, height, 
         NULL, NULL, wc.hInstance, NULL);
 
@@ -40,9 +40,9 @@ Win32App::~Win32App()
     UnregisterClass(TEXT("demo"), hInstance);
 }
 
-void Win32App::setWindowCaption(const String caption)
+void Win32App::setWindowCaption(const std::tstring& caption)
 {
-    SetWindowText(hWnd, caption);
+    SetWindowText(hWnd, caption.c_str());
 }
 
 void Win32App::show() const

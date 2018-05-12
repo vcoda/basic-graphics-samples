@@ -24,7 +24,7 @@ struct alignas(alignment) Aligned
 class IApplication : public NonCopyable, public Aligned<16>
 {
 public:
-    virtual void setWindowCaption(String caption) = 0;
+    virtual void setWindowCaption(const std::tstring& caption) = 0;
     virtual void show() const = 0;
     virtual void run() = 0;
     virtual void close() = 0;
@@ -63,7 +63,7 @@ struct AppEntry
 class BaseApp : public IApplication
 {
 protected:
-    BaseApp(String caption, uint32_t width, uint32_t height):
+    BaseApp(const std::tstring& caption, uint32_t width, uint32_t height):
         caption(caption), width(width), height(height) {}
     virtual void close() override { quit = true; }
     virtual void onKeyDown(char key, int repeat, uint32_t flags) override
@@ -73,7 +73,7 @@ protected:
     }
 
 protected:
-    String caption;
+    std::tstring caption;
     uint32_t width, height;
     bool mousing = false;
     float spinX = 0.f;

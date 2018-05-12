@@ -3,7 +3,7 @@
 #include <xcb/xcb_icccm.h> // libxcb-icccm4-dev
 #include "xcbApp.h"
 
-XcbApp::XcbApp(const AppEntry& entry, String caption, uint32_t width, uint32_t height):
+XcbApp::XcbApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height):
     BaseApp(caption, width, height)
 {
     std::cout << "Platform: XCB" << std::endl;
@@ -58,11 +58,11 @@ XcbApp::~XcbApp()
     xcb_disconnect(connection);
 }
 
-void XcbApp::setWindowCaption(String caption)
+void XcbApp::setWindowCaption(const std::tstring& caption)
 {
     xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window,
         XCB_ATOM_WM_NAME, XCB_ATOM_STRING,
-        sizeof(char) * 8, strlen(caption), caption);
+        sizeof(char) * 8, caption.length(), caption.c_str());
 }
 
 void XcbApp::show() const
