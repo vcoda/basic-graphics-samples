@@ -14,10 +14,10 @@ aligned_vector<char> loadBinaryFile(const std::string& filename)
     }
     const std::streamoff size = file.tellg();
     file.seekg(0, std::ios::beg);
-    aligned_vector<char> data(static_cast<size_t>(size));
-    file.read(data.data(), size);
+    aligned_vector<char> binary(static_cast<size_t>(size));
+    file.read(binary.data(), size);
     file.close();
-    return data;
+    return std::move(binary);
 }
 
 VkFormat getBCFormat(const gliml::context& ctx)
