@@ -49,7 +49,7 @@ XlibApp::XlibApp(const AppEntry& entry, const std::tstring& caption, uint32_t wi
     hints.min_height = hints.max_height = height;
 
     XSetStandardProperties(dpy, window,
-        caption, caption, None,
+        caption.c_str(), caption.c_str(), None,
         entry.argv, entry.argc,
         &hints);
 
