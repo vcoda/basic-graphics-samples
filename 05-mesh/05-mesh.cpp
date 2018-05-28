@@ -5,7 +5,6 @@
 class MeshApp : public VulkanApp
 {
     std::unique_ptr<BezierPatchMesh> mesh;
-    magma::VertexInputState vertexInput;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
@@ -75,17 +74,6 @@ public:
     {
         const uint32_t subdivisionDegree = 4;
         mesh.reset(new BezierPatchMesh(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy));
-        vertexInput = magma::VertexInputState (
-        {
-            magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
-            magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
-            magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
-        },
-        {
-            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
-        });
     }
 
     void createUniformBuffer()
@@ -116,7 +104,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             utilities::loadShaders(device, "transform.o", "normal.o"),
-            vertexInput,
+            mesh->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::lineCullBackCW : magma::states::lineCullBackCCW,
             magma::states::dontMultisample,

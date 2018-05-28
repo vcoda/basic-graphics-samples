@@ -83,3 +83,17 @@ void CubeMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
     for (uint32_t firstVertex = 0; firstVertex <= 20; firstVertex += 4)
         cmdBuffer->draw(4, firstVertex);
 }
+
+const magma::VertexInputState& CubeMesh::getVertexInput() const
+{
+    static const magma::VertexInputState vertexInput(
+    {
+        magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
+        magma::VertexInputBinding(1, sizeof(rapid::float3))  // TexCoord
+    },
+    {
+        magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
+        magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
+    });
+    return vertexInput;
+}

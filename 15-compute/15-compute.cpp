@@ -7,7 +7,7 @@ class ComputeApp : public VulkanApp
 
     std::shared_ptr<magma::StorageBuffer> inputBuffers[2];
     std::shared_ptr<magma::StorageBuffer> outputBuffer;
-    std::shared_ptr<magma::DestTransferBuffer> readbackBuffer;
+    std::shared_ptr<magma::DstTransferBuffer> readbackBuffer;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
@@ -68,7 +68,7 @@ public:
         inputBuffers[1].reset(new magma::StorageBuffer(cmdBufferCopy, numbers));
         const VkDeviceSize size = sizeof(float) * numbers.size();
         outputBuffer.reset(new magma::StorageBuffer(device, size));
-        readbackBuffer.reset(new magma::DestTransferBuffer(device, size));
+        readbackBuffer.reset(new magma::DstTransferBuffer(device, size));
     }
 
     void setupDescriptorSet()
@@ -146,15 +146,14 @@ public:
 
     void printOutputValues(const char *description)
     {
-        if (float *values = static_cast<float *>(readbackBuffer->getMemory()->map()))
+        magma::helpers::mapScoped<float>(readbackBuffer, [&](float *values)
         {
             std::cout << std::setw(6) << std::left << description << ": ";
             const uint32_t count = static_cast<uint32_t>(readbackBuffer->getMemory()->getSize()/sizeof(float));
             for (uint32_t i = 0; i < count; ++i)
                 std::cout << std::setw(4) << std::right << values[i] << ", ";
             std::cout << std::endl;
-            readbackBuffer->getMemory()->unmap();
-        }
+        });
     }
 
     // This stuff not used in compute application

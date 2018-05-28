@@ -1,6 +1,7 @@
 #include "bezierMesh.h"
 #include "bezier.inl"
 #include "magma/magma.h"
+#include "rapid/rapid.h"
 
 BezierPatchMesh::BezierPatchMesh(
     const uint32_t patches[][16], 
@@ -12,32 +13,25 @@ BezierPatchMesh::BezierPatchMesh(
     assert(subdivisionDegree >= 2);
     assert(subdivisionDegree <= 32);
     const uint32_t divs = subdivisionDegree;
-    uint32_t numFaces = divs * divs;
-    std::vector<uint32_t> indices(numFaces * 4);
-    // All patches are subdivided in the same way, so here we share the same topology
-    for (uint16_t j = 0, k = 0; j < divs; ++j) 
-    {
-        for (uint16_t i = 0; i < divs; ++i, ++k) 
-        {
-            indices[k * 4] = (divs + 1) * j + i;
-            indices[k * 4 + 1] = (divs + 1) * j + i + 1;
-            indices[k * 4 + 2] = (divs + 1) * (j + 1) + i + 1;
-            indices[k * 4 + 3] = (divs + 1) * (j + 1) + i;
-        }
-    }
-    std::vector<rapid::float3> P((divs + 1) * (divs + 1));
-    std::vector<rapid::float3> N((divs + 1) * (divs + 1));
-    std::vector<rapid::float2> st((divs + 1) * (divs + 1));
+    const uint32_t vertexCount = (divs + 1) * (divs + 1);
+    std::shared_ptr<magma::SrcTransferBuffer> vertices(std::make_shared<magma::SrcTransferBuffer>(
+        cmdBuffer->getDevice(), vertexCount * sizeof(rapid::float3)));
+    std::shared_ptr<magma::SrcTransferBuffer> normals(std::make_shared<magma::SrcTransferBuffer>(
+        cmdBuffer->getDevice(), vertexCount * sizeof(rapid::float3)));
+    std::shared_ptr<magma::SrcTransferBuffer> texCoords(std::make_shared<magma::SrcTransferBuffer>(
+        cmdBuffer->getDevice(), vertexCount * sizeof(rapid::float2)));
     rapid::vector3 controlPoints[16];
     for (uint32_t np = 0; np < numPatches; ++np)
-    {
-        // Set patch control points
+    {   // Set patch control points
         for (uint32_t i = 0; i < 16; ++i)
         {
             controlPoints[i] = rapid::vector3(patchVertices[patches[np][i] - 1][0],
                                               patchVertices[patches[np][i] - 1][1],
                                               patchVertices[patches[np][i] - 1][2]);
         }
+        rapid::float3 *P = static_cast<rapid::float3 *>(vertices->getMemory()->map());
+        rapid::float3 *N = static_cast<rapid::float3 *>(normals->getMemory()->map());
+        rapid::float2 *st = static_cast<rapid::float2 *>(texCoords->getMemory()->map());
         // Generate grid
         for (uint16_t j = 0, k = 0; j <= divs; ++j)
         {
@@ -54,47 +48,83 @@ BezierPatchMesh::BezierPatchMesh(
                 st[k].y = v;
             }
         }
-        // Swap Y and Z component to match coordinate system
-        for (auto& v : P) std::swap(v.y, v.z);
-        for (auto& n : N) std::swap(n.y, n.z);
+        for (uint32_t i = 0; i < vertexCount; ++i)
+        {   // Swap Y and Z component to match coordinate system
+            std::swap(P[i].y, P[i].z);
+            std::swap(N[i].y, N[i].z);
+        }
+        texCoords->getMemory()->unmap();
+        normals->getMemory()->unmap();
+        vertices->getMemory()->unmap();
         // Triangulate and load to buffers
-        std::shared_ptr<Patch> patch(new Patch(numFaces, indices, P, N, st, cmdBuffer));
+        std::shared_ptr<Patch> patch(std::make_shared<Patch>(cmdBuffer, vertices, normals, texCoords));
         this->patches.push_back(patch);
     }
+    const uint32_t numFaces = divs * divs;
+    std::vector<uint32_t> indices(numFaces * 4);
+    // All patches are subdivided in the same way, so here we share the same topology
+    for (uint16_t j = 0, k = 0; j < divs; ++j) 
+    {
+        for (uint16_t i = 0; i < divs; ++i, ++k) 
+        {
+            indices[k * 4] = (divs + 1) * j + i;
+            indices[k * 4 + 1] = (divs + 1) * j + i + 1;
+            indices[k * 4 + 2] = (divs + 1) * (j + 1) + i + 1;
+            indices[k * 4 + 3] = (divs + 1) * (j + 1) + i;
+        }
+    }
+    std::shared_ptr<magma::SrcTransferBuffer> srcBuffer(std::make_shared<magma::SrcTransferBuffer>(
+        cmdBuffer->getDevice(), numFaces * 2 * 3 * sizeof(uint32_t)));
+    magma::helpers::mapScoped<uint32_t>(srcBuffer, [numFaces, indices](uint32_t *faces)
+    {
+        for (uint32_t i = 0, k = 0, n = 0; i < numFaces; ++i, k += 4) // For each face
+        { 
+            for (uint32_t j = 0; j < 2; ++j) // For each triangle in the face
+            { 
+                faces[n    ] = indices[k];
+                faces[n + 1] = indices[k + j + 1];
+                faces[n + 2] = indices[k + j + 2];
+                n += 3;
+            }
+        }
+    });
+    indexBuffer = std::make_shared<magma::IndexBuffer>(cmdBuffer, srcBuffer, VK_INDEX_TYPE_UINT32);
 }
 
 void BezierPatchMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
 {
+    cmdBuffer->bindIndexBuffer(indexBuffer);
     for (const auto& patch : patches)
     {
         cmdBuffer->bindVertexBuffer(0, patch->vertexBuffer);
         cmdBuffer->bindVertexBuffer(1, patch->normalBuffer);
         cmdBuffer->bindVertexBuffer(2, patch->texCoordBuffer);
-        cmdBuffer->bindIndexBuffer(patch->indexBuffer);
-        cmdBuffer->drawIndexed(patch->indexBuffer->getIndexCount(), 0, 0);
+        cmdBuffer->drawIndexed(indexBuffer->getIndexCount(), 0, 0);
     }
 }
 
-BezierPatchMesh::Patch::Patch(const uint32_t numFaces, 
-    const std::vector<uint32_t>& faceIndices, 
-    const std::vector<rapid::float3>& vertices,
-    const std::vector<rapid::float3>& normals,
-    const std::vector<rapid::float2>& texCoords,
-    std::shared_ptr<magma::CommandBuffer> cmdBuffer)
+const magma::VertexInputState& BezierPatchMesh::getVertexInput() const
 {
-    std::vector<uint32_t> indices(numFaces * 2 * 3);
-    for (uint32_t i = 0, k = 0, n = 0; i < numFaces; ++i, k += 4) // For each face
-    { 
-        for (uint32_t j = 0; j < 2; ++j) // For each triangle in the face
-        { 
-            indices[n    ] = faceIndices[k];
-            indices[n + 1] = faceIndices[k + j + 1];
-            indices[n + 2] = faceIndices[k + j + 2];
-            n += 3;
-        }
-    }
-    vertexBuffer.reset(new magma::VertexBuffer(cmdBuffer, vertices));
-    normalBuffer.reset(new magma::VertexBuffer(cmdBuffer, normals));
-    texCoordBuffer.reset(new magma::VertexBuffer(cmdBuffer, texCoords));
-    indexBuffer.reset(new magma::IndexBuffer(cmdBuffer, indices));
+    static const magma::VertexInputState vertexInput(
+    {
+        magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
+        magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
+        magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
+    },
+    {
+        magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
+        magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
+        magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
+    });
+    return vertexInput;
+}
+
+BezierPatchMesh::Patch::Patch(std::shared_ptr<magma::CommandBuffer> cmdBuffer,
+    std::shared_ptr<magma::SrcTransferBuffer> vertices,
+    std::shared_ptr<magma::SrcTransferBuffer> normals,
+    std::shared_ptr<magma::SrcTransferBuffer> texCoords)
+{
+    vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, vertices);
+    normalBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, normals);
+    texCoordBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, texCoords);
 }

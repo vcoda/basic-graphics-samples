@@ -8,8 +8,6 @@ class OcclusionQueryApp : public VulkanApp
 {
     std::unique_ptr<BezierPatchMesh> teapot;
     std::unique_ptr<PlaneMesh> plane;
-    magma::VertexInputState vertexInput;
-
     std::shared_ptr<magma::QueryPool> occlusionQuery;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::matrix>> transformUniforms;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::vector4>> colorUniforms;
@@ -98,17 +96,6 @@ public:
         const uint32_t subdivisionDegree = 16;
         teapot.reset(new BezierPatchMesh(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy));
         plane.reset(new PlaneMesh(6.f, 6.f, true, true, cmdBufferCopy));
-        vertexInput = magma::VertexInputState(
-        {
-            magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
-            magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
-            magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
-        },
-        {
-            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
-        });
     }
 
     void createUniformBuffer()
@@ -151,7 +138,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayouts));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             utilities::loadShaders(device, "transform.o", "fill.o"),
-            vertexInput,
+            teapot->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,
             magma::states::dontMultisample,

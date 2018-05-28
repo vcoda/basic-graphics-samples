@@ -123,3 +123,14 @@ void KnotMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
     cmdBuffer->bindIndexBuffer(indexBuffer);
     cmdBuffer->drawIndexed(indexBuffer->getIndexCount(), 0, 0);
 }
+
+const magma::VertexInputState& KnotMesh::getVertexInput() const
+{
+    static const magma::VertexInputState vertexInput(
+        magma::VertexInputBinding(0, sizeof(Vertex)),
+    {
+        magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KnotMesh::Vertex, position)),
+        magma::VertexInputAttribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KnotMesh::Vertex, normal))
+    });
+    return vertexInput;
+}

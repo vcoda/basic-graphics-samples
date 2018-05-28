@@ -134,7 +134,7 @@ void ParticleSystem::update(float dt)
             }
             vertexBuffer->getMemory()->unmap();
         }
-        drawParams->updateDraw(static_cast<uint32_t>(activeList.size()), 0);
+        drawParams->writeDrawCommand(static_cast<uint32_t>(activeList.size()), 0);
     }
 }
 

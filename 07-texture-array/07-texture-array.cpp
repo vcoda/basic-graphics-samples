@@ -10,8 +10,6 @@ class TextureArrayApp : public VulkanApp
     };
 
     std::unique_ptr<CubeMesh> mesh;
-    magma::VertexInputState vertexInput;
-
     std::shared_ptr<magma::Image2DArray> imageArray;
     std::shared_ptr<magma::ImageView> imageViewArray;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
@@ -119,15 +117,6 @@ public:
     void createMesh()
     {
         mesh.reset(new CubeMesh(cmdBufferCopy));
-        vertexInput = magma::VertexInputState(
-        {
-            magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
-            magma::VertexInputBinding(1, sizeof(rapid::float3))  // TexCoord, FaceId
-        },
-        {
-            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0)
-        });
     }
 
     void loadTextureArray(const std::vector<std::string>& filenames)
@@ -232,7 +221,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             utilities::loadShaders(device, "transform.o", "textureArray.o"),
-            vertexInput,
+            mesh->getVertexInput(),
             magma::states::triangleStrip,
             negateViewport ? magma::states::fillCullBackCCW : magma::states::fillCullBackCW,
             magma::states::dontMultisample,

@@ -15,6 +15,7 @@ public:
     KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radius, bool counterClockwise,
         std::shared_ptr<magma::CommandBuffer> cmdBuffer);
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const override;
+    virtual const magma::VertexInputState& getVertexInput() const override;
 
 private:
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;

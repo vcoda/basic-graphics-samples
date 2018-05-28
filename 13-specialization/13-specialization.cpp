@@ -34,7 +34,6 @@ class SpecializationApp : public VulkanApp
     };
 
     std::unique_ptr<KnotMesh> mesh;
-    magma::VertexInputState vertexInput;
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
     std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
@@ -150,14 +149,6 @@ public:
         const uint32_t stacks = 128;
         const float radius = 0.25f;
         mesh.reset(new KnotMesh(3, slices, stacks, radius, false, cmdBufferCopy));
-        vertexInput = magma::VertexInputState (
-        {
-            magma::VertexInputBinding(0, sizeof(KnotMesh::Vertex)),
-        },
-        {
-            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KnotMesh::Vertex, position)),
-            magma::VertexInputAttribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KnotMesh::Vertex, normal)),
-        });
     }
 
     void loadShaders()
@@ -214,7 +205,7 @@ public:
         shaderStages.push_back(specializeFragmentStage(shadingType, "main"));
         auto pipeline = new magma::GraphicsPipeline(device, pipelineCache,
             shaderStages,
-            vertexInput,
+            mesh->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,
             magma::states::dontMultisample,

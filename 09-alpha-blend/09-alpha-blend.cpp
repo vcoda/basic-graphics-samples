@@ -4,8 +4,6 @@
 class AlphaBlendApp : public VulkanApp
 {
     std::unique_ptr<CubeMesh> mesh;
-    magma::VertexInputState vertexInput;
-
     std::shared_ptr<magma::Image2D> image;
     std::shared_ptr<magma::ImageView> imageView;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
@@ -82,15 +80,6 @@ public:
     void createMesh()
     {
         mesh.reset(new CubeMesh(cmdBufferCopy));
-        vertexInput = magma::VertexInputState(
-        {
-            magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
-            magma::VertexInputBinding(1, sizeof(rapid::float3))  // Normal
-        },
-        {
-            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0)
-        });
     }
 
     void loadTexture(const std::string& filename)
@@ -156,7 +145,7 @@ public:
     {
         std::shared_ptr<magma::GraphicsPipeline> pipeline(new magma::GraphicsPipeline(device, pipelineCache,
             utilities::loadShaders(device, "transform.o", "texture.o"),
-            vertexInput,
+            mesh->getVertexInput(),
             magma::states::triangleStrip,
             rasterizationState,
             magma::states::dontMultisample,

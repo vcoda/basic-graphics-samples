@@ -21,8 +21,6 @@ class CubeMapApp : public VulkanApp
     std::unique_ptr<BezierPatchMesh> mesh;
     std::unique_ptr<TextureCube> diffuse;
     std::unique_ptr<TextureCube> specular;
-    magma::VertexInputState vertexInput;
-
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<TransformMatrices>> uniformTransforms;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
@@ -94,17 +92,6 @@ public:
     {
         const uint32_t subdivisionDegree = 16;
         mesh.reset(new BezierPatchMesh(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy));
-        vertexInput = magma::VertexInputState (
-        {
-            magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
-            magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
-            magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
-        },
-        {
-            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
-            magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
-        });
     }
 
     std::unique_ptr<TextureCube> loadCubeMap(const std::string& filename)
@@ -177,7 +164,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             utilities::loadShaders(device, "transform.o", "envmap.o"),
-            vertexInput,
+            mesh->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,
             magma::states::dontMultisample,

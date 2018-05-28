@@ -41,3 +41,19 @@ void PlaneMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
     cmdBuffer->bindIndexBuffer(indexBuffer);
     cmdBuffer->drawIndexed(indexBuffer->getIndexCount(), 0, 0);
 }
+
+const magma::VertexInputState& PlaneMesh::getVertexInput() const
+{
+    static const magma::VertexInputState vertexInput(
+    {
+        magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
+        magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
+        magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
+    },
+    {
+        magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
+        magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
+        magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
+    });
+    return vertexInput;
+}

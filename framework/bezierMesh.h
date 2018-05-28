@@ -13,22 +13,21 @@ public:
         const uint32_t subdivisionDegree, 
         std::shared_ptr<magma::CommandBuffer> cmdBuffer);
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const override;
+    virtual const magma::VertexInputState& getVertexInput() const override;
 
 private:
     struct Patch
     {
-        Patch(const uint32_t numFaces, 
-            const std::vector<uint32_t>& faceIndices, 
-            const std::vector<rapid::float3>& vertices, 
-            const std::vector<rapid::float3>& normals,
-            const std::vector<rapid::float2>& texCoords,
-            std::shared_ptr<magma::CommandBuffer> cmdBuffer);
+        Patch(std::shared_ptr<magma::CommandBuffer> cmdBuffer,
+            std::shared_ptr<magma::SrcTransferBuffer> vertices,
+            std::shared_ptr<magma::SrcTransferBuffer> normals,
+            std::shared_ptr<magma::SrcTransferBuffer> texCoords);
 
         std::shared_ptr<magma::VertexBuffer> vertexBuffer;
         std::shared_ptr<magma::VertexBuffer> normalBuffer;
         std::shared_ptr<magma::VertexBuffer> texCoordBuffer;
-        std::shared_ptr<magma::IndexBuffer> indexBuffer;
     };
 
     std::vector<std::shared_ptr<Patch>> patches;
+    std::shared_ptr<magma::IndexBuffer> indexBuffer;
 };
