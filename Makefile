@@ -222,7 +222,7 @@ shaders-10: $(TARGET10)/triangle.o		$(TARGET10)/fill.o $(TARGET10)/quad.o $(TARG
 shaders-11: $(TARGET11)/transform.o		$(TARGET11)/fill.o
 shaders-12: $(TARGET12)/passthrough.o	$(TARGET12)/fill.o
 shaders-13: $(TARGET13)/transform.o		$(TARGET13)/specialized.o
-shaders-14: $(TARGET14)/pointSize.o		$(TARGET14)/particle.o
+shaders-14: $(TARGET14)/pointSize.o		$(TARGET14)/particle.o $(TARGET14)/particleNeg.o
 
 $(TARGET15)/sum.o: $(TARGET15)/arithmetic.comp
 	$(GLSLC) -V $(TARGET15)/arithmetic.comp -e sum --source-entrypoint main -o $(TARGET15)/sum.o

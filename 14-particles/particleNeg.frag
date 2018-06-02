@@ -15,7 +15,8 @@ void main()
 {
     vec2 screenPos = pos * resolution;
     float radius = pointSize * .5;
-    vec2 fragCoord = gl_FragCoord.xy;
+    // Negate fragment Y coordinate to match vertex screen position
+    vec2 fragCoord = vec2(gl_FragCoord.x, resolution.y - gl_FragCoord.y);
     float d = length(fragCoord - screenPos)/radius;
     if (d >= 1.)
         discard; // Do not blend zeros
