@@ -13,6 +13,6 @@ layout(binding = 2) uniform sampler2DArray texarr;
 void main() 
 {
     vec4 color = textureLod(texarr, texCoord, lod);
-    color.rgb *= vec3(texCoord.xy, 0.);
+    color.rgb *= vec3(texCoord.st, 0.);
     oColor = color;
 }

@@ -27,9 +27,9 @@ vec3 faceColors[6] =
 
 void main() 
 {
-    float u = texCoord.x;
-    float v = (texCoord.y * 2. - 0.5)/0.77; // fix aspect ratio
+    float u = texCoord.s;
+    float v = (texCoord.t * 2. - 0.5)/0.77; // fix aspect ratio
     oTexCoord = vec2(u, v);
-    oFaceColor = faceColors[int(texCoord.z)];
+    oFaceColor = faceColors[int(texCoord.p)];
     gl_Position = worldViewProj * position;
 }

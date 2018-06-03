@@ -12,7 +12,7 @@ void main()
     vec4 color = texture(diffuse, texCoord);
     float alpha = clamp(color.a + 0.1, 0., 1.); // make geometry visible
     if (gl_FrontFacing)
-        oColor = vec4(color.rgb + texCoord.xyx, alpha);
+        oColor = vec4(color.rgb + texCoord.sts, alpha);
     else
         oColor = vec4(faceColor, alpha);
 }
