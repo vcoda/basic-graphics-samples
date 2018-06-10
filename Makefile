@@ -60,6 +60,8 @@ MAGMA_OBJS= \
 	$(BUILD)$(MAGMA)/objects/descriptorSetLayout.o \
 	$(BUILD)$(MAGMA)/objects/device.o \
 	$(BUILD)$(MAGMA)/objects/deviceMemory.o \
+	$(BUILD)$(MAGMA)/objects/display.o \
+	$(BUILD)$(MAGMA)/objects/displayMode.o \
 	$(BUILD)$(MAGMA)/objects/dstTransferBuffer.o \
 	$(BUILD)$(MAGMA)/objects/event.o \
 	$(BUILD)$(MAGMA)/objects/fence.o \
@@ -89,6 +91,7 @@ MAGMA_OBJS= \
 	$(BUILD)$(MAGMA)/objects/storageBuffer.o \
 	$(BUILD)$(MAGMA)/objects/surface.o \
 	$(BUILD)$(MAGMA)/objects/swapchain.o \
+	$(BUILD)$(MAGMA)/objects/uniformTexelBuffer.o \
 	$(BUILD)$(MAGMA)/objects/vertexBuffer.o \
 	\
 	$(BUILD)$(MAGMA)/states/colorBlendState.o \
