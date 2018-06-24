@@ -22,13 +22,7 @@ void VulkanApp::initialize()
     createFramebuffer();
     createCommandBuffers();
     createSyncPrimitives();
-
     pipelineCache.reset(new magma::PipelineCache(device));
-
-#ifdef _DEBUG
-    if (extensions->EXT_debug_marker)
-        magma::DebugObject::initDebugMarker(device);
-#endif
 }
 
 void VulkanApp::onIdle()
