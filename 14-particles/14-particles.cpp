@@ -159,10 +159,9 @@ public:
             cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
-                    magma::ColorClear(0.0f, 0.0f, 0.0f, 1.f),
-                    magma::DepthStencilClear(1.f, 0)
-                }
-            );
+                    magma::clears::blackColor,
+                    magma::clears::depthOne
+                });
             {
                 PushConstants pushConstants;
                 pushConstants.width = static_cast<float>(width);

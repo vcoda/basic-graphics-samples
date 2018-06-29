@@ -194,7 +194,7 @@ public:
         rtCmdBuffer->begin();
         {
             rtCmdBuffer->setRenderArea(0, 0, fb.framebuffer->getExtent());
-            rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer, magma::ColorClear(0.f, 0.f, 0.f));
+            rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer, magma::clears::blackColor);
             {
                 rtCmdBuffer->setViewport(magma::Viewport(0, 0, fb.framebuffer->getExtent()));
                 rtCmdBuffer->setScissor(magma::Scissor(0, 0, fb.framebuffer->getExtent()));
@@ -213,7 +213,7 @@ public:
         cmdBuffer->begin();
         {
             cmdBuffer->setRenderArea(0, 0, width, height);
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], magma::ColorClear(.5f, .5f, .5f));
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], magma::clears::grayColor);
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);

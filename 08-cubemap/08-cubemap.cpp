@@ -183,10 +183,9 @@ public:
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
-                    magma::ColorClear(.5f, .5f, .5f),
-                    magma::DepthStencilClear(1.f, 0)
-                }
-            );
+                    magma::clears::grayColor,
+                    magma::clears::depthOne
+                });
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);

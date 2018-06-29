@@ -115,7 +115,7 @@ public:
             computeCmdBuffer->dispatch(workgroups, 1, 1);
             // Ensure that shader writes are finished before transfer readback
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                outputBuffer, magma::barriers::shaderWriteTransferRead);
+                magma::BufferMemoryBarrier(outputBuffer, magma::barriers::shaderWriteTransferRead));
             // Copy output local buffer to readback buffer
             computeCmdBuffer->copyBuffer(outputBuffer, readbackBuffer);
             /* The memory dependency defined by signaling a fence and waiting on the host
@@ -125,7 +125,7 @@ public:
                and the end of the submission that will signal the fence,
                to guarantee completion of the writes. */
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT,
-                readbackBuffer, magma::barriers::transferWriteHostRead);
+                magma::BufferMemoryBarrier(readbackBuffer, magma::barriers::transferWriteHostRead));
         }
         computeCmdBuffer->end();
         // Execute

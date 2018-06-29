@@ -312,8 +312,7 @@ public:
         cmdBuffer->begin();
         {
             cmdBuffer->setRenderArea(0, 0, width, height);
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
-                magma::ColorClear(0.5f, 0.5f, 0.5f, 1.0f));
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], magma::clears::grayColor);
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);

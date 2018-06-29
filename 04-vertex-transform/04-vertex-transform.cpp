@@ -137,7 +137,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             utilities::loadShaders(device, "transform.o", "frontFace.o"),
-            magma::states::pos3Float_Col4Unorm,
+            magma::states::pos3Float_Col4UNorm,
             magma::states::triangleList,
             rhs ? magma::states::fillCullNoneCCW
                 : magma::states::fillCullNoneCW,
@@ -155,7 +155,7 @@ public:
         cmdBuffer->begin();
         {
             cmdBuffer->setRenderArea(0, 0, width, height);
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], magma::ColorClear(.5f, .5f, .5f));
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], magma::clears::grayColor);
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
