@@ -35,25 +35,28 @@ MAGMA=/third-party/magma
 MAGMA_OBJS= \
 	$(BUILD)$(MAGMA)/allocator/allocator.o \
 	\
+	$(BUILD)$(MAGMA)/barriers/bufferMemoryBarrier.o \
+	$(BUILD)$(MAGMA)/barriers/globalMemoryBarrier.o \
+	$(BUILD)$(MAGMA)/barriers/imageMemoryBarrier.o \
+	\
 	$(BUILD)$(MAGMA)/descriptors/attachment.o \
 	$(BUILD)$(MAGMA)/descriptors/subpass.o \
 	\
 	$(BUILD)$(MAGMA)/helpers/immediateRender.o \
 	\
-	$(BUILD)$(MAGMA)/misc/bufferMemoryBarrier.o \
-	$(BUILD)$(MAGMA)/misc/debugMarker.o \
+	$(BUILD)$(MAGMA)/misc/clearValue.o \
 	$(BUILD)$(MAGMA)/misc/deviceQueueDesc.o \
 	$(BUILD)$(MAGMA)/misc/exception.o \
 	$(BUILD)$(MAGMA)/misc/extensions.o \
 	$(BUILD)$(MAGMA)/misc/format.o \
-	$(BUILD)$(MAGMA)/misc/imageMemoryBarrier.o \
+	$(BUILD)$(MAGMA)/misc/scopedDebugMarker.o \
 	$(BUILD)$(MAGMA)/misc/stringize.o \
 	\
 	$(BUILD)$(MAGMA)/objects/buffer.o \
 	$(BUILD)$(MAGMA)/objects/bufferView.o \
 	$(BUILD)$(MAGMA)/objects/commandBuffer.o \
 	$(BUILD)$(MAGMA)/objects/commandPool.o \
-	$(BUILD)$(MAGMA)/objects/debugObject.o \
+	$(BUILD)$(MAGMA)/objects/debugMarker.o \
 	$(BUILD)$(MAGMA)/objects/debugReportCallback.o \
 	$(BUILD)$(MAGMA)/objects/descriptorPool.o \
 	$(BUILD)$(MAGMA)/objects/descriptorSet.o \
@@ -188,6 +191,7 @@ $(TARGET16)/$(TARGET16): $(BUILD)/$(TARGET16)/$(TARGET16).o $(OBJS)
 mkbuilddir:
 	@mkdir -p $(BUILD)
 	@mkdir -p $(BUILD)$(MAGMA)/allocator
+	@mkdir -p $(BUILD)$(MAGMA)/barriers
 	@mkdir -p $(BUILD)$(MAGMA)/descriptors
 	@mkdir -p $(BUILD)$(MAGMA)/helpers
 	@mkdir -p $(BUILD)$(MAGMA)/misc
