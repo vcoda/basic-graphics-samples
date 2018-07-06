@@ -59,8 +59,11 @@ public:
 
     void setupPipeline()
     {
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "passthrough.o", "fill.o"),
+        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache, 
+            {
+                VertexShader(device, "passthrough.o"), 
+                FragmentShader(device, "fill.o")
+            },
             magma::states::pos2Float_Col4UNorm,
             magma::states::triangleList,
             magma::states::fillCullBackCCW,

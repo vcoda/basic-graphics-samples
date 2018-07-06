@@ -1,5 +1,6 @@
 #include "../framework/vulkanApp.h"
 #include "../framework/knotMesh.h"
+#include "../framework/utilities.h"
 
 #define CAPTION "13 - Specialization constants"
 

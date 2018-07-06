@@ -137,7 +137,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayouts));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "transform.o", "fill.o"),
+            {
+                VertexShader(device, "transform.o"), 
+                FragmentShader(device, "fill.o")
+            },
             teapot->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,

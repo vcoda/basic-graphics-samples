@@ -1,6 +1,5 @@
 #include <fstream>
 #include "utilities.h"
-#include "magma/shared.h"
 
 namespace utilities
 {
@@ -17,7 +16,7 @@ aligned_vector<char> loadBinaryFile(const std::string& filename)
     aligned_vector<char> binary(static_cast<size_t>(size));
     file.read(binary.data(), size);
     file.close();
-    return std::move(binary);
+    return binary;
 }
 
 VkFormat getBCFormat(const gliml::context& ctx)

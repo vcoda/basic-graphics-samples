@@ -32,7 +32,10 @@ public:
     void setupPipeline()
     {
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "position.o", "fill.o"),
+            {
+                VertexShader(device, "position.o"), 
+                FragmentShader(device, "fill.o")
+            },
             magma::states::nullVertexInput,
             magma::states::triangleList,
             magma::states::fillCullBackCCW,

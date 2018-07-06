@@ -94,7 +94,7 @@ public:
     {
         return std::shared_ptr<magma::ComputePipeline>(new magma::ComputePipeline(device,
             pipelineCache,
-            utilities::loadShader<magma::ComputeShaderStage>(device, filename, entrypoint),
+            ComputeShader(device, filename, entrypoint),
             pipelineLayout));
     }
 

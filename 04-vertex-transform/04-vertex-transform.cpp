@@ -136,7 +136,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "transform.o", "frontFace.o"),
+            {
+                VertexShader(device, "transform.o"), 
+                FragmentShader(device, "frontFace.o")
+            },
             magma::states::pos3Float_Col4UNorm,
             magma::states::triangleList,
             rhs ? magma::states::fillCullNoneCCW

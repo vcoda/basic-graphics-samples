@@ -116,6 +116,7 @@ FRAMEWORK_OBJS= \
 	$(BUILD)$(FRAMEWORK)/knotMesh.o \
 	$(BUILD)$(FRAMEWORK)/main.o \
 	$(BUILD)$(FRAMEWORK)/planeMesh.o \
+	$(BUILD)$(FRAMEWORK)/shader.o \
 	$(BUILD)$(FRAMEWORK)/utilities.o \
 	$(BUILD)$(FRAMEWORK)/vulkanApp.o \
 	$(BUILD)$(FRAMEWORK)/xcbApp.o

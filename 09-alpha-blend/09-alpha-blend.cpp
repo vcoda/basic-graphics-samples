@@ -1,5 +1,6 @@
 #include "../framework/vulkanApp.h"
 #include "../framework/cubeMesh.h"
+#include "../framework/utilities.h"
 
 class AlphaBlendApp : public VulkanApp
 {
@@ -144,7 +145,10 @@ public:
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState)
     {
         std::shared_ptr<magma::GraphicsPipeline> pipeline(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "transform.o", "texture.o"),
+            {
+                VertexShader(device, "transform.o"), 
+                FragmentShader(device, "texture.o")
+            },
             mesh->getVertexInput(),
             magma::states::triangleStrip,
             rasterizationState,

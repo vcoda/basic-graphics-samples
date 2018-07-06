@@ -1,4 +1,5 @@
 #include "../framework/vulkanApp.h"
+#include "../framework/utilities.h"
 
 // Use Space to enable/disable multitexturing
 class TextureApp : public VulkanApp
@@ -177,7 +178,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "passthrough.o", "multitexture.o"),
+            {
+                VertexShader(device, "passthrough.o"), 
+                FragmentShader(device, "multitexture.o")
+            },
             magma::states::pos2Float_Tex2Float,
             magma::states::triangleStrip,
             magma::states::fillCullBackCCW,

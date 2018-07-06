@@ -1,5 +1,6 @@
 #include "../framework/vulkanApp.h"
 #include "../framework/bezierMesh.h"
+#include "../framework/utilities.h"
 #include "teapot.h"
 
 // Use L button + mouse to rotate scene
@@ -163,7 +164,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "transform.o", "envmap.o"),
+            {
+                VertexShader(device, "transform.o"), 
+                FragmentShader(device, "envmap.o")
+            },
             mesh->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,

@@ -34,7 +34,6 @@ public:
         VulkanApp(entry, TEXT("10 - Render to texture"), 512, 512)
     {
         initialize();
-        loadShaders();
         createFramebuffer({fbSize, fbSize});
         createUniformBuffer();
         setupDescriptorSet();
@@ -74,14 +73,6 @@ public:
         {
             *world = roll;
         });
-    }
-
-    void loadShaders()
-    {
-        rtShaderStages.push_back(utilities::loadShader<magma::VertexShaderStage>(device, "triangle.o", "main"));
-        rtShaderStages.push_back(utilities::loadShader<magma::FragmentShaderStage>(device, "fill.o", "main"));
-        shaderStages.push_back(utilities::loadShader<magma::VertexShaderStage>(device, "quad.o", "main"));
-        shaderStages.push_back(utilities::loadShader<magma::FragmentShaderStage>(device, "texture.o", "main"));
     }
 
     uint32_t maxSampleCount(VkSampleCountFlags sampleCounts) const
@@ -163,7 +154,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         rtPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            rtShaderStages,
+            {
+                VertexShader(device, "triangle.o"), 
+                FragmentShader(device, "fill.o")
+            },
             magma::states::nullVertexInput,
             magma::states::triangleList,
             magma::states::fillCullBackCCW,
@@ -174,7 +168,10 @@ public:
             pipelineLayout,
             fb.renderPass));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            shaderStages,
+            {
+                VertexShader(device, "quad.o"), 
+                FragmentShader(device, "texture.o")
+            },
             magma::states::nullVertexInput,
             magma::states::triangleStrip,
             magma::states::fillCullBackCCW,

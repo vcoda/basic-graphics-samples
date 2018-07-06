@@ -103,7 +103,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "transform.o", "normal.o"),
+            {
+                VertexShader(device, "transform.o"), 
+                FragmentShader(device, "normal.o")
+            },
             mesh->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::lineCullBackCW : magma::states::lineCullBackCCW,

@@ -1,5 +1,6 @@
 #include "../framework/vulkanApp.h"
 #include "../framework/cubeMesh.h"
+#include "../framework/utilities.h"
 
 // Use PgUp/PgDown to select texture lod
 class TextureArrayApp : public VulkanApp
@@ -220,7 +221,10 @@ public:
     {
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "transform.o", "textureArray.o"),
+            {
+                VertexShader(device, "transform.o"), 
+                FragmentShader(device, "textureArray.o")
+            },
             mesh->getVertexInput(),
             magma::states::triangleStrip,
             negateViewport ? magma::states::fillCullBackCCW : magma::states::fillCullBackCW,

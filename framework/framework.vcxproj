@@ -149,6 +149,7 @@
     <ClInclude Include="nonCopyable.h" />
     <ClInclude Include="planeMesh.h" />
     <ClInclude Include="platform.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="vulkanApp.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="knotMesh.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="planeMesh.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="vulkanApp.cpp" />
     <ClCompile Include="winApp.cpp" />

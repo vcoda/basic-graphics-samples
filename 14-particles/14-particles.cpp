@@ -139,7 +139,10 @@ public:
             }
         );
         pipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "pointSize.o", (negateViewport ? "particleNeg.o" : "particle.o")),
+            {
+                VertexShader(device, "pointSize.o"), 
+                FragmentShader(device, negateViewport ? "particleNeg.o" : "particle.o")
+            },
             vertexInput,
             magma::states::pointList,
             negateViewport ? magma::states::lineCullBackCW : magma::states::lineCullBackCCW,

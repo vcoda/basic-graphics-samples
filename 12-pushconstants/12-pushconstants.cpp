@@ -99,7 +99,10 @@ public:
     void setupPipeline()
     {
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
-            utilities::loadShaders(device, "passthrough.o", "fill.o"),
+            {
+                VertexShader(device, "passthrough.o"), 
+                FragmentShader(device, "fill.o")
+            },
             magma::states::pos2Float,
             magma::states::triangleList,
             magma::states::fillCullBackCCW,
