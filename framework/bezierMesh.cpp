@@ -4,10 +4,10 @@
 #include "rapid/rapid.h"
 
 BezierPatchMesh::BezierPatchMesh(
-    const uint32_t patches[][16], 
-    const uint32_t numPatches, 
+    const uint32_t patches[][16],
+    const uint32_t numPatches,
     const float patchVertices[][3],
-    const uint32_t subdivisionDegree, 
+    const uint32_t subdivisionDegree,
     std::shared_ptr<magma::CommandBuffer> cmdBuffer)
 {
     assert(subdivisionDegree >= 2);
@@ -63,9 +63,9 @@ BezierPatchMesh::BezierPatchMesh(
     const uint32_t numFaces = divs * divs;
     std::vector<uint32_t> indices(numFaces * 4);
     // All patches are subdivided in the same way, so here we share the same topology
-    for (uint16_t j = 0, k = 0; j < divs; ++j) 
+    for (uint16_t j = 0, k = 0; j < divs; ++j)
     {
-        for (uint16_t i = 0; i < divs; ++i, ++k) 
+        for (uint16_t i = 0; i < divs; ++i, ++k)
         {
             indices[k * 4] = (divs + 1) * j + i;
             indices[k * 4 + 1] = (divs + 1) * j + i + 1;
@@ -78,9 +78,9 @@ BezierPatchMesh::BezierPatchMesh(
     magma::helpers::mapScoped<uint32_t>(srcBuffer, [numFaces, indices](uint32_t *faces)
     {
         for (uint32_t i = 0, k = 0, n = 0; i < numFaces; ++i, k += 4) // For each face
-        { 
+        {
             for (uint32_t j = 0; j < 2; ++j) // For each triangle in the face
-            { 
+            {
                 faces[n    ] = indices[k];
                 faces[n + 1] = indices[k + j + 1];
                 faces[n + 2] = indices[k + j + 2];

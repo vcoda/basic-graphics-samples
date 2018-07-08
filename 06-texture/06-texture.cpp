@@ -164,7 +164,7 @@ public:
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
         descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
             magma::bindings::FragmentStageBinding(0, uniformBufferDesc), // Bind uniform buffer to slot 0 in fragment shader
-            magma::bindings::FragmentStageBinding(1, imageSamplerDesc),  // Bind diffuse sampler to slot 1 in fragment shader 
+            magma::bindings::FragmentStageBinding(1, imageSamplerDesc),  // Bind diffuse sampler to slot 1 in fragment shader
             magma::bindings::FragmentStageBinding(2, imageSamplerDesc)   // Bind lightmap sampler to slot 2 in fragment shader
         }));
         // Allocate and update descriptor set
@@ -179,7 +179,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "passthrough.o"), 
+                VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "multitexture.o")
             },
             magma::states::pos2Float_Tex2Float,

@@ -165,7 +165,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "transform.o"), 
+                VertexShader(device, "transform.o"),
                 FragmentShader(device, "envmap.o")
             },
             mesh->getVertexInput(),

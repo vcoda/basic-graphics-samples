@@ -20,8 +20,8 @@ Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t 
 
     // Create window
     const DWORD style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-    hWnd = CreateWindow(wc.lpszClassName, caption.c_str(), style, 
-        0, 0, width, height, 
+    hWnd = CreateWindow(wc.lpszClassName, caption.c_str(), style,
+        0, 0, width, height,
         NULL, NULL, wc.hInstance, NULL);
 
     // Adjust window size according to style

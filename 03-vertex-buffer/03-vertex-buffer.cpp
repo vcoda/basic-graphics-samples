@@ -45,7 +45,7 @@ public:
                 {0.0f, -0.5f},
                 {_1, 0, 0, _1}
             },
-            {   // left 
+            {   // left
                 {-0.5f, 0.5f},
                 {0, 0, _1, _1}
             },
@@ -59,9 +59,9 @@ public:
 
     void setupPipeline()
     {
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache, 
+        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "passthrough.o"), 
+                VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
             },
             magma::states::pos2Float_Col4UNorm,

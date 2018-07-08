@@ -8,8 +8,8 @@ void onError(
 {
     std::cerr << msg << std::endl;
 #ifdef _WIN32
-    MessageBoxA(NULL, 
-        msg.c_str(), caption, 
+    MessageBoxA(NULL,
+        msg.c_str(), caption,
         MB_ICONHAND);
 #endif
 }
@@ -39,23 +39,23 @@ int main(int argc, char *argv[])
     catch (const magma::BadResultException& exc)
     {
         std::ostringstream msg;
-        msg << exc.file() << "(" << exc.line() << "):" << std::endl 
-            << std::endl 
-            << exc.codeString() << std::endl 
+        msg << exc.file() << "(" << exc.line() << "):" << std::endl
+            << std::endl
+            << exc.codeString() << std::endl
             << exc.what();
         onError(msg.str(), "Vulkan");
     }
     catch (const magma::NotImplementedException& exc)
     {
         std::ostringstream msg;
-        msg << exc.file() << "(" << exc.line() << "):" << std::endl 
+        msg << exc.file() << "(" << exc.line() << "):" << std::endl
             << "Error: " << exc.what();
         onError(msg.str(), "Not implemented");
     }
     catch (const magma::Exception& exc)
     {
         std::ostringstream msg;
-        msg << exc.file() << "(" << exc.line() << "):" << std::endl 
+        msg << exc.file() << "(" << exc.line() << "):" << std::endl
             << "Error: " << exc.what();
         onError(msg.str(), "Magma");
     }

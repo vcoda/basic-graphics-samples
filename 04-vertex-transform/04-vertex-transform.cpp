@@ -97,7 +97,7 @@ public:
                 {0.0f, -1.0f, 0.0f},
                 {_1, 0, 0, _1}
             },
-            {   // left 
+            {   // left
                 {-1.0f, 1.0f, 0.0f},
                 {0, 0, _1, _1 }
             },
@@ -137,7 +137,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "transform.o"), 
+                VertexShader(device, "transform.o"),
                 FragmentShader(device, "frontFace.o")
             },
             magma::states::pos3Float_Col4UNorm,

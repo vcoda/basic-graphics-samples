@@ -212,9 +212,9 @@ public:
         }));
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformWorldViewProj); 
-        descriptorSet->update(1, uniformTexParameters); 
-        descriptorSet->update(2, imageViewArray, anisotropicSampler); 
+        descriptorSet->update(0, uniformWorldViewProj);
+        descriptorSet->update(1, uniformTexParameters);
+        descriptorSet->update(2, imageViewArray, anisotropicSampler);
     }
 
     void setupPipeline()
@@ -222,7 +222,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "transform.o"), 
+                VertexShader(device, "transform.o"),
                 FragmentShader(device, "textureArray.o")
             },
             mesh->getVertexInput(),

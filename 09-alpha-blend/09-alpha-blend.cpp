@@ -136,7 +136,7 @@ public:
             magma::bindings::FragmentStageBinding(1, imageSamplerDesc)
         }));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformWorldViewProj);  
+        descriptorSet->update(0, uniformWorldViewProj);
         descriptorSet->update(1, imageView, anisotropicSampler);
 
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
@@ -146,7 +146,7 @@ public:
     {
         std::shared_ptr<magma::GraphicsPipeline> pipeline(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "transform.o"), 
+                VertexShader(device, "transform.o"),
                 FragmentShader(device, "texture.o")
             },
             mesh->getVertexInput(),

@@ -1,7 +1,7 @@
 #pragma once
 #include <streambuf>
 
-class DebugOutputStream : public std::streambuf 
+class DebugOutputStream : public std::streambuf
 {
 public:
     DebugOutputStream()

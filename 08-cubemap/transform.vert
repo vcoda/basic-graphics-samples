@@ -13,12 +13,12 @@ layout(binding = 0) uniform Transforms
     mat4 normalMatrix;
 };
 
-out gl_PerVertex 
+out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
-void main() 
+void main()
 {
     // transform to view space
     oPosition = (worldView * position).xyz;

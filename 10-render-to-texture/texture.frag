@@ -5,7 +5,7 @@ layout(location = 0) out vec4 oColor;
 
 layout(binding = 1) uniform sampler2D diffuse;
 
-void main() 
+void main()
 {
     oColor = texture(diffuse, texCoord);
 }

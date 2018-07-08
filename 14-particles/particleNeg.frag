@@ -11,7 +11,7 @@ layout(push_constant) uniform PushConstants
     vec2 resolution;
 };
 
-void main() 
+void main()
 {
     vec2 screenPos = pos * resolution;
     float radius = pointSize * .5;

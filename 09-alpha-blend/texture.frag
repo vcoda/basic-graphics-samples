@@ -7,7 +7,7 @@ layout(location = 0) out vec4 oColor;
 
 layout(binding = 1) uniform sampler2D diffuse;
 
-void main() 
+void main()
 {
     vec4 color = texture(diffuse, texCoord);
     float alpha = clamp(color.a + 0.1, 0., 1.); // make geometry visible

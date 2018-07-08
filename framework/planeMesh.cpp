@@ -26,8 +26,8 @@ PlaneMesh::PlaneMesh(float width, float height, bool textured, bool twoSided, st
         };
         texCoordBuffer.reset(new magma::VertexBuffer(cmdBuffer, texCoords));
     }
-    const std::vector<uint16_t> indices = twoSided ? 
-        std::vector<uint16_t>{0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3} : 
+    const std::vector<uint16_t> indices = twoSided ?
+        std::vector<uint16_t>{0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3} :
         std::vector<uint16_t>{0, 1, 2, 2, 1, 3};
     indexBuffer.reset(new magma::IndexBuffer(cmdBuffer, indices));
 }

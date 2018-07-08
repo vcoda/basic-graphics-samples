@@ -71,9 +71,9 @@ public:
     void setWind(const rapid::float3& wind) { this->wind = rapid::vector3(wind); }
     void setAirResistence(bool airResistence) { this->airResistence = airResistence; }
     void setVelocityScale(float scale) { this->velocityScale = scale; }
-    void setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point, 
+    void setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
         float bounceFactor = 1.f, CollisionResult collisionResult = CollisionResult::BOUNCE);
-    
+
     void initialize(std::shared_ptr<magma::Device> device);
     void update(float dt);
     void reset(void);

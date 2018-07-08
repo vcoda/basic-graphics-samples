@@ -19,7 +19,7 @@ float stepmix(float edge0, float edge1, float e, float x)
     return mix(edge0, edge1, t);
 }
 
-void main() 
+void main()
 {
     vec3 albedo = vec3(0., 0.5, 1.);
     if (colorFill)
@@ -40,7 +40,7 @@ void main()
             float NdL = max(0., dot(N, L));
             oColor.rgb = albedo * NdL;
         }
-        else 
+        else
         {
             vec3 L = normalize(lightPos - viewPos);
             vec3 V = normalize(-viewPos);
@@ -57,11 +57,11 @@ void main()
                 // cell-shading code taken from http://prideout.net/blog/?p=22
                 float a = 0.4, b = 0.6, c = 0.9, d = 1.;
                 float e = fwidth(NdL);
-                if ((NdL > a - e) && (NdL < a + e)) 
+                if ((NdL > a - e) && (NdL < a + e))
                     NdL = stepmix(a, b, d, NdL);
-                else if ((NdL > b - e) && (NdL < b + e)) 
+                else if ((NdL > b - e) && (NdL < b + e))
                     NdL = stepmix(b, c, d, NdL);
-                else if ((NdL > c - e) && (NdL < c + e)) 
+                else if ((NdL > c - e) && (NdL < c + e))
                     NdL = stepmix(c, d, d, NdL);
                 else if (NdL < a) NdL = 0.0;
                 else if (NdL < b) NdL = b;

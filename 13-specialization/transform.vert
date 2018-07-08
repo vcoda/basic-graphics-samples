@@ -13,12 +13,12 @@ layout(binding = 0) uniform Transforms
 layout(location = 0) out vec3 oViewPos;
 layout(location = 1) out vec3 oViewNormal;
 
-out gl_PerVertex 
+out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
-void main() 
+void main()
 {
     oViewPos = (worldView * position).xyz;
     oViewNormal = (normalMatrix * normal).xyz;

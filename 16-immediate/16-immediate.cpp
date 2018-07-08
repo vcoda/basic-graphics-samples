@@ -22,7 +22,7 @@ public:
         std::cout << "vkFreeFunction(memory=0x" << memory << ")" << std::endl;
         return _mm_free(memory);
     }
-        
+
     virtual void internalAllocationNotification(size_t size,
         VkInternalAllocationType allocationType,
         VkSystemAllocationScope allocationScope) override
@@ -182,7 +182,7 @@ public:
 
     void drawPolygon()
     {   // Polygons are not present in Vulkan, have to be emulated by triangle fan
-        ir->setRasterizationState(negateViewport ? magma::states::fillCullBackCW 
+        ir->setRasterizationState(negateViewport ? magma::states::fillCullBackCW
                                                  : magma::states::fillCullBackCCW);
         ir->color(0.f, 0.5f, 0.5f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
@@ -198,7 +198,7 @@ public:
 
     void drawQuads()
     {   // Quads are not present in Vulkan, have to be emulated by triangle strips
-        ir->setRasterizationState(negateViewport ? magma::states::lineCullBackCCW 
+        ir->setRasterizationState(negateViewport ? magma::states::lineCullBackCCW
                                                  : magma::states::lineCullBackCW);
         ir->color(1.f, 0.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
@@ -220,10 +220,10 @@ public:
         ir->endPrimitive();
     }
 
-    
+
     void drawQuadStrip()
     {   // Quad strip not present in Vulkan, have to be emulated by triangle strip
-        ir->setRasterizationState(negateViewport ? magma::states::lineCullBackCW 
+        ir->setRasterizationState(negateViewport ? magma::states::lineCullBackCW
                                                  : magma::states::lineCullBackCCW);
         ir->color(0.f, 0.f, 0.5f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);

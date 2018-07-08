@@ -78,7 +78,7 @@ public:
         const rapid::matrix transMesh = rapid::translation(0.f, -2.f, 0.f);
         const rapid::matrix worldPlane = transPlane * pitch * yaw;
         const rapid::matrix worldMesh = transMesh * pitch * yaw;
-        magma::helpers::mapScoped<rapid::matrix>(transformUniforms, true, 
+        magma::helpers::mapScoped<rapid::matrix>(transformUniforms, true,
             [this, &worldPlane, &worldMesh](magma::helpers::AlignedUniformArray<rapid::matrix>& transforms)
         {
             transforms[0] = worldPlane * viewProj;
@@ -104,7 +104,7 @@ public:
         updatePerspectiveTransform();
         colorUniforms.reset(new magma::DynamicUniformBuffer<rapid::vector4>(device, 2));
         // Update only once
-        magma::helpers::mapScoped<rapid::vector4>(colorUniforms, false, 
+        magma::helpers::mapScoped<rapid::vector4>(colorUniforms, false,
             [](magma::helpers::AlignedUniformArray<rapid::vector4>& colors)
         {
             colors[0] = rapid::vector4(0.f, 0.f, 1.f, 1.f);
@@ -114,19 +114,19 @@ public:
 
     void setupDescriptorSet()
     {
-        const uint32_t maxDescriptorSets = 2; 
+        const uint32_t maxDescriptorSets = 2;
         descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
-            magma::descriptors::DynamicUniformBuffer(2), 
+            magma::descriptors::DynamicUniformBuffer(2),
         }));
         const magma::Descriptor uniformBufferDesc = magma::descriptors::DynamicUniformBuffer(1);
         // Setup first set layout
-        descriptorSetLayouts[0].reset(new magma::DescriptorSetLayout(device, 
+        descriptorSetLayouts[0].reset(new magma::DescriptorSetLayout(device,
             magma::bindings::VertexStageBinding(0, uniformBufferDesc))
         );
         descriptorSets[0] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[0]);
         descriptorSets[0]->update(0, transformUniforms);
         // Setup second set layout
-        descriptorSetLayouts[1].reset(new magma::DescriptorSetLayout(device, 
+        descriptorSetLayouts[1].reset(new magma::DescriptorSetLayout(device,
             magma::bindings::VertexStageBinding(1, uniformBufferDesc))
         );
         descriptorSets[1] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[1]);
@@ -138,7 +138,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayouts));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "transform.o"), 
+                VertexShader(device, "transform.o"),
                 FragmentShader(device, "fill.o")
             },
             teapot->getVertexInput(),
@@ -172,15 +172,15 @@ public:
                 cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, {0, 0});
                 plane->draw(cmdBuffer);
                 // Occludee
-                cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, 
+                cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets,
                     {
                         transformUniforms->getDynamicOffset(1),
                         colorUniforms->getDynamicOffset(1)
                     });
-                /* Not setting precise bit may be more efficient on some implementations, 
-                   and should be used where it is sufficient to know a boolean result 
+                /* Not setting precise bit may be more efficient on some implementations,
+                   and should be used where it is sufficient to know a boolean result
                    on whether any samples passed the per-fragment tests.
-                   In this case, some implementations may only return zero or one, 
+                   In this case, some implementations may only return zero or one,
                    indifferent to the actual number of samples passing the per-fragment tests. */
                 const bool precise = false;
                 cmdBuffer->beginQuery(occlusionQuery, 0, precise);

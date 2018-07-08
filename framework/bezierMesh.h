@@ -7,10 +7,10 @@
 class BezierPatchMesh : public Mesh
 {
 public:
-    BezierPatchMesh(const uint32_t patches[][16], 
-        const uint32_t numPatches, 
+    BezierPatchMesh(const uint32_t patches[][16],
+        const uint32_t numPatches,
         const float patchVertices[][3],
-        const uint32_t subdivisionDegree, 
+        const uint32_t subdivisionDegree,
         std::shared_ptr<magma::CommandBuffer> cmdBuffer);
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const override;
     virtual const magma::VertexInputState& getVertexInput() const override;

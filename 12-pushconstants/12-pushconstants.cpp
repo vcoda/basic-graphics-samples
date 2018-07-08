@@ -100,7 +100,7 @@ public:
     {
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "passthrough.o"), 
+                VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
             },
             magma::states::pos2Float,

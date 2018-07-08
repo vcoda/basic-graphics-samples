@@ -140,7 +140,7 @@ public:
         );
         pipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "pointSize.o"), 
+                VertexShader(device, "pointSize.o"),
                 FragmentShader(device, negateViewport ? "particleNeg.o" : "particle.o")
             },
             vertexInput,

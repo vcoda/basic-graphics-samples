@@ -11,12 +11,12 @@ layout(binding = 0) uniform Transforms
 
 layout(location = 0) out vec3 oNormal;
 
-out gl_PerVertex 
+out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
-void main() 
+void main()
 {
     oNormal = normal;
     gl_Position = worldViewProj * position;

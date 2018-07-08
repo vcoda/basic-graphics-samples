@@ -15,12 +15,12 @@ layout(set = 1, binding = 1) uniform Color
 
 layout(location = 0) out vec4 oColor;
 
-out gl_PerVertex 
+out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
-void main() 
+void main()
 {
     oColor = color;
     gl_Position = worldViewProj * position;

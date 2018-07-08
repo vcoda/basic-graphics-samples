@@ -1,7 +1,7 @@
 #version 450
 
 layout(location = 0) out vec3 oColor;
-out gl_PerVertex 
+out gl_PerVertex
 {
     vec4 gl_Position;
 };
@@ -17,7 +17,7 @@ vec3 colors[3] = vec3[](
     vec3(0., 1., 0.)
 );
 
-void main() 
+void main()
 {
     float L = 1.;
     float y = sqrt(3. * L)/4.;

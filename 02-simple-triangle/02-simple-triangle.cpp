@@ -23,7 +23,7 @@ public:
             renderFinished,
             waitFences[bufferIndex]);
     }
-    
+
     virtual void createLogicalDevice() override
     {
         device = physicalDevice->createDefaultDevice();
@@ -33,7 +33,7 @@ public:
     {
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "position.o"), 
+                VertexShader(device, "position.o"),
                 FragmentShader(device, "fill.o")
             },
             magma::states::nullVertexInput,

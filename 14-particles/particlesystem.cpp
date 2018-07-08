@@ -19,7 +19,7 @@ ParticleSystem::ParticleSystem()
     rng.seed(static_cast<std::mt19937::result_type>(clock()));
 }
 
-void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point, 
+void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
     float bounceFactor /* 1 */, CollisionResult collisionResult /* CollisionResult::BOUNCE */)
 {
     Plane plane;
@@ -158,7 +158,7 @@ float ParticleSystem::randomScalar(float min, float max)
 rapid::float3 ParticleSystem::randomVector()
 {
     rapid::float3 v;
-    v.z = randomScalar(-1.0f, 1.0f);  
+    v.z = randomScalar(-1.0f, 1.0f);
     float radius = sqrtf(1.f - v.z * v.z); // Get radius of this circle
     float t = randomScalar(-rapid::constants::pi, rapid::constants::pi); // Pick a random point on a circle
     v.x = (float)cosf(t) * radius; // Compute matching X and Y for our Z

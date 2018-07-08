@@ -98,7 +98,7 @@ public:
     void createFramebuffer(const VkExtent2D& extent)
     {
         fb.color.reset(new magma::ColorAttachment2D(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1));
-        fb.colorView.reset(new magma::ImageView(fb.color)); 
+        fb.colorView.reset(new magma::ImageView(fb.color));
 
         // Make sure that we are fit to hardware limits
         const VkImageFormatProperties formatProperties = physicalDevice->getImageFormatProperties(
@@ -112,7 +112,7 @@ public:
             fb.msaaColorView.reset(new magma::ImageView(fb.msaaColor));
             const magma::AttachmentDescription multisampleColorAttachment(fb.msaaColor->getFormat(), fb.msaaColor->getSamples(),
                 magma::attachments::colorClearStoreOptimal);
-            const magma::AttachmentDescription resolveColorAttachment(fb.color->getFormat(), 1, 
+            const magma::AttachmentDescription resolveColorAttachment(fb.color->getFormat(), 1,
                 magma::attachments::colorDontCareStoreOptimal); // Don't care about clear as it will be used as MSAA resolve target
             fb.renderPass.reset(new magma::RenderPass(device, {multisampleColorAttachment, resolveColorAttachment}));
             fb.framebuffer.reset(new magma::Framebuffer(fb.renderPass, {fb.msaaColorView, fb.colorView}));
@@ -136,7 +136,7 @@ public:
         const uint32_t maxDescriptorSets = 1;
         descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
             magma::descriptors::UniformBuffer(1),
-            magma::descriptors::CombinedImageSampler(1) 
+            magma::descriptors::CombinedImageSampler(1)
         }));
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
@@ -155,7 +155,7 @@ public:
         pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
         rtPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "triangle.o"), 
+                VertexShader(device, "triangle.o"),
                 FragmentShader(device, "fill.o")
             },
             magma::states::nullVertexInput,
@@ -169,7 +169,7 @@ public:
             fb.renderPass));
         graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
             {
-                VertexShader(device, "quad.o"), 
+                VertexShader(device, "quad.o"),
                 FragmentShader(device, "texture.o")
             },
             magma::states::nullVertexInput,

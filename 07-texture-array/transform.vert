@@ -10,12 +10,12 @@ layout(binding = 0) uniform Transforms
 
 layout(location = 0) out vec3 oTexCoord;
 
-out gl_PerVertex 
+out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
-void main() 
+void main()
 {
     oTexCoord = texCoord;
     gl_Position = worldViewProj * position;

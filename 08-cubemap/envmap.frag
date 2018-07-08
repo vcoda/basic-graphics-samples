@@ -13,7 +13,7 @@ float fresnelApprox(vec3 I, vec3 N, float bias, float scale, float power)
     return max(0., min(1., bias + scale * pow(1. + dot(I, N), power)));
 }
 
-void main() 
+void main()
 {
     vec3 I = normalize(position);
     vec3 N = normalize(normal);
@@ -23,6 +23,6 @@ void main()
     float power = 2.0;
     float factor = fresnelApprox(I, N, bias, scale, power);
     vec3 diff = texture(envDiff, R).rgb;
-    vec3 spec = texture(envSpec, R).rgb; 
+    vec3 spec = texture(envSpec, R).rgb;
     oColor = vec4(mix(diff, spec, factor), 1.);
 }

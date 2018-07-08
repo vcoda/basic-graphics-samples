@@ -32,7 +32,7 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
             else
                 tangent = ringCenters[0] - ringCenters[i];
             tangent.normalize();
-            // Calculate the vector perpendicular to the tangent, 
+            // Calculate the vector perpendicular to the tangent,
             // pointing approximately in the positive Y direction
             const rapid::vector3 up(0.f, 1.f, 0.f);
             const rapid::vector3 side = up ^ tangent;
@@ -80,7 +80,7 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
             {
                 static const uint32_t ccw[6] = {0, 1, 2, 2, 1, 3};
                 static const uint32_t cw[6] = {0, 2, 1, 1, 2, 3};
-                indices[index + k] = counterClockwise ? quadIndices[ccw[k]] 
+                indices[index + k] = counterClockwise ? quadIndices[ccw[k]]
                                                       : quadIndices[cw[k]];
             }
         }
@@ -93,8 +93,8 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
     for(uint32_t i = 0; i < numIndices; i += 3)
     {
         // Calculate normal of this triangle
-        const rapid::plane trianglePlane(rapid::vector3(vertices[indices[i    ]].position), 
-                                         rapid::vector3(vertices[indices[i + 1]].position), 
+        const rapid::plane trianglePlane(rapid::vector3(vertices[indices[i    ]].position),
+                                         rapid::vector3(vertices[indices[i + 1]].position),
                                          rapid::vector3(vertices[indices[i + 2]].position));
         rapid::vector3 triNormal = trianglePlane.P;
         if (!counterClockwise)
