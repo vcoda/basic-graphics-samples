@@ -38,7 +38,7 @@ public:
 
 class ImmediateApp : public VulkanApp
 {
-    std::shared_ptr<magma::helpers::ImmediateRender> ir;
+    std::shared_ptr<magma::utilities::ImmediateRender> ir;
     bool negateViewport = false;
 
 public:
@@ -94,7 +94,7 @@ public:
     void createImmediateRender()
     {
         std::shared_ptr<magma::IAllocator> allocator(new AlignedAllocator());
-        ir.reset(new magma::helpers::ImmediateRender(1024, device, pipelineCache, nullptr, renderPass, allocator));
+        ir.reset(new magma::utilities::ImmediateRender(1024, device, pipelineCache, nullptr, renderPass, allocator));
         ir->setLineWidth(2.f);
     }
 
