@@ -147,6 +147,7 @@
     <ClInclude Include="knotMesh.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="nonCopyable.h" />
+    <ClInclude Include="linearAllocator.h" />
     <ClInclude Include="planeMesh.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="shader.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="cubeMesh.cpp" />
     <ClCompile Include="knotMesh.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="linearAllocator.cpp" />
     <ClCompile Include="planeMesh.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="utilities.cpp" />

@@ -80,6 +80,7 @@ MAGMA_OBJS= \
 	$(BUILD)$(MAGMA)/objects/indexBuffer.o \
 	$(BUILD)$(MAGMA)/objects/indirectBuffer.o \
 	$(BUILD)$(MAGMA)/objects/instance.o \
+	$(BUILD)$(MAGMA)/objects/object.o \
 	$(BUILD)$(MAGMA)/objects/physicalDevice.o \
 	$(BUILD)$(MAGMA)/objects/pipeline.o \
 	$(BUILD)$(MAGMA)/objects/pipelineCache.o \
@@ -115,6 +116,7 @@ FRAMEWORK_OBJS= \
 	$(BUILD)$(FRAMEWORK)/cubeMesh.o \
 	$(BUILD)$(FRAMEWORK)/knotMesh.o \
 	$(BUILD)$(FRAMEWORK)/main.o \
+	$(BUILD)$(FRAMEWORK)/linearAllocator.o \
 	$(BUILD)$(FRAMEWORK)/planeMesh.o \
 	$(BUILD)$(FRAMEWORK)/shader.o \
 	$(BUILD)$(FRAMEWORK)/utilities.o \
