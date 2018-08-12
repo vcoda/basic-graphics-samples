@@ -42,8 +42,6 @@ MAGMA_OBJS= \
 	$(BUILD)$(MAGMA)/descriptors/attachment.o \
 	$(BUILD)$(MAGMA)/descriptors/subpass.o \
 	\
-	$(BUILD)$(MAGMA)/helpers/immediateRender.o \
-	\
 	$(BUILD)$(MAGMA)/misc/clearValue.o \
 	$(BUILD)$(MAGMA)/misc/deviceQueueDesc.o \
 	$(BUILD)$(MAGMA)/misc/exception.o \
@@ -106,7 +104,9 @@ MAGMA_OBJS= \
 	$(BUILD)$(MAGMA)/states/samplerState.o \
 	$(BUILD)$(MAGMA)/states/tesselationState.o \
 	$(BUILD)$(MAGMA)/states/vertexInputState.o \
-	$(BUILD)$(MAGMA)/states/viewportState.o
+	$(BUILD)$(MAGMA)/states/viewportState.o \
+	\
+	$(BUILD)$(MAGMA)/utilities/immediateRender.o
 
 # Framework object files
 
@@ -200,6 +200,7 @@ mkbuilddir:
 	@mkdir -p $(BUILD)$(MAGMA)/misc
 	@mkdir -p $(BUILD)$(MAGMA)/objects
 	@mkdir -p $(BUILD)$(MAGMA)/states
+	@mkdir -p $(BUILD)$(MAGMA)/utilities
 	@mkdir -p $(BUILD)$(FRAMEWORK)
 	@mkdir -p $(BUILD)/$(TARGET01)
 	@mkdir -p $(BUILD)/$(TARGET02)
