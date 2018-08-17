@@ -1,16 +1,16 @@
-#include <memory>
 #include "linearAllocator.h"
+#include "magma/shared.h"
 
 LinearAllocator::LinearAllocator():
     bufferSize(1024 * 64),
-    buffer(calloc(bufferSize, 1)),
+    buffer(MAGMA_MALLOC(bufferSize)),
     head((char *)buffer),
     bytesAllocated(0)
 {}
 
 LinearAllocator::~LinearAllocator()
 {
-    free(buffer);
+    MAGMA_FREE(buffer);
 }
 
 void *LinearAllocator::alloc(size_t size)
@@ -19,12 +19,13 @@ void *LinearAllocator::alloc(size_t size)
     if (size + bytesAllocated <= bufferSize)
     {   // Simply eat new chunk from fixed buffer until overflow
         p = head;
-        head += size;
+        head = (char *)MAGMA_ALIGN((intptr_t)(head + size));
     }
     else
     {   // Use malloc() on overflow
-        p = malloc(size);
+        p = MAGMA_MALLOC(size);
     }
+    MAGMA_ASSERT(MAGMA_ALIGNED(p));
     bytesAllocated += size;
     return p;
 }
@@ -32,7 +33,7 @@ void *LinearAllocator::alloc(size_t size)
 void LinearAllocator::free(void *p)
 {
     if (p < buffer || p > head)
-        ::free(p);
+        ::MAGMA_FREE(p);
     else
         // Do nothing
         ;
