@@ -26,15 +26,11 @@
     <CustomBuild Include="pointSize.vert">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="particleNeg.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="particlesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="particleNeg.frag">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

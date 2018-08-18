@@ -15,6 +15,7 @@
     <CustomBuild Include="transform.vert">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="envmap.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="diff.dds">
@@ -28,10 +29,5 @@
     <ClCompile Include="08-cubemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="envmap.frag">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>
