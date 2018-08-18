@@ -56,7 +56,7 @@ void Win32App::show() const
     GetWindowRect(hWnd, &rc);
     const int cx = static_cast<int>(rc.right - rc.left);
     const int cy = static_cast<int>(rc.bottom - rc.top);
-    int x, y;
+    int x = 0, y = 0;
     if (cx < desktopRect.right && cy < desktopRect.bottom)
     {   // Place window in the center of the desktop
         x = (desktopRect.right - cx) / 2;
@@ -125,7 +125,7 @@ char Win32App::translateKey(int code) const
     case VK_PRIOR: return AppKey::PgUp;
     case VK_NEXT: return AppKey::PgDn;
     }
-    return code;
+    return (char)code;
 }
 
 LRESULT WINAPI Win32App::wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
