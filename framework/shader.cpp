@@ -20,7 +20,8 @@ Shader::Shader(std::shared_ptr<magma::Device> device, const std::string& filenam
     file.read(bytecode.data(), size);
     file.close();
     module = std::make_shared<magma::ShaderModule>(device,
-        reinterpret_cast<const uint32_t *>(bytecode.data()), size);
+        reinterpret_cast<const uint32_t *>(bytecode.data()),
+        static_cast<size_t>(size));
 }
 
 VertexShader::VertexShader(std::shared_ptr<magma::Device> device, const std::string& filename,
