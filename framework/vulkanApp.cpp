@@ -92,7 +92,6 @@ void VulkanApp::createInstance()
         instance, reportCallback));
 
     physicalDevice = instance->getPhysicalDevice(0);
-    const VkPhysicalDeviceFeatures& features = physicalDevice->getFeatures();
     const VkPhysicalDeviceProperties& properties = physicalDevice->getProperties();
     std::cout << "Running on " << properties.deviceName << "\n";
 
