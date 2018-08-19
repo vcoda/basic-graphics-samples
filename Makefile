@@ -1,14 +1,19 @@
 CC=g++
 GLSLC=$(VULKAN_SDK)/bin/glslangValidator
 
+TARGET=debug
 PLATFORM=VK_USE_PLATFORM_XCB_KHR
 INCLUDE_DIR=-I$(VULKAN_SDK)/include -Ithird-party -Ithird-party/rapid
-BUILD=build
+LIBRARY_DIR=-L$(VULKAN_SDK)/lib -Lthird-party/magma
 
-BASE_CFLAGS=-std=c++14 -MD -D$(PLATFORM) $(INCLUDE_DIR)
+BASE_CFLAGS=-std=c++14 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(INCLUDE_DIR)
 DEBUG_CFLAGS=$(BASE_CFLAGS) -g -D_DEBUG
-RELEASE_CFLAGS=$(BASE_CFLAGS)
-LDFLAGS=-L$(VULKAN_SDK)/lib -lxcb -lvulkan
+RELEASE_CFLAGS=$(BASE_CFLAGS) -O3
+LDFLAGS=$(LIBRARY_DIR) -lxcb -lvulkan -lmagmad -lpthread
+
+BUILD=build
+MAGMA=third-party/magma
+FRAMEWORK=framework
 
 # Sample app dir/exe names
 
@@ -29,101 +34,21 @@ TARGET14=14-particles
 TARGET15=15-compute
 TARGET16=16-immediate
 
-# Magma object files
-
-MAGMA=/third-party/magma
-MAGMA_OBJS= \
-	$(BUILD)$(MAGMA)/allocator/allocator.o \
-	\
-	$(BUILD)$(MAGMA)/barriers/bufferMemoryBarrier.o \
-	$(BUILD)$(MAGMA)/barriers/globalMemoryBarrier.o \
-	$(BUILD)$(MAGMA)/barriers/imageMemoryBarrier.o \
-	\
-	$(BUILD)$(MAGMA)/descriptors/attachment.o \
-	$(BUILD)$(MAGMA)/descriptors/subpass.o \
-	\
-	$(BUILD)$(MAGMA)/misc/clearValue.o \
-	$(BUILD)$(MAGMA)/misc/deviceQueueDesc.o \
-	$(BUILD)$(MAGMA)/misc/exception.o \
-	$(BUILD)$(MAGMA)/misc/extensions.o \
-	$(BUILD)$(MAGMA)/misc/format.o \
-	$(BUILD)$(MAGMA)/misc/scopedDebugMarker.o \
-	$(BUILD)$(MAGMA)/misc/stringize.o \
-	\
-	$(BUILD)$(MAGMA)/objects/buffer.o \
-	$(BUILD)$(MAGMA)/objects/bufferView.o \
-	$(BUILD)$(MAGMA)/objects/commandBuffer.o \
-	$(BUILD)$(MAGMA)/objects/commandPool.o \
-	$(BUILD)$(MAGMA)/objects/debugMarker.o \
-	$(BUILD)$(MAGMA)/objects/debugReportCallback.o \
-	$(BUILD)$(MAGMA)/objects/descriptorPool.o \
-	$(BUILD)$(MAGMA)/objects/descriptorSet.o \
-	$(BUILD)$(MAGMA)/objects/descriptorSetLayout.o \
-	$(BUILD)$(MAGMA)/objects/device.o \
-	$(BUILD)$(MAGMA)/objects/deviceMemory.o \
-	$(BUILD)$(MAGMA)/objects/display.o \
-	$(BUILD)$(MAGMA)/objects/displayMode.o \
-	$(BUILD)$(MAGMA)/objects/dstTransferBuffer.o \
-	$(BUILD)$(MAGMA)/objects/event.o \
-	$(BUILD)$(MAGMA)/objects/fence.o \
-	$(BUILD)$(MAGMA)/objects/framebuffer.o \
-	$(BUILD)$(MAGMA)/objects/image.o \
-	$(BUILD)$(MAGMA)/objects/image1D.o \
-	$(BUILD)$(MAGMA)/objects/image1DArray.o \
-	$(BUILD)$(MAGMA)/objects/image2D.o \
-	$(BUILD)$(MAGMA)/objects/image2DArray.o \
-	$(BUILD)$(MAGMA)/objects/image3D.o \
-	$(BUILD)$(MAGMA)/objects/imageCube.o \
-	$(BUILD)$(MAGMA)/objects/imageView.o \
-	$(BUILD)$(MAGMA)/objects/indexBuffer.o \
-	$(BUILD)$(MAGMA)/objects/indirectBuffer.o \
-	$(BUILD)$(MAGMA)/objects/instance.o \
-	$(BUILD)$(MAGMA)/objects/object.o \
-	$(BUILD)$(MAGMA)/objects/physicalDevice.o \
-	$(BUILD)$(MAGMA)/objects/pipeline.o \
-	$(BUILD)$(MAGMA)/objects/pipelineCache.o \
-	$(BUILD)$(MAGMA)/objects/pipelineLayout.o \
-	$(BUILD)$(MAGMA)/objects/queryPool.o \
-	$(BUILD)$(MAGMA)/objects/queue.o \
-	$(BUILD)$(MAGMA)/objects/renderPass.o \
-	$(BUILD)$(MAGMA)/objects/sampler.o \
-	$(BUILD)$(MAGMA)/objects/semaphore.o \
-	$(BUILD)$(MAGMA)/objects/shaderModule.o \
-	$(BUILD)$(MAGMA)/objects/srcTransferBuffer.o \
-	$(BUILD)$(MAGMA)/objects/storageBuffer.o \
-	$(BUILD)$(MAGMA)/objects/surface.o \
-	$(BUILD)$(MAGMA)/objects/swapchain.o \
-	$(BUILD)$(MAGMA)/objects/uniformTexelBuffer.o \
-	$(BUILD)$(MAGMA)/objects/vertexBuffer.o \
-	\
-	$(BUILD)$(MAGMA)/states/colorBlendState.o \
-	$(BUILD)$(MAGMA)/states/depthStencilState.o \
-	$(BUILD)$(MAGMA)/states/inputAssemblyState.o \
-	$(BUILD)$(MAGMA)/states/multisampleState.o \
-	$(BUILD)$(MAGMA)/states/rasterizationState.o \
-	$(BUILD)$(MAGMA)/states/samplerState.o \
-	$(BUILD)$(MAGMA)/states/tesselationState.o \
-	$(BUILD)$(MAGMA)/states/vertexInputState.o \
-	$(BUILD)$(MAGMA)/states/viewportState.o \
-	\
-	$(BUILD)$(MAGMA)/utilities/immediateRender.o
-
 # Framework object files
 
-FRAMEWORK=/framework
 FRAMEWORK_OBJS= \
-	$(BUILD)$(FRAMEWORK)/bezierMesh.o \
-	$(BUILD)$(FRAMEWORK)/cubeMesh.o \
-	$(BUILD)$(FRAMEWORK)/knotMesh.o \
-	$(BUILD)$(FRAMEWORK)/main.o \
-	$(BUILD)$(FRAMEWORK)/linearAllocator.o \
-	$(BUILD)$(FRAMEWORK)/planeMesh.o \
-	$(BUILD)$(FRAMEWORK)/shader.o \
-	$(BUILD)$(FRAMEWORK)/utilities.o \
-	$(BUILD)$(FRAMEWORK)/vulkanApp.o \
-	$(BUILD)$(FRAMEWORK)/xcbApp.o
+	$(BUILD)/$(FRAMEWORK)/bezierMesh.o \
+	$(BUILD)/$(FRAMEWORK)/cubeMesh.o \
+	$(BUILD)/$(FRAMEWORK)/knotMesh.o \
+	$(BUILD)/$(FRAMEWORK)/main.o \
+	$(BUILD)/$(FRAMEWORK)/linearAllocator.o \
+	$(BUILD)/$(FRAMEWORK)/planeMesh.o \
+	$(BUILD)/$(FRAMEWORK)/shader.o \
+	$(BUILD)/$(FRAMEWORK)/utilities.o \
+	$(BUILD)/$(FRAMEWORK)/vulkanApp.o \
+	$(BUILD)/$(FRAMEWORK)/xcbApp.o
 
-OBJS = $(MAGMA_OBJS) $(FRAMEWORK_OBJS)
+OBJS = $(FRAMEWORK_OBJS)
 DEPS := $(OBJS:.o=.d)
 
 -include $(DEPS)
@@ -191,17 +116,17 @@ $(TARGET16)/$(TARGET16): $(BUILD)/$(TARGET16)/$(TARGET16).o $(OBJS)
 
 # Create build directories
 
-mkbuilddir:
+builddir:
 	@mkdir -p $(BUILD)
-	@mkdir -p $(BUILD)$(MAGMA)/allocator
-	@mkdir -p $(BUILD)$(MAGMA)/barriers
-	@mkdir -p $(BUILD)$(MAGMA)/descriptors
-	@mkdir -p $(BUILD)$(MAGMA)/helpers
-	@mkdir -p $(BUILD)$(MAGMA)/misc
-	@mkdir -p $(BUILD)$(MAGMA)/objects
-	@mkdir -p $(BUILD)$(MAGMA)/states
-	@mkdir -p $(BUILD)$(MAGMA)/utilities
-	@mkdir -p $(BUILD)$(FRAMEWORK)
+	@mkdir -p $(BUILD)/$(MAGMA)/allocator
+	@mkdir -p $(BUILD)/$(MAGMA)/barriers
+	@mkdir -p $(BUILD)/$(MAGMA)/descriptors
+	@mkdir -p $(BUILD)/$(MAGMA)/helpers
+	@mkdir -p $(BUILD)/$(MAGMA)/misc
+	@mkdir -p $(BUILD)/$(MAGMA)/objects
+	@mkdir -p $(BUILD)/$(MAGMA)/states
+	@mkdir -p $(BUILD)/$(MAGMA)/utilities
+	@mkdir -p $(BUILD)/$(FRAMEWORK)
 	@mkdir -p $(BUILD)/$(TARGET01)
 	@mkdir -p $(BUILD)/$(TARGET02)
 	@mkdir -p $(BUILD)/$(TARGET03)
@@ -218,6 +143,9 @@ mkbuilddir:
 	@mkdir -p $(BUILD)/$(TARGET14)
 	@mkdir -p $(BUILD)/$(TARGET15)
 	@mkdir -p $(BUILD)/$(TARGET16)
+
+magma:
+	$(MAKE) -C $(MAGMA) $(TARGET)
 
 # Sample app shaders
 
@@ -248,22 +176,22 @@ shaders-15: $(TARGET15)/sum.o $(TARGET15)/mul.o $(TARGET15)/power.o
 
 # Sample app builds: make output directory, build executable, compile shaders
 
-01-clear:				mkbuilddir $(TARGET01)/$(TARGET01)
-02-simple-triangle:		mkbuilddir $(TARGET02)/$(TARGET02) shaders-02
-03-vertex-buffer:		mkbuilddir $(TARGET03)/$(TARGET03) shaders-03
-04-vertex-transform:	mkbuilddir $(TARGET04)/$(TARGET04) shaders-04
-05-mesh:				mkbuilddir $(TARGET05)/$(TARGET05) shaders-05
-06-texture:				mkbuilddir $(TARGET06)/$(TARGET06) shaders-06
-07-texture-array:		mkbuilddir $(TARGET07)/$(TARGET07) shaders-07
-08-cubemap:				mkbuilddir $(TARGET08)/$(TARGET08) shaders-08
-09-alpha-blend:			mkbuilddir $(TARGET09)/$(TARGET09) shaders-09
-10-render-to-texture:	mkbuilddir $(TARGET10)/$(TARGET10) shaders-10
-11-occlusion-query:		mkbuilddir $(TARGET11)/$(TARGET11) shaders-11
-12-pushconstants:		mkbuilddir $(TARGET12)/$(TARGET12) shaders-12
-13-specialization:		mkbuilddir $(TARGET13)/$(TARGET13) shaders-13
-14-particles:			mkbuilddir $(TARGET14)/$(TARGET14) shaders-14
-15-compute:				mkbuilddir $(TARGET15)/$(TARGET15) shaders-15
-16-immediate:			mkbuilddir $(TARGET16)/$(TARGET16)
+01-clear:				builddir magma $(TARGET01)/$(TARGET01)
+02-simple-triangle:		builddir magma $(TARGET02)/$(TARGET02) shaders-02
+03-vertex-buffer:		builddir magma $(TARGET03)/$(TARGET03) shaders-03
+04-vertex-transform:	builddir magma $(TARGET04)/$(TARGET04) shaders-04
+05-mesh:				builddir magma $(TARGET05)/$(TARGET05) shaders-05
+06-texture:				builddir magma $(TARGET06)/$(TARGET06) shaders-06
+07-texture-array:		builddir magma $(TARGET07)/$(TARGET07) shaders-07
+08-cubemap:				builddir magma $(TARGET08)/$(TARGET08) shaders-08
+09-alpha-blend:			builddir magma $(TARGET09)/$(TARGET09) shaders-09
+10-render-to-texture:	builddir magma $(TARGET10)/$(TARGET10) shaders-10
+11-occlusion-query:		builddir magma $(TARGET11)/$(TARGET11) shaders-11
+12-pushconstants:		builddir magma $(TARGET12)/$(TARGET12) shaders-12
+13-specialization:		builddir magma $(TARGET13)/$(TARGET13) shaders-13
+14-particles:			builddir magma $(TARGET14)/$(TARGET14) shaders-14
+15-compute:				builddir magma $(TARGET15)/$(TARGET15) shaders-15
+16-immediate:			builddir magma $(TARGET16)/$(TARGET16)
 
 # Build all samples
 
@@ -287,6 +215,7 @@ all:$(TARGET01) \
 # Remove build stuff
 
 clean:
+	$(MAKE) -C $(MAGMA) clean
 	@find . -name '*.o' -delete
 	@rm -rf $(DEPS) \
 	$(TARGET01)/$(TARGET01) \
