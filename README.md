@@ -208,7 +208,9 @@ This sample shows how to use Magma helper to draw different primitives without V
 <br><br><br><br>
 
 ## Known issues
-Negative viewport height may not work on Intel integrated GPU's despite support of VK_KHR_maintenance1 extension.
+
+* Negative viewport height may not work on Intel integrated GPU's despite support of VK_KHR_maintenance1 extension.
+* vkCreateSwapchainKHR() may fail on Linux due to unknown issues with alignment.
 
 ## Credits
 This framework uses a few third-party libraries:
