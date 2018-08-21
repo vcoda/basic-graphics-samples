@@ -1,15 +1,20 @@
 CC=g++
 GLSLC=$(VULKAN_SDK)/bin/glslangValidator
 
-TARGET=debug
 PLATFORM=VK_USE_PLATFORM_XCB_KHR
 INCLUDE_DIR=-I$(VULKAN_SDK)/include -Ithird-party -Ithird-party/rapid
 LIBRARY_DIR=-L$(VULKAN_SDK)/lib -Lthird-party/magma
 
 BASE_CFLAGS=-std=c++14 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(INCLUDE_DIR)
-DEBUG_CFLAGS=$(BASE_CFLAGS) -g -D_DEBUG
-RELEASE_CFLAGS=$(BASE_CFLAGS) -O3
-LDFLAGS=$(LIBRARY_DIR) -lxcb -lvulkan -lmagmad -lpthread
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+	CFLAGS=$(BASE_CFLAGS) -O0 -g -D_DEBUG
+    MAGMA_LIB=magmad
+else
+	CFLAGS=$(BASE_CFLAGS) -O3 -DNDEBUG
+	MAGMA_LIB=magma
+endif
+LDFLAGS=$(LIBRARY_DIR) -lxcb -lvulkan -l$(MAGMA_LIB) -lpthread
 
 BUILD=build
 MAGMA=third-party/magma
@@ -54,7 +59,7 @@ DEPS := $(OBJS:.o=.d)
 -include $(DEPS)
 
 $(BUILD)/%.o: %.cpp
-	$(CC) $(DEBUG_CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.vert
 	@echo Compiling vertex shader
@@ -145,7 +150,7 @@ builddir:
 	@mkdir -p $(BUILD)/$(TARGET16)
 
 magma:
-	$(MAKE) -C $(MAGMA) $(TARGET)
+	$(MAKE) -C $(MAGMA) magma
 
 # Sample app shaders
 
