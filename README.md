@@ -93,13 +93,18 @@ ii  amdgpu-pro                      17.10-446706         amd64                Me
 
 To build all samples, go to the repo root directory and run Make script:
 ```
+make magma
 make all
 ```
 or to build particular sample, type
 ```
 make <NN-sample-name>
 ```
-Optionally use can use -jN flag (where N is the number of threads) to run multithreaded compilation.
+Optionally use can use -jN flag (where N is the number of threads) to run multi-threaded compilation.
+There is debug build by default. For release build, set DEBUG variable to false, e. g.:
+```
+make all DEBUG=0
+```
 
 ### Android
 
