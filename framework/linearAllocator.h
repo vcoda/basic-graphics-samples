@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include "magma/allocator/objectAllocator.h"
 
 class LinearAllocator : public magma::IObjectAllocator
@@ -15,4 +16,5 @@ private:
     void *const buffer;
     char *head;
     size_t bytesAllocated;
+    std::map<void *, size_t> blocks;
 };

@@ -27,11 +27,18 @@ void *LinearAllocator::alloc(size_t size)
     }
     MAGMA_ASSERT(MAGMA_ALIGNED(p));
     bytesAllocated += size;
+    blocks[p] = size;
     return p;
 }
 
 void LinearAllocator::free(void *p)
 {
+    auto it = blocks.find(p);
+    if (it != blocks.end())
+    {
+        bytesAllocated -= it->second;
+        blocks.erase(it);
+    }
     if (p < buffer || p > head)
         ::MAGMA_FREE(p);
     else
