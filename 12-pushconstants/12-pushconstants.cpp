@@ -83,11 +83,8 @@ public:
 
     void setupDescriptorSet()
     {
-        const uint32_t maxDescriptorSets = 1;
-        descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
-            magma::descriptors::UniformBuffer(1),
-        }));
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
+        descriptorPool.reset(new magma::DescriptorPool(device, 1, {uniformBufferDesc}));
         descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
             magma::bindings::VertexStageBinding(0, uniformBufferDesc)
         }));

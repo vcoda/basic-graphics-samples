@@ -114,8 +114,7 @@ public:
 
     void setupDescriptorSet()
     {
-        const uint32_t maxDescriptorSets = 2;
-        descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
+        descriptorPool.reset(new magma::DescriptorPool(device, 2, {
             magma::descriptors::DynamicUniformBuffer(2),
         }));
         const magma::Descriptor uniformBufferDesc = magma::descriptors::DynamicUniformBuffer(1);

@@ -73,8 +73,7 @@ public:
 
     void setupDescriptorSet()
     {
-        const uint32_t maxDescriptorSets = 1;
-        descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
+        descriptorPool.reset(new magma::DescriptorPool(device, 1, {
             magma::descriptors::StorageBuffer(3),
         }));
         const magma::Descriptor storageBufferDesc = magma::descriptors::StorageBuffer(1);

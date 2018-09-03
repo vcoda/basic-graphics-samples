@@ -155,13 +155,13 @@ public:
     {
         // Create descriptor pool
         const uint32_t maxDescriptorSets = 1; // One set is enough for us
+        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
+        const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
         descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
-            magma::descriptors::UniformBuffer(1), // Allocate one uniform buffer
+            uniformBufferDesc, // Allocate one uniform buffer
             magma::descriptors::CombinedImageSampler(2) // Allocate two combined image samplers
         }));
         // Setup descriptor set layout
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
         descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
             magma::bindings::FragmentStageBinding(0, uniformBufferDesc), // Bind uniform buffer to slot 0 in fragment shader
             magma::bindings::FragmentStageBinding(1, imageSamplerDesc),  // Bind diffuse sampler to slot 1 in fragment shader

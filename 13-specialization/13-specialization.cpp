@@ -168,18 +168,11 @@ public:
 
     void setupDescriptorSet()
     {
-        // Create descriptor pool
-        const uint32_t maxDescriptorSets = 1; // One set is enough for us
-        descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
-            magma::descriptors::UniformBuffer(1), // Allocate simply one uniform buffer
-        }));
-        // Setup descriptor set layout:
-        // Here we describe that slot 0 in vertex shader will have uniform buffer binding
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
+        descriptorPool.reset(new magma::DescriptorPool(device, 1, {uniformBufferDesc}));
         descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
             magma::bindings::VertexStageBinding(0, uniformBufferDesc)
         }));
-        // Connect our uniform buffer to binding point
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
 
