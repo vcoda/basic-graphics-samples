@@ -21,11 +21,9 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
     }
     // Loop through the rings
     for (uint32_t i = 0; i < stacks; ++i)
-    {
-        // Loop through the vertices making up this ring
+    {   // Loop through the vertices making up this ring
         for(uint32_t j = 0; j < slices; ++j)
-        {
-            // Get the vector from the centre of this ring to the centre of the next
+        {   // Get the vector from the centre of this ring to the centre of the next
             rapid::vector3 tangent;
             if (i < stacks - 1)
                 tangent = ringCenters[i + 1] - ringCenters[i];
@@ -46,11 +44,9 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
     std::vector<uint32_t> indices(6 * stacks * slices);
     // Loop through the rings
     for (uint32_t i = 0; i < stacks; ++i)
-    {
-        // Loop through the vertices making up this ring
+    {   // Loop through the vertices making up this ring
         for (uint32_t j = 0; j < slices; ++j)
-        {
-            // Calculate quad indices
+        {   // Calculate quad indices
             uint32_t quadIndices[4];
             quadIndices[0] = i * slices + j;
             if (j != slices - 1)
@@ -91,8 +87,7 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
     // Loop through the triangles
     const uint32_t numIndices = 6 * stacks * slices;
     for(uint32_t i = 0; i < numIndices; i += 3)
-    {
-        // Calculate normal of this triangle
+    {   // Calculate normal of this triangle
         const rapid::plane trianglePlane(rapid::vector3(vertices[indices[i    ]].position),
                                          rapid::vector3(vertices[indices[i + 1]].position),
                                          rapid::vector3(vertices[indices[i + 2]].position));

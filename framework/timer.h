@@ -4,20 +4,21 @@
 
 class Timer
 {
-    typedef std::chrono::high_resolution_clock clock;
+    typedef std::chrono::high_resolution_clock HiResClock;
 
 public:
     void run()
     {
-        prev = std::chrono::high_resolution_clock::now();
+        prev = HiResClock::now();
         running = true;
     }
 
     float millisecondsElapsed()
     {
         assert(running);
-        const clock::time_point now = clock::now();
-        const std::chrono::microseconds ms = std::chrono::duration_cast<std::chrono::microseconds>(now - prev);
+        const auto now = HiResClock::now();
+        const std::chrono::microseconds ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(now - prev);
         prev = now;
         return static_cast<float>(ms.count()) * 0.001f;
     }
@@ -28,6 +29,6 @@ public:
     }
 
 private:
-    clock::time_point prev;
+    HiResClock::time_point prev;
     bool running = false;
 };

@@ -3,7 +3,8 @@
 #include "magma/magma.h"
 #include "rapid/rapid.h"
 
-PlaneMesh::PlaneMesh(float width, float height, bool textured, bool twoSided, std::shared_ptr<magma::CommandBuffer> cmdBuffer)
+PlaneMesh::PlaneMesh(float width, float height, bool textured, bool twoSided,
+    std::shared_ptr<magma::CommandBuffer> cmdBuffer)
 {
     const float hw = width *.5f;
     const float hh = height * .5f;
