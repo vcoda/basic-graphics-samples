@@ -7,7 +7,7 @@
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
     PlatformApp(entry, caption, width, height),
-    timer(new Timer()),
+    timer(std::make_unique<Timer>()),
     depthBuffer(depthBuffer)
 {
     magma::Object::setAllocator(std::make_shared<LinearAllocator>());

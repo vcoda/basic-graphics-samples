@@ -65,6 +65,6 @@ protected:
 
     std::shared_ptr<magma::PipelineCache> pipelineCache;
 
-    std::shared_ptr<Timer> timer;
+    std::unique_ptr<Timer> timer;
     bool depthBuffer;
 };
