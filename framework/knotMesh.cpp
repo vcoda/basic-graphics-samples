@@ -108,8 +108,8 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
         normal.store(&v.normal);
     }
     // Create vertex and index buffers
-    vertexBuffer.reset(new magma::VertexBuffer(cmdBuffer, vertices));
-    indexBuffer.reset(new magma::IndexBuffer(cmdBuffer, indices));
+    vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, vertices);
+    indexBuffer = std::make_shared<magma::IndexBuffer>(cmdBuffer, indices);
 }
 
 void KnotMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const

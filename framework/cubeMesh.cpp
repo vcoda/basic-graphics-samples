@@ -72,8 +72,8 @@ CubeMesh::CubeMesh(std::shared_ptr<magma::CommandBuffer> cmdBuffer)
         {1.0f, 1.0f, 5.0f}
     };
 
-    vertexBuffer.reset(new magma::VertexBuffer(cmdBuffer, vertices));
-    texCoordBuffer.reset(new magma::VertexBuffer(cmdBuffer, texCoords));
+    vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, vertices);
+    texCoordBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, texCoords);
 }
 
 void CubeMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const

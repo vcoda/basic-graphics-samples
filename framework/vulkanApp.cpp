@@ -25,7 +25,7 @@ void VulkanApp::initialize()
     createFramebuffer();
     createCommandBuffers();
     createSyncPrimitives();
-    pipelineCache.reset(new magma::PipelineCache(device));
+    pipelineCache = std::make_shared<magma::PipelineCache>(device);
 }
 
 void VulkanApp::onIdle()
@@ -82,21 +82,22 @@ void VulkanApp::createInstance()
     strcpy(appName, caption.c_str());
 #endif
 
-    instance.reset(new magma::Instance(
+    instance = std::make_shared<magma::Instance>(
         appName,
         "Magma",
         VK_API_VERSION_1_0,
-        layerNames, extensionNames));
+        layerNames, extensionNames);
 
-    debugReportCallback.reset(new magma::DebugReportCallback(
-        instance, reportCallback));
+    debugReportCallback = std::make_unique<magma::DebugReportCallback>(
+        instance,
+        reportCallback);
 
     physicalDevice = instance->getPhysicalDevice(0);
     const VkPhysicalDeviceProperties& properties = physicalDevice->getProperties();
     std::cout << "Running on " << properties.deviceName << "\n";
 
-    instanceExtensions.reset(new magma::InstanceExtensions(instance));
-    extensions.reset(new magma::DeviceExtensions(physicalDevice));
+    instanceExtensions = std::make_unique<magma::InstanceExtensions>(instance);
+    extensions = std::make_unique<magma::DeviceExtensions>(physicalDevice);
 }
 
 void VulkanApp::createLogicalDevice()
@@ -130,11 +131,11 @@ void VulkanApp::createLogicalDevice()
 void VulkanApp::createSwapchain(bool vSync)
 {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-    surface.reset(new magma::Win32Surface(instance, hInstance, hWnd));
+    surface = std::make_shared<magma::Win32Surface>(instance, hInstance, hWnd);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
-    surface.reset(new magma::XlibSurface(instance, dpy, window));
+    surface = std::make_shared<magma::XlibSurface>(instance, dpy, window);
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-    surface.reset(new magma::XcbSurface(instance, connection, window));
+    surface = std::make_shared<magma::XcbSurface>(instance, connection, window);
 #endif // VK_USE_PLATFORM_XCB_KHR
     if (!physicalDevice->getSurfaceSupport(surface))
         throw std::runtime_error("surface not supported");
@@ -196,10 +197,10 @@ void VulkanApp::createSwapchain(bool vSync)
             presentMode = VK_PRESENT_MODE_FIFO_KHR;
         }
     }
-    swapchain = std::shared_ptr<magma::Swapchain>(new magma::Swapchain(device, surface,
+    swapchain = std::make_shared<magma::Swapchain>(device, surface,
         std::min(2U, surfaceCaps.maxImageCount),
         surfaceFormats[0], surfaceCaps.currentExtent,
-        preTransform, compositeAlpha, presentMode));
+        preTransform, compositeAlpha, presentMode);
 }
 
 void VulkanApp::createRenderPass()
@@ -218,11 +219,12 @@ void VulkanApp::createRenderPass()
             magma::op::clearDontCare, // Stencil don't care
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-        renderPass.reset(new magma::RenderPass(device, {colorAttachment, depthStencilAttachment}));
+        const std::initializer_list<magma::AttachmentDescription> attachments = {colorAttachment, depthStencilAttachment};
+        renderPass = std::make_shared<magma::RenderPass>(device, attachments);
     }
     else
     {
-        renderPass.reset(new magma::RenderPass(device, colorAttachment));
+        renderPass = std::make_shared<magma::RenderPass>(device, colorAttachment);
     }
 }
 
@@ -232,17 +234,17 @@ void VulkanApp::createFramebuffer()
     if (depthBuffer)
     {
         const VkFormat depthFormat = getSupportedDepthFormat(false, true);
-        depthStencil.reset(new magma::DepthStencilAttachment2D(device, depthFormat, surfaceCaps.currentExtent, 1, 1));
-        depthStencilView.reset(new magma::ImageView(depthStencil));
+        depthStencil = std::make_shared<magma::DepthStencilAttachment2D>(device, depthFormat, surfaceCaps.currentExtent, 1, 1);
+        depthStencilView = std::make_shared<magma::ImageView>(depthStencil);
     }
     for (const auto& image : swapchain->getImages())
     {
         std::vector<std::shared_ptr<const magma::ImageView>> attachments;
-        std::shared_ptr<magma::ImageView> colorView(new magma::ImageView(image));
+        std::shared_ptr<magma::ImageView> colorView(std::make_shared<magma::ImageView>(image));
         attachments.push_back(colorView);
         if (depthBuffer)
             attachments.push_back(depthStencilView);
-        std::shared_ptr<magma::Framebuffer> framebuffer(new magma::Framebuffer(renderPass, attachments));
+        std::shared_ptr<magma::Framebuffer> framebuffer(std::make_shared<magma::Framebuffer>(renderPass, attachments));
         framebuffers.push_back(framebuffer);
     }
 }
@@ -250,7 +252,7 @@ void VulkanApp::createFramebuffer()
 void VulkanApp::createCommandBuffers()
 {
     queue = device->getQueue(VK_QUEUE_GRAPHICS_BIT, 0);
-    commandPools[0].reset(new magma::CommandPool(device, queue->getFamilyIndex()));
+    commandPools[0] = std::make_shared<magma::CommandPool>(device, queue->getFamilyIndex());
     // Create draw command buffers
     commandBuffers = commandPools[0]->allocateCommandBuffers(static_cast<uint32_t>(framebuffers.size()), true);
     // Create image copy command buffer
@@ -258,7 +260,7 @@ void VulkanApp::createCommandBuffers()
     try
     {
         std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
-        commandPools[1].reset(new magma::CommandPool(device, transferQueue->getFamilyIndex()));
+        commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         // Create buffer copy command buffer
         cmdBufferCopy = commandPools[1]->allocateCommandBuffer(true);
     }
@@ -270,12 +272,12 @@ void VulkanApp::createCommandBuffers()
 
 void VulkanApp::createSyncPrimitives()
 {
-    presentFinished.reset(new magma::Semaphore(device));
-    renderFinished.reset(new magma::Semaphore(device));
+    presentFinished = std::make_shared<magma::Semaphore>(device);
+    renderFinished = std::make_shared<magma::Semaphore>(device);
     for (int i = 0; i < (int)commandBuffers.size(); ++i)
     {
         constexpr bool signaled = true; // Don't wait on first render of each command buffer
-        waitFences.push_back(std::shared_ptr<magma::Fence>(new magma::Fence(device, signaled)));
+        waitFences.push_back(std::make_shared<magma::Fence>(device, signaled));
     }
 }
 

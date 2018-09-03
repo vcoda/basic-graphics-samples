@@ -14,9 +14,9 @@ PlaneMesh::PlaneMesh(float width, float height, bool textured, bool twoSided,
         { hw,-hh, 0.f},
         { hw, hh, 0.f},
     };
-    vertexBuffer.reset(new magma::VertexBuffer(cmdBuffer, vertices));
+    vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, vertices);
     const std::vector<rapid::float3> normals(6, rapid::float3(0.f, 0.f, 1.f));
-    normalBuffer.reset(new magma::VertexBuffer(cmdBuffer, normals));
+    normalBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, normals);
     if (textured)
     {
         const std::vector<rapid::float2> texCoords = {
@@ -25,12 +25,12 @@ PlaneMesh::PlaneMesh(float width, float height, bool textured, bool twoSided,
             {1.f, 0.f},
             {1.f, 1.f}
         };
-        texCoordBuffer.reset(new magma::VertexBuffer(cmdBuffer, texCoords));
+        texCoordBuffer = std::make_shared<magma::VertexBuffer>(cmdBuffer, texCoords);
     }
     const std::vector<uint16_t> indices = twoSided ?
         std::vector<uint16_t>{0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3} :
         std::vector<uint16_t>{0, 1, 2, 2, 1, 3};
-    indexBuffer.reset(new magma::IndexBuffer(cmdBuffer, indices));
+    indexBuffer = std::make_shared<magma::IndexBuffer>(cmdBuffer, indices);
 }
 
 void PlaneMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
