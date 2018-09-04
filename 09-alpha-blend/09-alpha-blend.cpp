@@ -41,12 +41,7 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
-        queue->submit(
-            commandBuffers[bufferIndex],
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            presentFinished,
-            renderFinished,
-            waitFences[bufferIndex]);
+        submitCmdBuffer(bufferIndex);
     }
 
     void setupView()

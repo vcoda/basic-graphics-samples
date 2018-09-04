@@ -34,6 +34,7 @@ protected:
     virtual void createFramebuffer();
     virtual void createCommandBuffers();
     virtual void createSyncPrimitives();
+    bool submitCmdBuffer(uint32_t bufferIndex);
     VkFormat getSupportedDepthFormat(bool hasStencil, bool optimalTiling) const;
 
 protected:

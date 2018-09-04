@@ -83,12 +83,7 @@ public:
 
     virtual void render(uint32_t bufferIndex) override
     {
-        queue->submit(
-            commandBuffers[bufferIndex],
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            presentFinished,
-            renderFinished,
-            waitFences[bufferIndex]);
+        submitCmdBuffer(bufferIndex);
     }
 
     void createImmediateRender()
