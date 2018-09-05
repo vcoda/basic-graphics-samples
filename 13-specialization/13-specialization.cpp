@@ -149,42 +149,46 @@ public:
         const uint32_t slices = 16;
         const uint32_t stacks = 128;
         const float radius = 0.25f;
-        mesh.reset(new KnotMesh(3, slices, stacks, radius, false, cmdBufferCopy));
+        mesh = std::make_unique<KnotMesh>(3, slices, stacks, radius, false, cmdBufferCopy);
     }
 
     void loadShaders()
     {
         utilities::aligned_vector<char> bytecode;
         bytecode = utilities::loadBinaryFile("transform.o");
-        vertexShader.reset(new magma::ShaderModule(device, (const uint32_t *)bytecode.data(), bytecode.size()));
+        vertexShader = std::make_shared<magma::ShaderModule>(device, (const uint32_t *)bytecode.data(), bytecode.size());
         bytecode = utilities::loadBinaryFile("specialized.o");
-        fragmentShader.reset(new magma::ShaderModule(device, (const uint32_t *)bytecode.data(), bytecode.size()));
+        fragmentShader = std::make_shared<magma::ShaderModule>(device, (const uint32_t *)bytecode.data(), bytecode.size());
     }
 
     void createUniformBuffer()
     {
-        uniformBuffer.reset(new magma::UniformBuffer<UniformBlock>(device));
+        uniformBuffer = std::make_shared<magma::UniformBuffer<UniformBlock>>(device);
     }
 
     void setupDescriptorSet()
     {
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, 1, {uniformBufferDesc}));
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc)
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
+            std::vector<magma::Descriptor>
+            {
+                uniformBufferDesc
+            });
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            magma::bindings::VertexStageBinding(0, uniformBufferDesc));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
 
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
     }
 
-    magma::FragmentShaderStage specializeFragmentStage(ShadingType shadingType, const char *entrypoint)
+    magma::FragmentShaderStage specializeFragmentStage(ShadingType shadingType, const char *entrypoint) const
     {
         Constants constants;
         constants.colorFill = MAGMA_BOOLEAN(ShadingType::ALBEDO == shadingType);
         constants.shadingType = static_cast<int>(shadingType);
-        std::shared_ptr<magma::Specialization> specialization(new magma::Specialization(constants,
+        std::shared_ptr<magma::Specialization> specialization(std::make_shared<magma::Specialization>(constants,
+            std::initializer_list<magma::SpecializationEntry>
             {
                 magma::SpecializationEntry(0, &Constants::colorFill),
                 magma::SpecializationEntry(1, &Constants::shadingType)
@@ -194,10 +198,11 @@ public:
 
     void setupPipeline(ShadingType shadingType)
     {
-        std::vector<magma::ShaderStage> shaderStages;
-        shaderStages.push_back(magma::VertexShaderStage(vertexShader, "main"));
-        shaderStages.push_back(specializeFragmentStage(shadingType, "main"));
-        auto pipeline = new magma::GraphicsPipeline(device, pipelineCache,
+        const std::vector<magma::ShaderStage> shaderStages = {
+            magma::VertexShaderStage(vertexShader, "main"),
+            specializeFragmentStage(shadingType, "main")
+        };
+        auto pipeline(std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
             shaderStages,
             mesh->getVertexInput(),
             magma::states::triangleList,
@@ -205,10 +210,10 @@ public:
             magma::states::dontMultisample,
             magma::states::depthLessOrEqual,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
-        pipelines.push_back(std::shared_ptr<magma::GraphicsPipeline>(pipeline));
+            renderPass));
+        pipelines.push_back(pipeline);
     }
 
     void recordCommandBuffer(uint32_t bufferIndex, uint32_t pipelineIndex)
@@ -237,5 +242,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new SpecializationApp(entry));
+    return std::make_unique<SpecializationApp>(entry);
 }

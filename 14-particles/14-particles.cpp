@@ -60,7 +60,7 @@ public:
 
     void initParticleSystem()
     {
-        particles.reset(new ParticleSystem());
+        particles = std::make_unique<ParticleSystem>();
         particles->setMaxParticles(200);
         particles->setNumToRelease(10);
         particles->setReleaseInterval(0.05f);
@@ -100,22 +100,26 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer.reset(new magma::UniformBuffer<rapid::matrix>(device));
+        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void setupDescriptorSet()
     {
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, 1, {uniformBufferDesc}));
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc)
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
+            std::vector<magma::Descriptor>
+            {
+                uniformBufferDesc
+            });
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            magma::bindings::VertexStageBinding(0, uniformBufferDesc));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
-
-        // Specify push constant range
-        const magma::pushconstants::VertexFragmentConstantRange<PushConstants> pushConstantRange;
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout, {pushConstantRange}));
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout,
+            std::initializer_list<VkPushConstantRange>
+            {   // Specify push constant range
+                magma::pushconstants::VertexFragmentConstantRange<PushConstants>()
+            });
     }
 
     void setupPipeline()
@@ -127,7 +131,8 @@ public:
                 magma::VertexInputAttribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ParticleSystem::ParticleVertex, color))
             }
         );
-        pipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        pipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "pointSize.o"),
                 FragmentShader(device, negateViewport ? "particleNeg.o" : "particle.o")
@@ -138,9 +143,9 @@ public:
             magma::states::dontMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::blendNormalWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -176,5 +181,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new ParticlesApp(entry));
+    return std::make_unique<ParticlesApp>(entry);
 }

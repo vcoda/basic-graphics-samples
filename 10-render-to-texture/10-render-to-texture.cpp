@@ -97,8 +97,8 @@ public:
 
     void createFramebuffer(const VkExtent2D& extent)
     {
-        fb.color.reset(new magma::ColorAttachment2D(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1));
-        fb.colorView.reset(new magma::ImageView(fb.color));
+        fb.color = std::make_shared<magma::ColorAttachment2D>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1);
+        fb.colorView = std::make_shared<magma::ImageView>(fb.color);
 
         // Make sure that we are fit to hardware limits
         const VkImageFormatProperties formatProperties = physicalDevice->getImageFormatProperties(
@@ -108,51 +108,66 @@ public:
             msaaSamples = maxFormatSamples;
         if (msaaSamples > 1)
         {
-            fb.msaaColor.reset(new magma::ColorAttachment2D(device, fb.color->getFormat(), extent, 1, msaaSamples));
-            fb.msaaColorView.reset(new magma::ImageView(fb.msaaColor));
+            fb.msaaColor = std::make_shared<magma::ColorAttachment2D>(device, fb.color->getFormat(), extent, 1, msaaSamples);
+            fb.msaaColorView = std::make_shared<magma::ImageView>(fb.msaaColor);
             const magma::AttachmentDescription multisampleColorAttachment(fb.msaaColor->getFormat(), fb.msaaColor->getSamples(),
                 magma::attachments::colorClearStoreOptimal);
             const magma::AttachmentDescription resolveColorAttachment(fb.color->getFormat(), 1,
                 magma::attachments::colorDontCareStoreOptimal); // Don't care about clear as it will be used as MSAA resolve target
-            fb.renderPass.reset(new magma::RenderPass(device, {multisampleColorAttachment, resolveColorAttachment}));
-            fb.framebuffer.reset(new magma::Framebuffer(fb.renderPass, {fb.msaaColorView, fb.colorView}));
+            fb.renderPass = std::make_shared<magma::RenderPass>(device,
+                std::initializer_list<magma::AttachmentDescription>
+                {
+                    multisampleColorAttachment,
+                    resolveColorAttachment
+                });
+            fb.framebuffer = std::make_shared<magma::Framebuffer>(fb.renderPass,
+                std::vector<std::shared_ptr<const magma::ImageView>>
+                {
+                    fb.msaaColorView,
+                    fb.colorView
+                });
         }
         else
         {
             const magma::AttachmentDescription colorAttachment(fb.color->getFormat(), 1,
                 magma::attachments::colorClearStoreReadOnly);
-            fb.renderPass.reset(new magma::RenderPass(device, colorAttachment));
-            fb.framebuffer.reset(new magma::Framebuffer(fb.renderPass, fb.colorView));
+            fb.renderPass = std::make_shared<magma::RenderPass>(device, colorAttachment);
+            fb.framebuffer = std::make_shared<magma::Framebuffer>(fb.renderPass, fb.colorView);
         }
     }
 
     void createUniformBuffer()
     {
-        uniformBuffer.reset(new magma::UniformBuffer<rapid::matrix>(device));
+        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void setupDescriptorSet()
     {
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, 1, {
-            uniformBufferDesc,
-            imageSamplerDesc
-        }));
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc),
-            magma::bindings::FragmentStageBinding(1, imageSamplerDesc)
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
+            std::vector<magma::Descriptor>
+            {
+                uniformBufferDesc,
+                imageSamplerDesc
+            });
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            std::initializer_list<magma::DescriptorSetLayout::Binding>
+            {
+                magma::bindings::VertexStageBinding(0, uniformBufferDesc),
+                magma::bindings::FragmentStageBinding(1, imageSamplerDesc)
+            });
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        nearestSampler.reset(new magma::Sampler(device, magma::samplers::nearestMipmapNearestClampToEdge));
+        nearestSampler = std::make_shared<magma::Sampler>(device, magma::samplers::nearestMipmapNearestClampToEdge);
         descriptorSet->update(0, uniformBuffer);
         descriptorSet->update(1, fb.colorView, nearestSampler);
     }
 
     void setupPipelines()
     {
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
-        rtPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        rtPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "triangle.o"),
                 FragmentShader(device, "fill.o")
@@ -163,10 +178,11 @@ public:
             magma::MultisampleState(static_cast<VkSampleCountFlagBits>(msaaSamples)),
             magma::states::depthAlwaysDontWrite,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            fb.renderPass));
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+            fb.renderPass);
+        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "quad.o"),
                 FragmentShader(device, "texture.o")
@@ -177,15 +193,15 @@ public:
             magma::states::dontMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::blendNormalWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 
     void recordRTCommandBuffer()
     {
         rtCmdBuffer = commandPools[0]->allocateCommandBuffer(true);
-        rtSemaphore.reset(new magma::Semaphore(device));
+        rtSemaphore = std::make_shared<magma::Semaphore>(device);
 
         rtCmdBuffer->begin();
         {
@@ -205,7 +221,7 @@ public:
 
     void recordCommandBuffer(uint32_t index)
     {
-        std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
+        std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
             cmdBuffer->setRenderArea(0, 0, width, height);
@@ -225,5 +241,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new RenderToTextureApp(entry));
+    return std::make_unique<RenderToTextureApp>(entry);
 }

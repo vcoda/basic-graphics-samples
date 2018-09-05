@@ -49,12 +49,13 @@ public:
                 {0, _1, 0, _1}
             }
         };
-        vertexBuffer.reset(new magma::VertexBuffer(device, vertices));
+        vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
     }
 
     void setupPipeline()
     {
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
@@ -65,9 +66,9 @@ public:
             magma::states::dontMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             nullptr,
-            renderPass));
+            renderPass);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -92,5 +93,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new VertexBufferApp(entry));
+    return std::make_unique<VertexBufferApp>(entry);
 }

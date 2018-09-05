@@ -52,57 +52,55 @@ public:
     virtual void createCommandBuffers() override
     {
         queue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
-        commandPools[0].reset(new magma::CommandPool(device, queue->getFamilyIndex()));
+        commandPools[0] = std::make_shared<magma::CommandPool>(device, queue->getFamilyIndex());
         computeCmdBuffer = commandPools[0]->allocateCommandBuffer(true);
 
         std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
-        commandPools[1].reset(new magma::CommandPool(device, transferQueue->getFamilyIndex()));
+        commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         cmdBufferCopy = commandPools[1]->allocateCommandBuffer(true);
 
-        fence.reset(new magma::Fence(device, true));
+        fence = std::make_shared<magma::Fence>(device, true);
     }
 
     void createInputOutputBuffers()
     {
-        inputBuffers[0].reset(new magma::StorageBuffer(cmdBufferCopy, numbers));
-        inputBuffers[1].reset(new magma::StorageBuffer(cmdBufferCopy, numbers));
-        const VkDeviceSize size = sizeof(float) * numbers.size();
-        outputBuffer.reset(new magma::StorageBuffer(device, size));
-        readbackBuffer.reset(new magma::DstTransferBuffer(device, size));
+        inputBuffers[0] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
+        inputBuffers[1] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
+        outputBuffer = std::make_shared<magma::StorageBuffer>(device, sizeof(float) * numbers.size());
+        readbackBuffer = std::make_shared<magma::DstTransferBuffer>(device, sizeof(float) * numbers.size());
     }
 
     void setupDescriptorSet()
     {
-        descriptorPool.reset(new magma::DescriptorPool(device, 1, {
-            magma::descriptors::StorageBuffer(3),
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
+            std::vector<magma::Descriptor>{
+                magma::descriptors::StorageBuffer(3),
+            });
         const magma::Descriptor storageBufferDesc = magma::descriptors::StorageBuffer(1);
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::ComputeStageBinding(0, storageBufferDesc),
-            magma::bindings::ComputeStageBinding(1, storageBufferDesc),
-            magma::bindings::ComputeStageBinding(2, storageBufferDesc),
-        }));
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            std::initializer_list<magma::DescriptorSetLayout::Binding>{
+                magma::bindings::ComputeStageBinding(0, storageBufferDesc),
+                magma::bindings::ComputeStageBinding(1, storageBufferDesc),
+                magma::bindings::ComputeStageBinding(2, storageBufferDesc),
+            });
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, inputBuffers[0]);
         descriptorSet->update(1, inputBuffers[1]);
         descriptorSet->update(2, outputBuffer);
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
     }
 
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint)
     {
-        return std::shared_ptr<magma::ComputePipeline>(new magma::ComputePipeline(device,
-            pipelineCache,
+        return std::make_shared<magma::ComputePipeline>(device, pipelineCache,
             ComputeShader(device, filename, entrypoint),
-            pipelineLayout));
+            pipelineLayout);
     }
 
     void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
-    {
-        // Record command buffer
+    {   // Record command buffer
         computeCmdBuffer->begin();
-        {
-            // Ensure that transfer write is finished before compute shader execution
+        {   // Ensure that transfer write is finished before compute shader execution
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 {inputBuffers[0], inputBuffers[1]}, magma::barriers::transferWriteShaderRead);
             // Bind input and output buffers
@@ -166,5 +164,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new ComputeApp(entry));
+    return std::make_unique<ComputeApp>(entry);
 }

@@ -63,6 +63,13 @@ public:
         ir->reset();
     }
 
+    void createImmediateRender()
+    {
+        std::shared_ptr<magma::IAllocator> allocator(std::make_shared<AlignedAllocator>());
+        ir = std::make_shared<magma::utilities::ImmediateRender>(1024, device, pipelineCache, nullptr, renderPass, allocator);
+        ir->setLineWidth(2.f);
+    }
+
     virtual void createLogicalDevice() override
     {
         const magma::DeviceQueueDescriptor graphicsQueue(VK_QUEUE_GRAPHICS_BIT, physicalDevice, {1.f});
@@ -84,13 +91,6 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         submitCmdBuffer(bufferIndex);
-    }
-
-    void createImmediateRender()
-    {
-        std::shared_ptr<magma::IAllocator> allocator(new AlignedAllocator());
-        ir.reset(new magma::utilities::ImmediateRender(1024, device, pipelineCache, nullptr, renderPass, allocator));
-        ir->setLineWidth(2.f);
     }
 
     void drawPoints()
@@ -321,5 +321,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new ImmediateApp(entry));
+    return std::make_unique<ImmediateApp>(entry);
 }

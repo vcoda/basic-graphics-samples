@@ -68,27 +68,29 @@ public:
     void createMesh()
     {
         const uint32_t subdivisionDegree = 4;
-        mesh.reset(new BezierPatchMesh(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy));
+        mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 
     void createUniformBuffer()
     {
-        uniformBuffer.reset(new magma::UniformBuffer<rapid::matrix>(device));
+        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void setupDescriptorSet()
-    {
-        // Create descriptor pool
+    {   // Create descriptor pool
         const uint32_t maxDescriptorSets = 1; // One set is enough for us
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
-            uniformBufferDesc // Allocate simply one uniform buffer
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
+            std::vector<magma::Descriptor>
+            {   // Allocate simply one uniform buffer
+                uniformBufferDesc
+            });
         // Setup descriptor set layout:
         // Here we describe that slot 0 in vertex shader will have uniform buffer binding
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc)
-        }));
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            std::initializer_list<magma::DescriptorSetLayout::Binding>{
+                magma::bindings::VertexStageBinding(0, uniformBufferDesc)
+            });
         // Connect our uniform buffer to binding point
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
@@ -96,8 +98,9 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
-        wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        wireframeDrawPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "normal.o")
@@ -108,9 +111,9 @@ public:
             magma::states::dontMultisample,
             magma::states::depthLessOrEqual,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -139,5 +142,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new MeshApp(entry));
+    return std::make_unique<MeshApp>(entry);
 }

@@ -83,21 +83,21 @@ public:
 
     void createOcclusionQuery()
     {
-        occlusionQuery.reset(new magma::OcclusionQuery(device, 1));
+        occlusionQuery = std::make_shared<magma::OcclusionQuery>(device, 1);
     }
 
     void createMesh()
     {
         const uint32_t subdivisionDegree = 16;
-        teapot.reset(new BezierPatchMesh(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy));
-        plane.reset(new PlaneMesh(6.f, 6.f, true, true, cmdBufferCopy));
+        teapot = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
+        plane = std::make_unique<PlaneMesh>(6.f, 6.f, true, true, cmdBufferCopy);
     }
 
     void createUniformBuffer()
     {
-        transformUniforms.reset(new magma::DynamicUniformBuffer<rapid::matrix>(device, 2));
+        transformUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::matrix>>(device, 2);
         updatePerspectiveTransform();
-        colorUniforms.reset(new magma::DynamicUniformBuffer<rapid::vector4>(device, 2));
+        colorUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::vector4>>(device, 2);
         // Update only once
         magma::helpers::mapScoped<rapid::vector4>(colorUniforms, false,
             [](magma::helpers::AlignedUniformArray<rapid::vector4>& colors)
@@ -109,28 +109,29 @@ public:
 
     void setupDescriptorSet()
     {
-        descriptorPool.reset(new magma::DescriptorPool(device, 2, {
-            magma::descriptors::DynamicUniformBuffer(2),
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 2,
+            std::vector<magma::Descriptor>
+            {
+                magma::descriptors::DynamicUniformBuffer(2),
+            });
         const magma::Descriptor uniformBufferDesc = magma::descriptors::DynamicUniformBuffer(1);
         // Setup first set layout
-        descriptorSetLayouts[0].reset(new magma::DescriptorSetLayout(device,
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc))
-        );
+        descriptorSetLayouts[0] = std::make_shared<magma::DescriptorSetLayout>(device,
+            magma::bindings::VertexStageBinding(0, uniformBufferDesc));
         descriptorSets[0] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[0]);
         descriptorSets[0]->update(0, transformUniforms);
         // Setup second set layout
-        descriptorSetLayouts[1].reset(new magma::DescriptorSetLayout(device,
-            magma::bindings::VertexStageBinding(1, uniformBufferDesc))
-        );
+        descriptorSetLayouts[1] = std::make_shared<magma::DescriptorSetLayout>(device,
+            magma::bindings::VertexStageBinding(1, uniformBufferDesc));
         descriptorSets[1] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[1]);
         descriptorSets[1]->update(0, colorUniforms);
     }
 
     void setupPipeline()
     {
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayouts));
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayouts);
+        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "fill.o")
@@ -141,9 +142,9 @@ public:
             magma::states::dontMultisample,
             magma::states::depthLessOrEqual,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -191,5 +192,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new OcclusionQueryApp(entry));
+    return std::make_unique<OcclusionQueryApp>(entry);
 }

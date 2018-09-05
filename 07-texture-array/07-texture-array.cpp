@@ -112,7 +112,7 @@ public:
 
     void createMesh()
     {
-        mesh.reset(new CubeMesh(cmdBufferCopy));
+        mesh = std::make_unique<CubeMesh>(cmdBufferCopy);
     }
 
     void loadTextureArray(const std::vector<std::string>& filenames)
@@ -172,39 +172,42 @@ public:
         }
 
         // Upload texture array data
-        imageArray.reset(new magma::Image2DArray(device, format, mipExtents, layersMipData, mipSizes, cmdImageCopy));
+        imageArray = std::make_shared<magma::Image2DArray>(device, format, mipExtents, layersMipData, mipSizes, cmdImageCopy);
         // Create image view array for shader
-        imageViewArray.reset(new magma::ImageView(imageArray));
+        imageViewArray = std::make_shared<magma::ImageView>(imageArray);
     }
 
     void createSampler()
     {
-        anisotropicSampler.reset(new magma::Sampler(device, magma::samplers::anisotropicClampToEdge));
+        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::samplers::anisotropicClampToEdge);
     }
 
     void createUniformBuffers()
     {
-        uniformWorldViewProj.reset(new magma::UniformBuffer<rapid::matrix>(device));
-        uniformTexParameters.reset(new magma::UniformBuffer<TexParameters>(device));
+        uniformWorldViewProj = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformTexParameters = std::make_shared<magma::UniformBuffer<TexParameters>>(device);
         updateLod();
     }
 
     void setupDescriptorSet()
-    {
-        // Create descriptor pool
+    {   // Create descriptor pool
         const uint32_t maxDescriptorSets = 1; // One set is enough for us
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, maxDescriptorSets, {
-            magma::descriptors::UniformBuffer(2), // Allocate two uniform buffers
-            imageSamplerDesc // Allocate one combined image sampler
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
+            std::vector<magma::Descriptor>
+            {
+                magma::descriptors::UniformBuffer(2), // Allocate two uniform buffers
+                imageSamplerDesc // Allocate one combined image sampler
+            });
         // Setup descriptor set layout
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc),   // Bind transforms to slot 0 in vertex shader
-            magma::bindings::FragmentStageBinding(1, uniformBufferDesc), // Bind texture lod to slot 1 in fragment shader
-            magma::bindings::FragmentStageBinding(2, imageSamplerDesc)   // Bind image array sampler to slot 2 in fragment shader
-        }));
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            std::initializer_list<magma::DescriptorSetLayout::Binding>
+            {
+                magma::bindings::VertexStageBinding(0, uniformBufferDesc),   // Bind transforms to slot 0 in vertex shader
+                magma::bindings::FragmentStageBinding(1, uniformBufferDesc), // Bind texture lod to slot 1 in fragment shader
+                magma::bindings::FragmentStageBinding(2, imageSamplerDesc)   // Bind image array sampler to slot 2 in fragment shader
+            });
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformWorldViewProj);
@@ -214,8 +217,9 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "textureArray.o")
@@ -226,9 +230,9 @@ public:
             magma::states::dontMultisample,
             magma::states::depthLess,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -257,5 +261,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new TextureArrayApp(entry));
+    return std::make_unique<TextureArrayApp>(entry);
 }

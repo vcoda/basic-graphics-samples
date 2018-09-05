@@ -87,7 +87,7 @@ public:
     void createMesh()
     {
         const uint32_t subdivisionDegree = 16;
-        mesh.reset(new BezierPatchMesh(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy));
+        mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 
     std::unique_ptr<TextureCube> loadCubeMap(const std::string& filename)
@@ -119,35 +119,39 @@ public:
             }
         }
 
-        std::unique_ptr<TextureCube> texture(new TextureCube);
-        texture->image.reset(new magma::ImageCube(device, format, mipDimensions, cubeMipData, mipSizes, cmdImageCopy));
-        texture->imageView.reset(new magma::ImageView(texture->image));
+        std::unique_ptr<TextureCube> texture(std::make_unique<TextureCube>());
+        texture->image = std::make_shared<magma::ImageCube>(device, format, mipDimensions, cubeMipData, mipSizes, cmdImageCopy);
+        texture->imageView = std::make_shared<magma::ImageView>(texture->image);
         return texture;
     }
 
     void createSampler()
     {
-        anisotropicSampler.reset(new magma::Sampler(device, magma::samplers::anisotropicClampToEdge));
+        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::samplers::anisotropicClampToEdge);
     }
 
     void createUniformBuffer()
     {
-        uniformTransforms.reset(new magma::UniformBuffer<TransformMatrices>(device));
+        uniformTransforms = std::make_shared<magma::UniformBuffer<TransformMatrices>>(device);
     }
 
     void setupDescriptorSet()
     {
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, 1, {
-            uniformBufferDesc,
-            magma::descriptors::CombinedImageSampler(2)
-        }));
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc),
-            magma::bindings::FragmentStageBinding(1, imageSamplerDesc),
-            magma::bindings::FragmentStageBinding(2, imageSamplerDesc)
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
+            std::vector<magma::Descriptor>
+            {
+                uniformBufferDesc,
+                magma::descriptors::CombinedImageSampler(2)
+            });
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            std::initializer_list<magma::DescriptorSetLayout::Binding>
+            {
+                magma::bindings::VertexStageBinding(0, uniformBufferDesc),
+                magma::bindings::FragmentStageBinding(1, imageSamplerDesc),
+                magma::bindings::FragmentStageBinding(2, imageSamplerDesc)
+            });
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformTransforms);
         descriptorSet->update(1, diffuse->imageView, anisotropicSampler);
@@ -156,8 +160,9 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout));
-        wireframeDrawPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        wireframeDrawPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "envmap.o")
@@ -168,9 +173,9 @@ public:
             magma::states::dontMultisample,
             magma::states::depthLessOrEqual,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -199,5 +204,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new CubeMapApp(entry));
+    return std::make_unique<CubeMapApp>(entry);
 }

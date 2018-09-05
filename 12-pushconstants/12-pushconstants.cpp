@@ -73,24 +73,29 @@ public:
             {-0.5f, 0.5f},
             { 0.5f, 0.5f}
         };
-        vertexBuffer.reset(new magma::VertexBuffer(device, vertices));
+        vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
     }
 
     void setupDescriptorSet()
     {
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool.reset(new magma::DescriptorPool(device, 1, {uniformBufferDesc}));
-        descriptorSetLayout.reset(new magma::DescriptorSetLayout(device, {
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc)
-        }));
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
+            std::vector<magma::Descriptor>{uniformBufferDesc});
+        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
+            magma::bindings::VertexStageBinding(0, uniformBufferDesc));
         // Specify push constant range
         const magma::pushconstants::VertexConstantRange<PushConstants> pushConstantRange;
-        pipelineLayout.reset(new magma::PipelineLayout(descriptorSetLayout, {pushConstantRange}));
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout,
+            std::initializer_list<VkPushConstantRange>
+            {
+                pushConstantRange
+            });
     }
 
     void setupPipeline()
     {
-        graphicsPipeline.reset(new magma::GraphicsPipeline(device, pipelineCache,
+        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::ShaderStage>
             {
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
@@ -101,13 +106,13 @@ public:
             magma::states::dontMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::dontBlendWriteRGB,
-            {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
+            renderPass);
     }
 };
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::unique_ptr<IApplication>(new PushConstantsApp(entry));
+    return std::make_unique<PushConstantsApp>(entry);
 }
