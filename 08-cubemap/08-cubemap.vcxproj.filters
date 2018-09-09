@@ -15,7 +15,9 @@
     <CustomBuild Include="transform.vert">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="envmap.frag" />
+    <CustomBuild Include="envmap.frag">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Image Include="diff.dds">
