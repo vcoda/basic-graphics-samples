@@ -90,8 +90,7 @@ void ParticleSystem::update(float dt)
     }
 
     if (currentTime - lastUpdate > releaseInterval)
-    {
-        // Reset update timing...
+    {   // Reset update timing...
         lastUpdate = currentTime;
         // Emit new particles at specified flow rate...
         for (uint32_t i = 0; i < numToRelease; ++i)

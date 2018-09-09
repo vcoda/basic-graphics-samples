@@ -16,18 +16,6 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
 VulkanApp::~VulkanApp()
 {}
 
-void VulkanApp::initialize()
-{
-    createInstance();
-    createLogicalDevice();
-    createSwapchain(false);
-    createRenderPass();
-    createFramebuffer();
-    createCommandBuffers();
-    createSyncPrimitives();
-    pipelineCache = std::make_shared<magma::PipelineCache>(device);
-}
-
 void VulkanApp::onIdle()
 {
 	onPaint();
@@ -48,6 +36,18 @@ void VulkanApp::onPaint()
 void VulkanApp::onKeyDown(char key, int repeat, uint32_t flags)
 {
 	PlatformApp::onKeyDown(key, repeat, flags);
+}
+
+void VulkanApp::initialize()
+{
+    createInstance();
+    createLogicalDevice();
+    createSwapchain(false);
+    createRenderPass();
+    createFramebuffer();
+    createCommandBuffers();
+    createSyncPrimitives();
+    pipelineCache = std::make_shared<magma::PipelineCache>(device);
 }
 
 static VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,

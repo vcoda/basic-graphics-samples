@@ -147,9 +147,8 @@ public:
     }
 
     void setupDescriptorSet()
-    {
-        // Create descriptor pool
-        const uint32_t maxDescriptorSets = 1; // One set is enough for us
+    {   // Create descriptor pool
+        constexpr uint32_t maxDescriptorSets = 1; // One set is enough for us
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
         descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,

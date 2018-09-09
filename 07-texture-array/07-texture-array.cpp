@@ -160,8 +160,7 @@ public:
                 if (MAGMA_ALIGNED(imageData))
                     layersMipData[layer].push_back(imageData);
                 else
-                {
-                    // Magma requires data to be aligned
+                {   // Magma requires data to be aligned
                     const size_t size = layerData.ctx.image_size(0, level);
                     void *alignedImageData = MAGMA_MALLOC(size);
                     memcpy(alignedImageData, imageData, size);
@@ -191,7 +190,7 @@ public:
 
     void setupDescriptorSet()
     {   // Create descriptor pool
-        const uint32_t maxDescriptorSets = 1; // One set is enough for us
+        constexpr uint32_t maxDescriptorSets = 1; // One set is enough for us
         const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
         const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
         descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,

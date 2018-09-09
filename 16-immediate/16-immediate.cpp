@@ -100,19 +100,15 @@ public:
             ir->color(1.f, 0.f, 0.f);
             ir->pointSize(3.0f);
             ir->vertex(-0.937f, 0.830f);
-
             ir->color(1.f, 1.f, 0.f);
             ir->pointSize(4.0f);
             ir->vertex(-0.828f, 0.945f);
-
             ir->color(0.f, 1.f, 0.f);
             ir->pointSize(3.0f);
             ir->vertex(-0.844f, 0.734f);
-
             ir->color(0.f, 0.f, 1.f);
             ir->pointSize(4.0f);
             ir->vertex(-0.648f, 0.797f);
-
             ir->color(0.f, 0.f, 0.f);
             ir->pointSize(3.0f);
             ir->vertex(-0.621f, 0.941f);
@@ -127,11 +123,9 @@ public:
             ir->color(1.f, 0.f, 0.f);
             ir->vertex(-0.332f, 0.961f);
             ir->vertex(-0.07f, 0.711f);
-
             ir->color(0.f, 0.f, 1.f);
             ir->vertex(-0.289f, 0.767f);
             ir->vertex(0.047f, 0.953f);
-
             ir->color(1.f, 1.f, 1.f);
             ir->vertex(0.039f, 0.781f);
             ir->vertex(0.109f, 0.906f);
@@ -214,7 +208,6 @@ public:
         }
         ir->endPrimitive();
     }
-
 
     void drawQuadStrip()
     {   // Quad strip not present in Vulkan, have to be emulated by triangle strip
