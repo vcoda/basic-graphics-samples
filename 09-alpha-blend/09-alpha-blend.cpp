@@ -150,7 +150,7 @@ public:
             mesh->getVertexInput(),
             magma::states::triangleStrip,
             rasterizationState,
-            magma::states::dontMultisample,
+            magma::states::noMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::blendNormalWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},

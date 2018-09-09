@@ -34,7 +34,7 @@ void *LinearAllocator::alloc(size_t size)
     return p;
 }
 
-void LinearAllocator::free(void *p)
+void LinearAllocator::free(void *p) noexcept
 {
     if (p)
     {
@@ -52,7 +52,7 @@ void LinearAllocator::free(void *p)
     }
 }
 
-size_t LinearAllocator::getBytesAllocated() const
+size_t LinearAllocator::getBytesAllocated() const noexcept
 {
     return bytesAllocated;
 }

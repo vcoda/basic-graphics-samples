@@ -143,7 +143,7 @@ public:
             magma::states::triangleList,
             rhs ? magma::states::fillCullNoneCCW
                 : magma::states::fillCullNoneCW,
-            magma::states::dontMultisample,
+            magma::states::noMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::dontBlendWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},

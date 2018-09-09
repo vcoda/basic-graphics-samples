@@ -207,7 +207,7 @@ public:
             mesh->getVertexInput(),
             magma::states::triangleList,
             negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,
-            magma::states::dontMultisample,
+            magma::states::noMultisample,
             magma::states::depthLessOrEqual,
             magma::states::dontBlendWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},

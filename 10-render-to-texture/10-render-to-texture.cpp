@@ -190,7 +190,7 @@ public:
             magma::states::nullVertexInput,
             magma::states::triangleStrip,
             magma::states::fillCullBackCCW,
-            magma::states::dontMultisample,
+            magma::states::noMultisample,
             magma::states::depthAlwaysDontWrite,
             magma::states::blendNormalWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
