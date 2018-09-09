@@ -146,8 +146,8 @@ public:
 
     void createMesh()
     {
-        const uint32_t slices = 16;
-        const uint32_t stacks = 128;
+        const uint32_t slices = 32;
+        const uint32_t stacks = 256;
         const float radius = 0.25f;
         mesh = std::make_unique<KnotMesh>(3, slices, stacks, radius, false, cmdBufferCopy);
     }
