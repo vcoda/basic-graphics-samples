@@ -48,7 +48,19 @@ public:
         initialize();
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         createImmediateRender();
-        
+        drawPoints();
+        drawLines();
+        drawLineStrip();
+        drawLineLoop();
+        drawPolygon();
+        drawQuads();
+        drawQuadStrip();
+        drawTriangles();
+        drawTriangleStrip();
+        drawTriangleFan();
+        recordCommandBuffer(FrontBuffer);
+        recordCommandBuffer(BackBuffer);
+        ir->reset();
     }
 
     void createImmediateRender()
@@ -78,20 +90,6 @@ public:
 
     virtual void render(uint32_t bufferIndex) override
     {
-        drawPoints();
-        drawLines();
-        drawLineStrip();
-        drawLineLoop();
-        drawPolygon();
-        drawQuads();
-        drawQuadStrip();
-        drawTriangles();
-        drawTriangleStrip();
-        drawTriangleFan();
-        recordCommandBuffer(FrontBuffer);
-        recordCommandBuffer(BackBuffer);
-        ir->reset();
-
         submitCmdBuffer(bufferIndex);
     }
 
