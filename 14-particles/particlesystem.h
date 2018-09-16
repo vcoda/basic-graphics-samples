@@ -33,7 +33,7 @@ enum class CollisionResult
     RECYCLE
 };
 
-class ParticleSystem : public Aligned<16>
+class ParticleSystem : public AlignAs<16>
 {
 public:
     struct ParticleVertex

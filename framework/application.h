@@ -11,7 +11,7 @@
 #include "platform.h"
 #include "nonCopyable.h"
 
-class IApplication : public NonCopyable, public Aligned<16>
+class IApplication : public AlignAs<16>, public NonCopyable
 {
 public:
     virtual void setWindowCaption(const std::tstring& caption) = 0;

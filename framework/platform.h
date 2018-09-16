@@ -3,12 +3,21 @@
 #include <string>
 
 template<size_t alignment>
-struct alignas(alignment) Aligned
+class alignas(alignment) AlignAs
 {
-    void *operator new(size_t size) noexcept
-        { return _mm_malloc(size, alignment); }
-    void operator delete(void *p) noexcept
-        { _mm_free(p); }
+public:
+    void *operator new(size_t size)
+    {
+        void *ptr = _mm_malloc(size, alignment);
+        if (!ptr)
+            throw std::bad_alloc();
+        return ptr;
+    }
+
+    void operator delete(void *ptr) noexcept
+    {
+        _mm_free(ptr);
+    }
 };
 
 #ifndef TEXT
