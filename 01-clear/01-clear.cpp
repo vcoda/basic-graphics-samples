@@ -37,6 +37,10 @@ public:
             renderFinished,
             waitFences[bufferIndex]);
     }
+
+#if defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
+    char padding[16];
+#endif
 };
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
