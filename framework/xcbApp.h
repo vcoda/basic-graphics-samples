@@ -24,7 +24,7 @@ protected:
 
 private:
     virtual char translateKey(int code) const override;
-    void handleEvent(const xcb_generic_event_t *event);    
+    void handleEvent(const xcb_generic_event_t *event);
     xcb_intern_atom_reply_t *getAtom(const char *name, bool shouldExists) const;
 
     xcb_intern_atom_reply_t *deleteWindow = nullptr;

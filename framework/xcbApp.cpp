@@ -8,7 +8,7 @@ XcbApp::XcbApp(const AppEntry& entry, const std::tstring& caption, uint32_t widt
 {
     std::cout << "Platform: XCB" << std::endl;
     connection = xcb_connect(nullptr, nullptr);
-    if (xcb_connection_has_error(connection)) 
+    if (xcb_connection_has_error(connection))
         throw std::runtime_error("failed to open connection to X server");
 
     // Get the first screen
@@ -27,7 +27,7 @@ XcbApp::XcbApp(const AppEntry& entry, const std::tstring& caption, uint32_t widt
 
     // Create window
     window = xcb_generate_id(connection);
-    xcb_create_window(connection, XCB_COPY_FROM_PARENT, window, screen->root, 
+    xcb_create_window(connection, XCB_COPY_FROM_PARENT, window, screen->root,
         0, 0, width, height, 0, // border width
         XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual,
         mask, values);
@@ -68,24 +68,24 @@ void XcbApp::setWindowCaption(const std::tstring& caption)
 void XcbApp::show() const
 {
     uint32_t coords[2] = {0, 0};
-    if (width < screen->width_in_pixels && 
+    if (width < screen->width_in_pixels &&
         height < screen->height_in_pixels)
     {   // Place window in the center of the desktop
         coords[0] = (screen->width_in_pixels - width) / 2;
         coords[1] = (screen->height_in_pixels - height) / 2;
     }
     xcb_map_window(connection, window);
-    xcb_configure_window(connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coords);    
+    xcb_configure_window(connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coords);
     xcb_flush(connection);
 }
 
 void XcbApp::run()
 {
     xcb_flush(connection);
-    while (!quit) 
+    while (!quit)
     {
         xcb_generic_event_t *event = xcb_poll_for_event(connection);
-        while (event) 
+        while (event)
         {
             handleEvent(event);
             free(event);

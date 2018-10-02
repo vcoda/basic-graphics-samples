@@ -129,7 +129,7 @@ void XlibApp::onMouseLButton(bool down, int x, int y)
 char XlibApp::translateKey(int code) const
 {
     switch (code)
-    {    
+    {
     case XK_Tab: return AppKey::Tab;
     case XK_Return: return AppKey::Enter;
     case XK_Escape: return AppKey::Escape;
