@@ -48,7 +48,7 @@ protected:
     std::shared_ptr<magma::Device> device;
     std::shared_ptr<magma::Swapchain> swapchain;
     std::unique_ptr<magma::InstanceExtensions> instanceExtensions;
-    std::unique_ptr<magma::DeviceExtensions> extensions;
+    std::unique_ptr<magma::PhysicalDeviceExtensions> extensions;
 
     std::shared_ptr<magma::CommandPool> commandPools[2];
     std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers;

@@ -96,8 +96,8 @@ void VulkanApp::createInstance()
     const VkPhysicalDeviceProperties& properties = physicalDevice->getProperties();
     std::cout << "Running on " << properties.deviceName << "\n";
 
-    instanceExtensions = std::make_unique<magma::InstanceExtensions>(instance);
-    extensions = std::make_unique<magma::DeviceExtensions>(physicalDevice);
+    instanceExtensions = std::make_unique<magma::InstanceExtensions>();
+    extensions = std::make_unique<magma::PhysicalDeviceExtensions>(physicalDevice);
 }
 
 void VulkanApp::createLogicalDevice()

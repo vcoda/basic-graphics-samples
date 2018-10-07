@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         app->show();
         app->run();
     }
-    catch (const magma::BadResultException& exc)
+    catch (const magma::BadResult& exc)
     {
         std::ostringstream msg;
         msg << exc.file() << "(" << exc.line() << "):" << std::endl
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             << exc.what();
         onError(msg.str(), "Vulkan");
     }
-    catch (const magma::NotImplementedException& exc)
+    catch (const magma::NotImplemented& exc)
     {
         std::ostringstream msg;
         msg << exc.file() << "(" << exc.line() << "):" << std::endl
