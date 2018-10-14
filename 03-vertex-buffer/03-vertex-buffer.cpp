@@ -60,7 +60,7 @@ public:
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
             },
-            magma::states::pos2Float_Col4UNorm,
+            magma::states::pos2FloatCol4UNorm,
             magma::states::triangleList,
             magma::states::fillCullBackCCW,
             magma::states::noMultisample,
@@ -77,7 +77,7 @@ public:
         cmdBuffer->begin();
         {
             cmdBuffer->setRenderArea(0, 0, width, height);
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], magma::clears::grayColor);
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);

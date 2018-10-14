@@ -15,7 +15,7 @@ public:
             {
                 cmdBuffer->setRenderArea(0, 0, width, height); // Render area defines clear rectangle
                 cmdBuffer->beginRenderPass(renderPass, framebuffers[i],
-                    magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f)); // Set our clear color
+                    {magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f)}); // Set our clear color
                 cmdBuffer->endRenderPass();
             }
             cmdBuffer->end();
