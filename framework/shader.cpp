@@ -6,22 +6,18 @@
 
 Shader::Shader(std::shared_ptr<magma::Device> device, const std::string& filename)
 {
-    std::ifstream file(filename,
-        std::ios::in | std::ios::binary | std::ios::ate);
+    std::ifstream file(filename, std::ios::in | std::ios::binary);
     if (!file.is_open())
     {
         const std::string msg = "failed to open file \"" + filename + "\"";
         throw std::runtime_error(msg.c_str());
     }
-    const std::streamoff size = file.tellg();
-    file.seekg(0, std::ios::beg);
-    assert(size % sizeof(uint32_t) == 0);
-    std::vector<char> bytecode(static_cast<size_t>(size));
-    file.read(bytecode.data(), size);
-    file.close();
+    std::vector<char> bytecode((std::istreambuf_iterator<char>(file)),
+        std::istreambuf_iterator<char>());
+    assert(bytecode.size() % sizeof(uint32_t) == 0);
     module = std::make_shared<magma::ShaderModule>(device,
         reinterpret_cast<const uint32_t *>(bytecode.data()),
-        static_cast<size_t>(size));
+        static_cast<size_t>(bytecode.size()));
 }
 
 VertexShader::VertexShader(std::shared_ptr<magma::Device> device, const std::string& filename,
