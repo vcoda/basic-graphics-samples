@@ -106,6 +106,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16-immediate", "16-immediat
 		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844} = {D9B732E5-C6FC-4DBB-8CF9-6E880C260844}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17-shadertoy", "17-shadertoy\17-shadertoy.vcxproj", "{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8D9D4A3E-439A-4210-8879-259B20D992CA} = {8D9D4A3E-439A-4210-8879-259B20D992CA}
+		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844} = {D9B732E5-C6FC-4DBB-8CF9-6E880C260844}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -258,6 +264,14 @@ Global
 		{C341826D-793D-463A-BF26-C2E1D38350E9}.Release|x64.Build.0 = Release|x64
 		{C341826D-793D-463A-BF26-C2E1D38350E9}.Release|x86.ActiveCfg = Release|Win32
 		{C341826D-793D-463A-BF26-C2E1D38350E9}.Release|x86.Build.0 = Release|Win32
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Debug|x64.ActiveCfg = Debug|x64
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Debug|x64.Build.0 = Debug|x64
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Debug|x86.ActiveCfg = Debug|Win32
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Debug|x86.Build.0 = Debug|Win32
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x64.ActiveCfg = Release|x64
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x64.Build.0 = Release|x64
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x86.ActiveCfg = Release|Win32
+		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
