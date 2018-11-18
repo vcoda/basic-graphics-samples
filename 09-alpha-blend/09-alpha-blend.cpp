@@ -31,8 +31,8 @@ public:
         createSampler();
         createUniformBuffers();
         setupDescriptorSet();
-        cullFrontPipeline = setupPipeline(negateViewport ? magma::states::fillCullFrontCCW : magma::states::fillCullFrontCW);
-        cullBackPipeline = setupPipeline(negateViewport ? magma::states::fillCullBackCCW : magma::states::fillCullBackCW);
+        cullFrontPipeline = setupPipeline(negateViewport ? magma::renderstates::fillCullFrontCCW : magma::renderstates::fillCullFrontCW);
+        cullBackPipeline = setupPipeline(negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW);
         recordCommandBuffer(FrontBuffer);
         recordCommandBuffer(BackBuffer);
         timer->run();
@@ -142,17 +142,17 @@ public:
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
         return std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::ShaderStage>
+            std::vector<magma::PipelineShaderStage>
             {
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "texture.o")
             },
             mesh->getVertexInput(),
-            magma::states::triangleStrip,
+            magma::renderstates::triangleStrip,
             rasterizationState,
-            magma::states::noMultisample,
-            magma::states::depthAlwaysDontWrite,
-            magma::states::blendNormalWriteRGB,
+            magma::renderstates::noMultisample,
+            magma::renderstates::depthAlwaysDontWrite,
+            magma::renderstates::blendNormalWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

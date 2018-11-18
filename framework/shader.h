@@ -6,7 +6,7 @@ namespace magma
 {
     class Device;
     class ShaderModule;
-    class ShaderStage;
+    class PipelineShaderStage;
 }
 
 class Shader
@@ -15,14 +15,14 @@ public:
     Shader(std::shared_ptr<magma::Device> device,
         const std::string& filename);
 
-    operator magma::ShaderStage&()
+    operator magma::PipelineShaderStage&()
         { return *stage; }
-    operator const magma::ShaderStage&() const
+    operator const magma::PipelineShaderStage&() const
         { return *stage; }
 
 protected:
     std::shared_ptr<magma::ShaderModule> module;
-    std::shared_ptr<magma::ShaderStage> stage;
+    std::shared_ptr<magma::PipelineShaderStage> stage;
 };
 
 class VertexShader : public Shader

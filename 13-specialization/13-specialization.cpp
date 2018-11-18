@@ -198,18 +198,18 @@ public:
 
     void setupPipeline(ShadingType shadingType)
     {
-        const std::vector<magma::ShaderStage> shaderStages = {
+        const std::vector<magma::PipelineShaderStage> shaderStages = {
             magma::VertexShaderStage(vertexShader, "main"),
             specializeFragmentStage(shadingType, "main")
         };
         auto pipeline(std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
             shaderStages,
             mesh->getVertexInput(),
-            magma::states::triangleList,
-            negateViewport ? magma::states::fillCullBackCW : magma::states::fillCullBackCCW,
-            magma::states::noMultisample,
-            magma::states::depthLessOrEqual,
-            magma::states::dontBlendWriteRGB,
+            magma::renderstates::triangleList,
+            negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
+            magma::renderstates::noMultisample,
+            magma::renderstates::depthLessOrEqual,
+            magma::renderstates::dontBlendWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass));

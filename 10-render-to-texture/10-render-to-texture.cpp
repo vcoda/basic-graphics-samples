@@ -15,9 +15,9 @@ class RenderToTextureApp : public VulkanApp
     std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
     std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
-    std::vector<magma::ShaderStage> rtShaderStages;
+    std::vector<magma::PipelineShaderStage> rtShaderStages;
 
-    std::vector<magma::ShaderStage> shaderStages;
+    std::vector<magma::PipelineShaderStage> shaderStages;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::Sampler> nearestSampler;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
@@ -167,32 +167,32 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         rtPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::ShaderStage>
+            std::vector<magma::PipelineShaderStage>
             {
                 VertexShader(device, "triangle.o"),
                 FragmentShader(device, "fill.o")
             },
-            magma::states::nullVertexInput,
-            magma::states::triangleList,
-            magma::states::fillCullBackCCW,
+            magma::renderstates::nullVertexInput,
+            magma::renderstates::triangleList,
+            magma::renderstates::fillCullBackCCW,
             magma::MultisampleState(static_cast<VkSampleCountFlagBits>(msaaSamples)),
-            magma::states::depthAlwaysDontWrite,
-            magma::states::dontBlendWriteRGB,
+            magma::renderstates::depthAlwaysDontWrite,
+            magma::renderstates::dontBlendWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             fb.renderPass);
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::ShaderStage>
+            std::vector<magma::PipelineShaderStage>
             {
                 VertexShader(device, "quad.o"),
                 FragmentShader(device, "texture.o")
             },
-            magma::states::nullVertexInput,
-            magma::states::triangleStrip,
-            magma::states::fillCullBackCCW,
-            magma::states::noMultisample,
-            magma::states::depthAlwaysDontWrite,
-            magma::states::blendNormalWriteRGB,
+            magma::renderstates::nullVertexInput,
+            magma::renderstates::triangleStrip,
+            magma::renderstates::fillCullBackCCW,
+            magma::renderstates::noMultisample,
+            magma::renderstates::depthAlwaysDontWrite,
+            magma::renderstates::blendNormalWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

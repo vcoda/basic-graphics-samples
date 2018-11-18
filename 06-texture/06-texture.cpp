@@ -176,17 +176,17 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::ShaderStage>
+            std::vector<magma::PipelineShaderStage>
             {
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "multitexture.o")
             },
-            magma::states::pos2FloatTex2Float,
-            magma::states::triangleStrip,
-            magma::states::fillCullBackCCW,
-            magma::states::noMultisample,
-            magma::states::depthAlwaysDontWrite,
-            magma::states::dontBlendWriteRGB,
+            magma::renderstates::pos2FloatTex2Float,
+            magma::renderstates::triangleStrip,
+            magma::renderstates::fillCullBackCCW,
+            magma::renderstates::noMultisample,
+            magma::renderstates::depthAlwaysDontWrite,
+            magma::renderstates::dontBlendWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

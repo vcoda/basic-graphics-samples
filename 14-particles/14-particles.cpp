@@ -132,17 +132,17 @@ public:
             }
         );
         pipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::ShaderStage>
+            std::vector<magma::PipelineShaderStage>
             {
                 VertexShader(device, "pointSize.o"),
                 FragmentShader(device, negateViewport ? "particleNeg.o" : "particle.o")
             },
             vertexInput,
-            magma::states::pointList,
-            negateViewport ? magma::states::lineCullBackCW : magma::states::lineCullBackCCW,
-            magma::states::noMultisample,
-            magma::states::depthAlwaysDontWrite,
-            magma::states::blendNormalWriteRGB,
+            magma::renderstates::pointList,
+            negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
+            magma::renderstates::noMultisample,
+            magma::renderstates::depthAlwaysDontWrite,
+            magma::renderstates::blendNormalWriteRGB,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);
