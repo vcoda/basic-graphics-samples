@@ -204,8 +204,16 @@ Compute shaders are core part of Vulkan. This sample performs arithmetic computa
 ### [16 - Immediate mode](16-immediate/)
 <img src="./screenshots/16.jpg" height="128px" align="left">
 Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was useful to (quickly) draw something on the screen.
-This sample shows how to use Magma helper to draw different primitives without VB mapping, data copy, state management etc.
+This sample shows how to use Magma's immediate render to draw different primitives without VB mapping, data copy, state management etc.
 <br><br><br><br>
+
+### [17 - ShaderToy](17-shadetoy/)
+<img src="./screenshots/17.jpg" height="128px" align="left">
+Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan uses pre-compiled SPIR-V bytecode.
+This sample shows how to use [shaderc](https://github.com/google/shaderc) compiler from Google to compile GLSL shaders on fly 
+and apply changes immediately, which may be useful for shader development. Example fragment shader taken from
+[Simple path tracer](https://www.shadertoy.com/view/4tl3z4).
+<br><br>
 
 ## Known issues
 
