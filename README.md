@@ -210,9 +210,9 @@ This sample shows how to use Magma's immediate render to draw different primitiv
 ### [17 - ShaderToy](17-shadetoy/)
 <img src="./screenshots/17.jpg" height="128px" align="left">
 Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan uses pre-compiled SPIR-V bytecode.
-This sample shows how to use [shaderc](https://github.com/google/shaderc) compiler from Google to compile GLSL shaders on fly 
-and apply changes immediately, which may be useful for shader development. Example fragment shader taken from
-[Simple path tracer](https://www.shadertoy.com/view/4tl3z4).
+This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
+and apply changes immediately, which may be useful for shader development. Example fragment shader taken from 
+https://www.shadertoy.com/view/4tl3z4 (written by Reinder Nijhofftaken).
 <br><br>
 
 ## Known issues
