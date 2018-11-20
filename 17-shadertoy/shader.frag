@@ -61,11 +61,11 @@ float iSphere( in vec3 ro, in vec3 rd, in vec4 sph ) {
     float h = b * b - c;
     if (h < 0.0) return -1.0;
 
-	float s = sqrt(h);
-	float t1 = -b - s;
-	float t2 = -b + s;
+    float s = sqrt(h);
+    float t1 = -b - s;
+    float t2 = -b + s;
 
-	return t1 < 0.0 ? t2 : t1;
+    return t1 < 0.0 ? t2 : t1;
 }
 
 vec3 nPlane( in vec3 ro, in vec4 obj ) {
@@ -81,16 +81,16 @@ float iPlane( in vec3 ro, in vec3 rd, in vec4 pla ) {
 //-----------------------------------------------------
 
 vec3 cosWeightedRandomHemisphereDirection( const vec3 n, inout float seed ) {
-  	vec2 r = hash2(seed);
+    vec2 r = hash2(seed);
 
-	vec3  uu = normalize( cross( n, vec3(0.0,1.0,1.0) ) );
-	vec3  vv = cross( uu, n );
+    vec3  uu = normalize( cross( n, vec3(0.0,1.0,1.0) ) );
+    vec3  vv = cross( uu, n );
 
-	float ra = sqrt(r.y);
-	float rx = ra*cos(6.2831*r.x);
-	float ry = ra*sin(6.2831*r.x);
-	float rz = sqrt( 1.0-r.y );
-	vec3  rr = vec3( rx*uu + ry*vv + rz*n );
+    float ra = sqrt(r.y);
+    float rx = ra*cos(6.2831*r.x);
+    float ry = ra*sin(6.2831*r.x);
+    float rz = sqrt( 1.0-r.y );
+    vec3  rr = vec3( rx*uu + ry*vv + rz*n );
 
     return normalize( rr );
 }
@@ -98,12 +98,12 @@ vec3 cosWeightedRandomHemisphereDirection( const vec3 n, inout float seed ) {
 vec3 randomSphereDirection(inout float seed) {
     vec2 h = hash2(seed) * vec2(2.,6.28318530718)-vec2(1,0);
     float phi = h.y;
-	return vec3(sqrt(1.-h.x*h.x)*vec2(sin(phi),cos(phi)),h.x);
+    return vec3(sqrt(1.-h.x*h.x)*vec2(sin(phi),cos(phi)),h.x);
 }
 
 vec3 randomHemisphereDirection( const vec3 n, inout float seed ) {
-	vec3 dr = randomSphereDirection(seed);
-	return dot(dr,n) * dr;
+    vec3 dr = randomSphereDirection(seed);
+    return dot(dr,n) * dr;
 }
 
 //-----------------------------------------------------
@@ -113,7 +113,7 @@ vec3 randomHemisphereDirection( const vec3 n, inout float seed ) {
 vec4 lightSphere;
 
 void initLightSphere( float time ) {
-	lightSphere = vec4( 3.0+2.*sin(time),2.8+2.*sin(time*0.9),3.0+4.*cos(time*0.7), .5 );
+    lightSphere = vec4( 3.0+2.*sin(time),2.8+2.*sin(time*0.9),3.0+4.*cos(time*0.7), .5 );
 }
 
 vec3 sampleLight( const in vec3 ro, inout float seed ) {
@@ -126,18 +126,18 @@ vec3 sampleLight( const in vec3 ro, inout float seed ) {
 //-----------------------------------------------------
 
 vec2 intersect( in vec3 ro, in vec3 rd, inout vec3 normal ) {
-	vec2 res = vec2( 1e20, -1.0 );
+    vec2 res = vec2( 1e20, -1.0 );
     float t;
 
-	t = iPlane( ro, rd, vec4( 0.0, 1.0, 0.0,0.0 ) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = vec3( 0., 1., 0.); }
-	t = iPlane( ro, rd, vec4( 0.0, 0.0,-1.0,8.0 ) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = vec3( 0., 0.,-1.); }
+    t = iPlane( ro, rd, vec4( 0.0, 1.0, 0.0,0.0 ) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = vec3( 0., 1., 0.); }
+    t = iPlane( ro, rd, vec4( 0.0, 0.0,-1.0,8.0 ) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = vec3( 0., 0.,-1.); }
     t = iPlane( ro, rd, vec4( 1.0, 0.0, 0.0,0.0 ) ); if( t>eps && t<res.x ) { res = vec2( t, 2. ); normal = vec3( 1., 0., 0.); }
 #ifdef FULLBOX
     t = iPlane( ro, rd, vec4( 0.0,-1.0, 0.0,5.49) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = vec3( 0., -1., 0.); }
     t = iPlane( ro, rd, vec4(-1.0, 0.0, 0.0,5.59) ); if( t>eps && t<res.x ) { res = vec2( t, 3. ); normal = vec3(-1., 0., 0.); }
 #endif
 
-	t = iSphere( ro, rd, vec4( 1.5,1.0, 2.7, 1.0) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = nSphere( ro+t*rd, vec4( 1.5,1.0, 2.7,1.0) ); }
+    t = iSphere( ro, rd, vec4( 1.5,1.0, 2.7, 1.0) ); if( t>eps && t<res.x ) { res = vec2( t, 1. ); normal = nSphere( ro+t*rd, vec4( 1.5,1.0, 2.7,1.0) ); }
     t = iSphere( ro, rd, vec4( 4.0,1.0, 4.0, 1.0) ); if( t>eps && t<res.x ) { res = vec2( t, 6. ); normal = nSphere( ro+t*rd, vec4( 4.0,1.0, 4.0,1.0) ); }
     t = iSphere( ro, rd, lightSphere ); if( t>eps && t<res.x ) { res = vec2( t, 0.0 );  normal = nSphere( ro+t*rd, lightSphere ); }
 
@@ -147,7 +147,7 @@ vec2 intersect( in vec3 ro, in vec3 rd, inout vec3 normal ) {
 bool intersectShadow( in vec3 ro, in vec3 rd, in float dist ) {
     float t;
 
-	t = iSphere( ro, rd, vec4( 1.5,1.0, 2.7,1.0) );  if( t>eps && t<dist ) { return true; }
+    t = iSphere( ro, rd, vec4( 1.5,1.0, 2.7,1.0) );  if( t>eps && t<dist ) { return true; }
     t = iSphere( ro, rd, vec4( 4.0,1.0, 4.0,1.0) );  if( t>eps && t<dist ) { return true; }
 
     return false; // optimisation: planes don't cast shadows in this scene
@@ -158,12 +158,12 @@ bool intersectShadow( in vec3 ro, in vec3 rd, in float dist ) {
 //-----------------------------------------------------
 
 vec3 matColor( const in float mat ) {
-	vec3 nor = vec3(0., 0.95, 0.);
+    vec3 nor = vec3(0., 0.95, 0.);
 
-	if( mat<3.5 ) nor = REDCOLOR;
+    if( mat<3.5 ) nor = REDCOLOR;
     if( mat<2.5 ) nor = GREENCOLOR;
-	if( mat<1.5 ) nor = WHITECOLOR;
-	if( mat<0.5 ) nor = LIGHTCOLOR;
+    if( mat<1.5 ) nor = WHITECOLOR;
+    if( mat<0.5 ) nor = LIGHTCOLOR;
 
     return nor;
 }
@@ -201,7 +201,7 @@ vec3 getBRDFRay( in vec3 n, const in vec3 rd, const in float m, inout bool specu
         }
 
         float r0 = (n1-n2)/(n1+n2); r0 *= r0;
-		float fresnel = r0 + (1.-r0) * pow(1.0-abs(ndotr),5.);
+        float fresnel = r0 + (1.-r0) * pow(1.0-abs(ndotr),5.);
 
         vec3 ref;
 
@@ -212,7 +212,7 @@ vec3 getBRDFRay( in vec3 n, const in vec3 rd, const in float m, inout bool specu
         }
 
         return ref; // normalize( ref + 0.1 * r );
-	}
+    }
 }
 
 //-----------------------------------------------------
@@ -235,7 +235,7 @@ vec3 traceEyePath( in vec3 ro, in vec3 rd, const in bool directLightSampling, in
 
         if( matIsLight( res.y ) ) {
             if( directLightSampling ) {
-            	if( specularBounce ) tcol += fcol*LIGHTCOLOR;
+                if( specularBounce ) tcol += fcol*LIGHTCOLOR;
             } else {
                 tcol += fcol*LIGHTCOLOR;
             }
@@ -251,7 +251,7 @@ vec3 traceEyePath( in vec3 ro, in vec3 rd, const in bool directLightSampling, in
         vec3 ld = sampleLight( ro, seed ) - ro;
 
         if( directLightSampling ) {
-			vec3 nld = normalize(ld);
+            vec3 nld = normalize(ld);
             if( !specularBounce && j < EYEPATHLENGTH-1 && !intersectShadow( ro, nld, length(ld)) ) {
 
                 float cos_a_max = sqrt(1. - clamp(lightSphere.w * lightSphere.w / dot(lightSphere.xyz-ro, lightSphere.xyz-ro), 0., 1.));
@@ -271,9 +271,9 @@ vec3 traceEyePath( in vec3 ro, in vec3 rd, const in bool directLightSampling, in
 void main() {
     vec4 fragCoord = gl_FragCoord;
     fragCoord.y = iResolution.y - gl_FragCoord.y; // flip in Vulkan
-	vec2 q = fragCoord.xy / iResolution.xy;
+    vec2 q = fragCoord.xy / iResolution.xy;
 
-	float splitCoord = (iMouse.x == 0.0) ? iResolution.x/2. + iResolution.x*cos(iTime*.5) : iMouse.x;
+    float splitCoord = (iMouse.x == 0.0) ? iResolution.x/2. + iResolution.x*cos(iTime*.5) : iMouse.x;
     bool directLightSampling = fragCoord.x < splitCoord;
 
     //-----------------------------------------------------
@@ -306,12 +306,12 @@ void main() {
     for( int a=0; a<SAMPLES; a++ ) {
 
         vec2 rpof = 2.*(hash2(seed)-vec2(0.5)) / iResolution.y;
-	    vec3 rd = normalize( (p.x+rpof.x)*uu + (p.y+rpof.y)*vv + 3.0*ww );
+        vec3 rd = normalize( (p.x+rpof.x)*uu + (p.y+rpof.y)*vv + 3.0*ww );
 
 #ifdef DOF
-	    vec3 fp = ro + rd * 12.0;
-   		vec3 rof = ro + (uu*(hash1(seed)-0.5) + vv*(hash1(seed)-0.5))*0.125;
-    	rd = normalize( fp - rof );
+        vec3 fp = ro + rd * 12.0;
+        vec3 rof = ro + (uu*(hash1(seed)-0.5) + vv*(hash1(seed)-0.5))*0.125;
+        rd = normalize( fp - rof );
 #else
         vec3 rof = ro;
 #endif
@@ -332,12 +332,12 @@ void main() {
     tot /= float(SAMPLES);
 
 #ifdef SHOWSPLITLINE
-	if (abs(fragCoord.x - splitCoord) < 1.0) {
-		tot.x = 1.0;
-	}
+    if (abs(fragCoord.x - splitCoord) < 1.0) {
+        tot.x = 1.0;
+    }
 #endif
 
-	tot = pow( clamp(tot,0.0,1.0), vec3(0.45) );
+    tot = pow( clamp(tot,0.0,1.0), vec3(0.45) );
 
     fragColor = vec4( tot, 1.0 );
 }
