@@ -207,7 +207,7 @@ Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was us
 This sample shows how to use Magma's immediate render to draw different primitives without VB mapping, data copy, state management etc.
 <br><br><br><br>
 
-### [17 - ShaderToy](17-shadetoy/)
+### [17 - ShaderToy](17-shadertoy/)
 <img src="./screenshots/17.jpg" height="128px" align="left">
 Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan uses pre-compiled SPIR-V bytecode.
 This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
