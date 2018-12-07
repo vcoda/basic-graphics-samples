@@ -122,6 +122,7 @@ public:
             utilities::aligned_vector<char> buffer;
             gliml::context ctx;
         };
+
         std::vector<TextureData> arrayData(filenames.size());
         const uint32_t layerCount = static_cast<uint32_t>(filenames.size());
         for (uint32_t layer = 0; layer < layerCount; ++layer)
@@ -139,16 +140,9 @@ public:
         // Setup texture data description
         // The following should be identical between all layers!
         const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<VkExtent2D> mipExtents;
         std::vector<VkDeviceSize> mipSizes;
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
-        {
-            VkExtent2D extent;
-            extent.width = static_cast<uint32_t>(ctx.image_width(0, level));
-            extent.height = static_cast<uint32_t>(ctx.image_height(0, level));
-            mipExtents.push_back(extent);
             mipSizes.push_back(ctx.image_size(0, level));
-        }
         std::vector<std::vector<const void *>> layersMipData(layerCount);
         std::vector<std::shared_ptr<void>> toBeFreed;
         for (uint32_t layer = 0; layer < layerCount; ++layer)
@@ -171,7 +165,8 @@ public:
         }
 
         // Upload texture array data
-        imageArray = std::make_shared<magma::Image2DArray>(device, format, mipExtents, layersMipData, mipSizes, cmdImageCopy);
+        const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
+        imageArray = std::make_shared<magma::Image2DArray>(device, format, extent, layersMipData, mipSizes, cmdImageCopy);
         // Create image view array for shader
         imageViewArray = std::make_shared<magma::ImageView>(imageArray);
     }

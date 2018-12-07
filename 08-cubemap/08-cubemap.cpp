@@ -99,15 +99,10 @@ public:
             throw std::runtime_error("failed to load DDS texture");
         if (ctx.texture_target() != GLIML_GL_TEXTURE_CUBE_MAP)
             throw std::runtime_error("not a cubemap texture");
-
         const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<uint32_t> mipDimensions;
         std::vector<VkDeviceSize> mipSizes;
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
-        {
-            mipDimensions.push_back(static_cast<uint32_t>(ctx.image_width(0, level)));
             mipSizes.push_back(ctx.image_size(0, level));
-        }
         std::vector<const void *> cubeMipData[6];
         for (int face = 0; face < ctx.num_faces(); ++face)
         {
@@ -118,9 +113,9 @@ public:
                 cubeMipData[face].push_back(imageData);
             }
         }
-
         std::unique_ptr<TextureCube> texture(std::make_unique<TextureCube>());
-        texture->image = std::make_shared<magma::ImageCube>(device, format, mipDimensions, cubeMipData, mipSizes, cmdImageCopy);
+        const uint32_t cubeDimension = static_cast<uint32_t>(ctx.image_width(0, 0));
+        texture->image = std::make_shared<magma::ImageCube>(device, format, cubeDimension, cubeMipData, mipSizes, cmdImageCopy);
         texture->imageView = std::make_shared<magma::ImageView>(texture->image);
         return texture;
     }

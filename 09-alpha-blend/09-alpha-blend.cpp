@@ -85,25 +85,21 @@ public:
         ctx.enable_dxt(true);
         if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
             throw std::runtime_error("failed to load DDS texture");
-
         // Setup texture data description
         const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<VkExtent2D> mipExtents;
         std::vector<const void *> mipData;
         std::vector<VkDeviceSize> mipSizes;
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {
-            VkExtent2D mipExtent;
-            mipExtent.width = ctx.image_width(0, level);
-            mipExtent.height = ctx.image_height(0, level);
-            mipExtents.push_back(mipExtent);
             const void *imageData = ctx.image_data(0, level);
             MAGMA_ASSERT(MAGMA_ALIGNED(imageData));
             mipData.push_back(imageData);
             mipSizes.push_back(ctx.image_size(0, level));
         }
-
-        image = std::make_shared<magma::Image2D>(device, format, mipExtents, mipData, mipSizes, cmdImageCopy);
+        // Upload texture data
+        const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
+        image = std::make_shared<magma::Image2D>(device, format, extent, mipData, mipSizes, cmdImageCopy);
+        // Create image view for shader
         imageView = std::make_shared<magma::ImageView>(image);
     }
 

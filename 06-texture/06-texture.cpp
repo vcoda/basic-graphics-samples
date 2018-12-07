@@ -77,27 +77,21 @@ public:
         ctx.enable_dxt(true);
         if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
             throw std::runtime_error("failed to load DDS texture");
-
         // Setup texture data description
         const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<VkExtent2D> mipExtents;
         std::vector<const void *> mipData;
         std::vector<VkDeviceSize> mipSizes;
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {
-            VkExtent2D mipExtent;
-            mipExtent.width = ctx.image_width(0, level);
-            mipExtent.height = ctx.image_height(0, level);
-            mipExtents.push_back(mipExtent);
             const void *imageData = ctx.image_data(0, level);
             MAGMA_ASSERT(MAGMA_ALIGNED(imageData));
             mipData.push_back(imageData);
             mipSizes.push_back(ctx.image_size(0, level));
         }
-
-        Texture texture;
         // Upload texture data
-        texture.image = std::make_shared<magma::Image2D>(device, format, mipExtents, mipData, mipSizes, cmdImageCopy);
+        const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
+        Texture texture;
+        texture.image = std::make_shared<magma::Image2D>(device, format, extent, mipData, mipSizes, cmdImageCopy);
         // Create image view for shader
         texture.imageView = std::make_shared<magma::ImageView>(texture.image);
         return texture;
@@ -115,8 +109,9 @@ public:
             rapid::float2 position;
             rapid::float2 uv;
         };
-        const float width = static_cast<float>(diffuse.image->getExtent().width);
-        const float height = static_cast<float>(diffuse.image->getExtent().height);
+        const auto extent = diffuse.image->getMipExtent(0);
+        const float width = static_cast<float>(extent.width);
+        const float height = static_cast<float>(extent.height);
         const float hw = 0.5f;
         const float hh = height/width * hw;
         const std::vector<Vertex> vertices = {
