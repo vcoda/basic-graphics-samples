@@ -1,3 +1,4 @@
+#include <fstream>
 #include "../framework/vulkanApp.h"
 #include "../framework/cubeMesh.h"
 #include "../framework/utilities.h"
@@ -12,7 +13,7 @@ class TextureArrayApp : public VulkanApp
 
     std::unique_ptr<CubeMesh> mesh;
     std::shared_ptr<magma::Image2DArray> imageArray;
-    std::shared_ptr<magma::ImageView> imageViewArray;
+    std::shared_ptr<magma::ImageView> imageArrayView;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
     std::shared_ptr<magma::UniformBuffer<TexParameters>> uniformTexParameters;
@@ -34,7 +35,7 @@ public:
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
-        loadTextureArray({"dice1.dds" , "dice2.dds", "dice3.dds", "dice4.dds", "dice5.dds", "dice6.dds"});
+        loadDDSTextureArray({"dice1.dds" , "dice2.dds", "dice3.dds", "dice4.dds", "dice5.dds", "dice6.dds"});
         createSampler();
         createUniformBuffers();
         setupDescriptorSet();
@@ -115,60 +116,72 @@ public:
         mesh = std::make_unique<CubeMesh>(cmdBufferCopy);
     }
 
-    void loadTextureArray(const std::vector<std::string>& filenames)
+    void loadDDSTextureArray(const std::vector<std::string>& filenames)
     {
-        struct TextureData
-        {
-            utilities::aligned_vector<char> buffer;
-            gliml::context ctx;
-        };
-
-        std::vector<TextureData> arrayData(filenames.size());
-        const uint32_t layerCount = static_cast<uint32_t>(filenames.size());
-        for (uint32_t layer = 0; layer < layerCount; ++layer)
-        {
-            TextureData& layerData = arrayData[layer];
-            utilities::aligned_vector<char>& buffer = layerData.buffer;
-            buffer = utilities::loadBinaryFile("textures/" + filenames[layer]);
-            layerData.ctx.enable_dxt(true);
-            if (!layerData.ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
-                throw std::runtime_error("failed to load DDS texture");
+        std::vector<std::shared_ptr<std::ifstream>> files;
+        std::streamoff totalSize = 0;
+        for (const std::string& filename : filenames)
+        {   // Open binary stream
+            auto file = std::make_shared<std::ifstream>("textures/" + filename, std::ios::in | std::ios::binary | std::ios::ate);
+            if (!file->is_open())
+                throw std::runtime_error("failed to open file \"" + filename + "\"");
+            totalSize += file->tellg();
+            files.push_back(file);
         }
-
-        const gliml::context& ctx = arrayData[0].ctx;
-
-        // Setup texture data description
-        // The following should be identical between all layers!
-        const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<VkDeviceSize> mipSizes;
-        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
-            mipSizes.push_back(ctx.image_size(0, level));
-        std::vector<std::vector<const void *>> layersMipData(layerCount);
-        std::vector<std::shared_ptr<void>> toBeFreed;
-        for (uint32_t layer = 0; layer < layerCount; ++layer)
-        {
-            TextureData& layerData = arrayData[layer];
-            for (int level = 0; level < ctx.num_mipmaps(0); ++level)
+        std::vector<gliml::context> ctxArray;
+        std::vector<VkDeviceSize> baseMipOffsets;
+        std::shared_ptr<magma::Buffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, totalSize);
+        magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
+        {   // Read all data to single buffer
+            for (auto& file : files)
             {
-                const void *imageData = layerData.ctx.image_data(0, level);
-                if (MAGMA_ALIGNED(imageData))
-                    layersMipData[layer].push_back(imageData);
-                else
-                {   // Magma requires data to be aligned
-                    const size_t size = layerData.ctx.image_size(0, level);
-                    void *alignedImageData = MAGMA_MALLOC(size);
-                    memcpy(alignedImageData, imageData, size);
-                    layersMipData[layer].push_back(alignedImageData);
-                    toBeFreed.push_back(std::shared_ptr<void>(alignedImageData, [](void* p) {MAGMA_FREE(p);}));
-                }
+                const std::streamoff size = file->tellg();
+                file->seekg(0, std::ios::beg);
+                file->read(reinterpret_cast<char *>(data), size);
+                file->close();
+                gliml::context ctx;
+                ctx.enable_dxt(true);
+                if (!ctx.load(data, static_cast<unsigned>(size)))
+                    throw std::runtime_error("failed to load DDS texture");
+                ctxArray.push_back(ctx);
+                // Skip DDS header
+                baseMipOffsets.push_back(reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data); 
+                data += size;
             }
+        });
+        const VkFormat format = utilities::getBCFormat(ctxArray.front());
+        const VkExtent2D extent = {ctxArray.front().image_width(0, 0), ctxArray.front().image_height(0, 0)};
+        // Assert that all files have the same format and dimensions
+        for (size_t i = 1; i < ctxArray.size(); ++i)
+        {
+            const gliml::context& ctx = ctxArray[i];
+            MAGMA_ASSERT(utilities::getBCFormat(ctx) == format);
+            MAGMA_ASSERT(static_cast<uint32_t>(ctx.image_width(0, 0)) == extent.width);
+            MAGMA_ASSERT(static_cast<uint32_t>(ctx.image_height(0, 0)) == extent.height);
         }
-
-        // Upload texture array data
-        const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
-        imageArray = std::make_shared<magma::Image2DArray>(device, format, extent, layersMipData, mipSizes, cmdImageCopy);
-        // Create image view array for shader
-        imageViewArray = std::make_shared<magma::ImageView>(imageArray);
+        // Setup memory layout in transfer buffer
+        std::vector<VkDeviceSize> mipOffsets;
+        VkDeviceSize lastMipSize = 0;
+        uint32_t arrayIndex = 0;
+        for (const auto& ctx : ctxArray)
+        {   // Take into account DDS header and last mip level of previous mipmap chain
+            mipOffsets.push_back(baseMipOffsets[arrayIndex] + lastMipSize);
+            const int mipLevels = ctx.num_mipmaps(0);
+            for (int level = 1; level < mipLevels; ++level)
+            {   // Compute relative offset
+                const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
+                mipOffsets.push_back(mipOffset);
+            }
+            lastMipSize = ctx.image_size(0, mipLevels - 1);
+            ++arrayIndex;
+        }
+        // Upload texture array data from buffer
+        imageArray = std::make_shared<magma::Image2DArray>(device, format, extent, 
+            static_cast<uint32_t>(ctxArray.front().num_mipmaps(0)), // mipLevels
+            static_cast<uint32_t>(ctxArray.size()), // arrayLayers
+            buffer, 0, mipOffsets, cmdImageCopy);
+        // Create image view for pixel shader
+        imageArrayView = std::make_shared<magma::ImageView>(imageArray);
     }
 
     void createSampler()
@@ -206,7 +219,7 @@ public:
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformWorldViewProj);
         descriptorSet->update(1, uniformTexParameters);
-        descriptorSet->update(2, imageViewArray, anisotropicSampler);
+        descriptorSet->update(2, imageArrayView, anisotropicSampler);
     }
 
     void setupPipeline()

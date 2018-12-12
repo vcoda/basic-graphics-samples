@@ -1,3 +1,4 @@
+#include <fstream>
 #include "../framework/vulkanApp.h"
 #include "../framework/utilities.h"
 
@@ -34,8 +35,8 @@ public:
         VulkanApp(entry, TEXT("06 - Texture"), 512, 512)
     {
         initialize();
-        diffuse = loadTexture("brick.dds");
-        lightmap = loadTexture("spot.dds");
+        diffuse = loadDDSTexture("brick.dds");
+        lightmap = loadDDSTexture2("spot.dds");
         createSampler();
         createVertexBuffer();
         createUniformBuffer();
@@ -70,31 +71,40 @@ public:
         });
     }
 
-    Texture loadTexture(const std::string& filename)
+    Texture loadDDSTexture(const std::string& filename)
     {
-        utilities::aligned_vector<char> buffer = utilities::loadBinaryFile(filename);
+        std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
+        if (!file.is_open())
+            throw std::runtime_error("failed to open file \"" + filename + "\"");
+        const std::streamoff size = file.tellg();
+        file.seekg(0, std::ios::beg);
         gliml::context ctx;
-        ctx.enable_dxt(true);
-        if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
-            throw std::runtime_error("failed to load DDS texture");
+        VkDeviceSize baseMipOffset = 0;
+        std::shared_ptr<magma::Buffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
+        magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
+        {   // Read data to buffer
+            file.read(reinterpret_cast<char *>(data), size);
+            file.close();
+            ctx.enable_dxt(true);
+            if (!ctx.load(data, static_cast<unsigned>(size)))
+                throw std::runtime_error("failed to load DDS texture");
+            // Skip DDS header
+            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data; 
+        });
         // Setup texture data description
         const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<const void *> mipData;
-        std::vector<VkDeviceSize> mipSizes;
-        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
-        {
-            const void *imageData = ctx.image_data(0, level);
-            MAGMA_ASSERT(MAGMA_ALIGNED(imageData));
-            mipData.push_back(imageData);
-            mipSizes.push_back(ctx.image_size(0, level));
-        }
-        // Upload texture data
         const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
-        Texture texture;
-        texture.image = std::make_shared<magma::Image2D>(device, format, extent, mipData, mipSizes, cmdImageCopy);
+        std::vector<VkDeviceSize> mipOffsets(1, 0);
+        for (int level = 1; level < ctx.num_mipmaps(0); ++level)
+        {   // Compute relative offset
+            const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
+            mipOffsets.push_back(mipOffset);
+        }
+        // Upload texture data from buffer
+        auto image = std::make_shared<magma::Image2D>(device, format, extent, buffer, baseMipOffset, mipOffsets, cmdImageCopy);
         // Create image view for shader
-        texture.imageView = std::make_shared<magma::ImageView>(texture.image);
-        return texture;
+        auto imageView = std::make_shared<magma::ImageView>(image);
+        return Texture{image, imageView};
     }
 
     void createSampler()
