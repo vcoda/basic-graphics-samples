@@ -13,6 +13,7 @@ class TextureApp : public VulkanApp
 
     struct alignas(16) UniformBlock
     {
+        float lod;
         bool multitexture;
     };
 
@@ -28,6 +29,7 @@ class TextureApp : public VulkanApp
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
+    float lod = 0.f;
     bool multitexture = true;
 
 public:
@@ -36,7 +38,7 @@ public:
     {
         initialize();
         diffuse = loadDDSTexture("brick.dds");
-        lightmap = loadDDSTexture2("spot.dds");
+        lightmap = loadDDSTexture("spot.dds");
         createSampler();
         createVertexBuffer();
         createUniformBuffer();
@@ -55,18 +57,33 @@ public:
     {
         switch (key)
         {
+        case AppKey::PgUp:
+            if (lod < diffuse.image->getMipLevels() - 1)
+            {
+                lod += 1.f;
+                updateUniforms();
+            }
+            break;
+        case AppKey::PgDn:
+            if (lod > 0.f)
+            {
+                lod -= 1.f;
+                updateUniforms();
+            }
+            break;
         case AppKey::Space:
             multitexture = !multitexture;
-            updateUniform();
+            updateUniforms();
             break;
         }
         VulkanApp::onKeyDown(key, repeat, flags);
     }
 
-    void updateUniform()
+    void updateUniforms()
     {
         magma::helpers::mapScoped<UniformBlock>(uniformBuffer, true, [this](auto *block)
         {
+            block->lod = lod;
             block->multitexture = multitexture;
         });
     }
@@ -148,7 +165,7 @@ public:
     void createUniformBuffer()
     {
         uniformBuffer = std::make_shared<magma::UniformBuffer<UniformBlock>>(device);
-        updateUniform();
+        updateUniforms();
     }
 
     void setupDescriptorSet()

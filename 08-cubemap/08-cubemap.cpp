@@ -1,3 +1,4 @@
+#include <fstream>
 #include "../framework/vulkanApp.h"
 #include "../framework/bezierMesh.h"
 #include "../framework/utilities.h"
@@ -20,8 +21,9 @@ class CubeMapApp : public VulkanApp
     };
 
     std::unique_ptr<BezierPatchMesh> mesh;
-    std::unique_ptr<TextureCube> diffuse;
-    std::unique_ptr<TextureCube> specular;
+    TextureCube diffuse;
+    TextureCube specular;
+
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<TransformMatrices>> uniformTransforms;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
@@ -42,8 +44,8 @@ public:
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
-        diffuse = loadCubeMap("diff.dds");
-        specular = loadCubeMap("spec.dds");
+        diffuse = loadDDSCubeMap("diff.dds");
+        specular = loadDDSCubeMap("spec.dds");
         createSampler();
         createUniformBuffer();
         setupDescriptorSet();
@@ -90,34 +92,47 @@ public:
         mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 
-    std::unique_ptr<TextureCube> loadCubeMap(const std::string& filename)
+    TextureCube loadDDSCubeMap(const std::string& filename)
     {
-        utilities::aligned_vector<char> buffer = utilities::loadBinaryFile(filename);
+        std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
+        if (!file.is_open())
+            throw std::runtime_error("failed to open file \"" + filename + "\"");
+        const std::streamoff size = file.tellg();
+        file.seekg(0, std::ios::beg);
         gliml::context ctx;
-        ctx.enable_dxt(true);
-        if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
-            throw std::runtime_error("failed to load DDS texture");
-        if (ctx.texture_target() != GLIML_GL_TEXTURE_CUBE_MAP)
-            throw std::runtime_error("not a cubemap texture");
+        VkDeviceSize baseMipOffset = 0;
+        // Allocate transfer buffer
+        std::shared_ptr<magma::Buffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
+        magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
+        {   // Read data from file
+            file.read(reinterpret_cast<char *>(data), size);
+            ctx.enable_dxt(true);
+            if (!ctx.load(data, static_cast<unsigned>(size)))
+                throw std::runtime_error("failed to load DDS texture");
+            // Skip DDS header
+            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data; 
+        });
+        // Setup texture data description
         const VkFormat format = utilities::getBCFormat(ctx);
-        std::vector<VkDeviceSize> mipSizes;
-        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
-            mipSizes.push_back(ctx.image_size(0, level));
-        std::vector<const void *> cubeMipData[6];
+        const uint32_t dimension = ctx.image_width(0, 0);
+        magma::ImageMipmapLayout mipOffsets;
+        VkDeviceSize lastMipSize = 0;
         for (int face = 0; face < ctx.num_faces(); ++face)
         {
-            for (int level = 0; level < ctx.num_mipmaps(face); ++level)
-            {
-                const void *imageData = ctx.image_data(face, level);
-                MAGMA_ASSERT(MAGMA_ALIGNED(imageData));
-                cubeMipData[face].push_back(imageData);
+            mipOffsets.push_back(lastMipSize);
+            const int mipLevels = ctx.num_mipmaps(face);
+            for (int level = 1; level < mipLevels; ++level)
+            {   // Compute relative offset
+                const intptr_t mipOffset = (const uint8_t *)ctx.image_data(face, level) - (const uint8_t *)ctx.image_data(face, level - 1);
+                mipOffsets.push_back(mipOffset);
             }
+            lastMipSize = ctx.image_size(face, mipLevels - 1);
         }
-        std::unique_ptr<TextureCube> texture(std::make_unique<TextureCube>());
-        const uint32_t cubeDimension = static_cast<uint32_t>(ctx.image_width(0, 0));
-        texture->image = std::make_shared<magma::ImageCube>(device, format, cubeDimension, cubeMipData, mipSizes, cmdImageCopy);
-        texture->imageView = std::make_shared<magma::ImageView>(texture->image);
-        return texture;
+        // Upload texture data from buffer
+        auto image = std::make_shared<magma::ImageCube>(device, format, dimension, ctx.num_mipmaps(0), buffer, baseMipOffset, mipOffsets, cmdImageCopy);
+        // Create image view for fragment shader
+        auto imageView = std::make_shared<magma::ImageView>(image);
+        return TextureCube{image, imageView};
     }
 
     void createSampler()
@@ -149,8 +164,8 @@ public:
             });
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformTransforms);
-        descriptorSet->update(1, diffuse->imageView, anisotropicSampler);
-        descriptorSet->update(2, specular->imageView, anisotropicSampler);
+        descriptorSet->update(1, diffuse.imageView, anisotropicSampler);
+        descriptorSet->update(2, specular.imageView, anisotropicSampler);
     }
 
     void setupPipeline()

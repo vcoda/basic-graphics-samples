@@ -176,10 +176,8 @@ public:
             ++arrayIndex;
         }
         // Upload texture array data from buffer
-        imageArray = std::make_shared<magma::Image2DArray>(device, format, extent, 
-            static_cast<uint32_t>(ctxArray.front().num_mipmaps(0)), // mipLevels
-            static_cast<uint32_t>(ctxArray.size()), // arrayLayers
-            buffer, 0, mipOffsets, cmdImageCopy);
+        const uint32_t arrayLayers = MAGMA_COUNT(ctxArray);
+        imageArray = std::make_shared<magma::Image2DArray>(device, format, extent, arrayLayers, buffer, 0, mipOffsets, cmdImageCopy);
         // Create image view for pixel shader
         imageArrayView = std::make_shared<magma::ImageView>(imageArray);
     }
