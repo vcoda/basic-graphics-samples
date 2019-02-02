@@ -8,8 +8,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "framework", "framework\fram
 		{8D9D4A3E-439A-4210-8879-259B20D992CA} = {8D9D4A3E-439A-4210-8879-259B20D992CA}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "magma", "third-party\magma\magma.vcxproj", "{8D9D4A3E-439A-4210-8879-259B20D992CA}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-clear", "01-clear\01-clear.vcxproj", "{C9546E11-638C-4A05-8767-7E77B84AF8CB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8D9D4A3E-439A-4210-8879-259B20D992CA} = {8D9D4A3E-439A-4210-8879-259B20D992CA}
@@ -112,6 +110,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17-shadertoy", "17-shaderto
 		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844} = {D9B732E5-C6FC-4DBB-8CF9-6E880C260844}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "magma", "third-party\magma\projects\vs\magma.vcxproj", "{8D9D4A3E-439A-4210-8879-259B20D992CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -128,14 +128,6 @@ Global
 		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844}.Release|x64.Build.0 = Release|x64
 		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844}.Release|x86.ActiveCfg = Release|Win32
 		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844}.Release|x86.Build.0 = Release|Win32
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x64.ActiveCfg = Debug|x64
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x64.Build.0 = Debug|x64
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x86.ActiveCfg = Debug|Win32
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x86.Build.0 = Debug|Win32
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x64.ActiveCfg = Release|x64
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x64.Build.0 = Release|x64
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x86.ActiveCfg = Release|Win32
-		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x86.Build.0 = Release|Win32
 		{C9546E11-638C-4A05-8767-7E77B84AF8CB}.Debug|x64.ActiveCfg = Debug|x64
 		{C9546E11-638C-4A05-8767-7E77B84AF8CB}.Debug|x64.Build.0 = Debug|x64
 		{C9546E11-638C-4A05-8767-7E77B84AF8CB}.Debug|x86.ActiveCfg = Debug|Win32
@@ -272,6 +264,14 @@ Global
 		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x64.Build.0 = Release|x64
 		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x86.ActiveCfg = Release|Win32
 		{2EA54C12-10C7-48BE-8F7A-FD9E9E99F0A5}.Release|x86.Build.0 = Release|Win32
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x64.ActiveCfg = Debug|x64
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x64.Build.0 = Debug|x64
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x86.ActiveCfg = Debug|Win32
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Debug|x86.Build.0 = Debug|Win32
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x64.ActiveCfg = Release|x64
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x64.Build.0 = Release|x64
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x86.ActiveCfg = Release|Win32
+		{8D9D4A3E-439A-4210-8879-259B20D992CA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
