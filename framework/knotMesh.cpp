@@ -104,7 +104,8 @@ KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radiu
     // Normalize all normals
     for (auto& v : vertices)
     {
-        rapid::vector3 normal = rapid::vector3(v.normal).normalized();
+        rapid::vector3 normal(v.normal);
+        normal.normalize();
         normal.store(&v.normal);
     }
     // Create vertex and index buffers
