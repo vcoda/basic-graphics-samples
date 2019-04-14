@@ -15,9 +15,7 @@ class RenderToTextureApp : public VulkanApp
     std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
     std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
-    std::vector<magma::PipelineShaderStage> rtShaderStages;
 
-    std::vector<magma::PipelineShaderStage> shaderStages;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::Sampler> nearestSampler;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
