@@ -26,7 +26,7 @@ public:
         device = physicalDevice->createDefaultDevice();
     }
 
-	void createVertexBuffer()
+    void createVertexBuffer()
     {
         struct Vertex
         {

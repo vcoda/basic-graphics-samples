@@ -18,7 +18,7 @@ VulkanApp::~VulkanApp()
 
 void VulkanApp::onIdle()
 {
-	onPaint();
+    onPaint();
 }
 
 void VulkanApp::onPaint()
@@ -35,7 +35,7 @@ void VulkanApp::onPaint()
 
 void VulkanApp::onKeyDown(char key, int repeat, uint32_t flags)
 {
-	PlatformApp::onKeyDown(key, repeat, flags);
+    PlatformApp::onKeyDown(key, repeat, flags);
 }
 
 void VulkanApp::initialize()
@@ -141,7 +141,7 @@ void VulkanApp::createSwapchain(bool vSync)
         throw std::runtime_error("surface not supported");
     // Get surface caps
     VkSurfaceCapabilitiesKHR surfaceCaps;
-	surfaceCaps = physicalDevice->getSurfaceCapabilities(surface);
+    surfaceCaps = physicalDevice->getSurfaceCapabilities(surface);
     assert(surfaceCaps.currentExtent.width == width);
     assert(surfaceCaps.currentExtent.height == height);
     // Find supported transform flags
@@ -167,7 +167,7 @@ void VulkanApp::createSwapchain(bool vSync)
             break;
         }
     }
-	const std::vector<VkSurfaceFormatKHR> surfaceFormats = physicalDevice->getSurfaceFormats(surface);
+    const std::vector<VkSurfaceFormatKHR> surfaceFormats = physicalDevice->getSurfaceFormats(surface);
     // Choose available present mode
     const std::vector<VkPresentModeKHR> presentModes = physicalDevice->getSurfacePresentModes(surface);
     VkPresentModeKHR presentMode;

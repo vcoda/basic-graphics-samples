@@ -21,7 +21,7 @@ layout(push_constant) uniform PushConstants
 {
     vec2 resolution;
     float h;
-	float pointsize;
+    float pointsize;
 };
 
 void main()

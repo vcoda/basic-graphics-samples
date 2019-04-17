@@ -239,7 +239,7 @@ vec3 traceEyePath( in vec3 ro, in vec3 rd, const in bool directLightSampling, in
             } else {
                 tcol += fcol*LIGHTCOLOR;
             }
-         //   basecol = vec3(0.);	// the light has no diffuse component, therefore we can return col
+         //   basecol = vec3(0.); // the light has no diffuse component, therefore we can return col
             return tcol;
         }
 

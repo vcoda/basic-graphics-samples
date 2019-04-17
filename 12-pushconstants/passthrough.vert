@@ -10,7 +10,7 @@ out gl_PerVertex
 
 layout(push_constant) uniform PushConstants
 {
-	vec4 vertexColors[3];
+    vec4 vertexColors[3];
 };
 
 void main()
