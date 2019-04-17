@@ -57,9 +57,9 @@ public:
         const rapid::vector3 eye(0.f, 0.f, 10.f);
         const rapid::vector3 center(0.f, 0.f, 0.f);
         const rapid::vector3 up(0.f, 1.f, 0.f);
-        const float fov = rapid::radians(60.f);
+        constexpr float fov = rapid::radians(60.f);
         const float aspect = width/(float)height;
-        const float zn = 1.f, zf = 100.f;
+        constexpr float zn = 1.f, zf = 100.f;
         const rapid::matrix view = rapid::lookAtRH(eye, center, up);
         const rapid::matrix proj = rapid::perspectiveFovRH(fov, aspect, zn, zf);
         viewProj = view * proj;
@@ -177,7 +177,7 @@ public:
                    on whether any samples passed the per-fragment tests.
                    In this case, some implementations may only return zero or one,
                    indifferent to the actual number of samples passing the per-fragment tests. */
-                const bool precise = false;
+                constexpr bool precise = false;
                 cmdBuffer->beginQuery(occlusionQuery, 0, precise);
                 {
                     teapot->draw(cmdBuffer);

@@ -139,7 +139,7 @@ public:
         const auto extent = diffuse.image->getMipExtent(0);
         const float width = static_cast<float>(extent.width);
         const float height = static_cast<float>(extent.height);
-        const float hw = 0.5f;
+        constexpr float hw = 0.5f;
         const float hh = height/width * hw;
         const std::vector<Vertex> vertices = {
             {   // top left

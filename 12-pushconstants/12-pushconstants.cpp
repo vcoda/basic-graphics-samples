@@ -67,7 +67,7 @@ public:
 
     void createVertexBuffer()
     {
-        constexpr unsigned char _1 = std::numeric_limits<unsigned char>::max();
+        constexpr auto _1 = std::numeric_limits<unsigned char>::max();
         const std::vector<rapid::float2> vertices = {
             { 0.0f,-0.5f},
             {-0.5f, 0.5f},

@@ -45,9 +45,9 @@ public:
         const rapid::vector3 eye(0.f, 3.f, 8.f);
         const rapid::vector3 center(0.f, 2.f, 0.f);
         const rapid::vector3 up(0.f, 1.f, 0.f);
-        const float fov = rapid::radians(60.f);
+        constexpr float fov = rapid::radians(60.f);
         const float aspect = width/(float)height;
-        const float zn = 1.f, zf = 100.f;
+        constexpr float zn = 1.f, zf = 100.f;
         const rapid::matrix view = rapid::lookAtRH(eye, center, up);
         const rapid::matrix proj = rapid::perspectiveFovRH(fov, aspect, zn, zf);
         viewProj = view * proj;
@@ -55,7 +55,7 @@ public:
 
     void updatePerspectiveTransform()
     {
-        const float speed = 0.05f;
+        constexpr float speed = 0.05f;
         static float angle = 0.f;
         angle += timer->millisecondsElapsed() * speed;
         const rapid::matrix world = rapid::rotationY(rapid::radians(angle));

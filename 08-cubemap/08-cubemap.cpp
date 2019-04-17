@@ -65,9 +65,9 @@ public:
         const rapid::vector3 eye(0.f, 0.f, 8.f);
         const rapid::vector3 center(0.f, 0.f, 0.f);
         const rapid::vector3 up(0.f, 1.f, 0.f);
-        const float fov = rapid::radians(60.f);
+        constexpr float fov = rapid::radians(60.f);
         const float aspect = width/(float)height;
-        const float zn = 1.f, zf = 100.f;
+        constexpr float zn = 1.f, zf = 100.f;
         view = rapid::lookAtRH(eye, center, up);
         proj = rapid::perspectiveFovRH(fov, aspect, zn, zf);
     }
@@ -88,7 +88,7 @@ public:
 
     void createMesh()
     {
-        const uint32_t subdivisionDegree = 16;
+        constexpr uint32_t subdivisionDegree = 16;
         mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 

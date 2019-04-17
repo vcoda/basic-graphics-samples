@@ -43,9 +43,9 @@ public:
         const rapid::vector3 eye(0.f, 0.f, 3.5f);
         const rapid::vector3 center(0.f);
         const rapid::vector3 up(0.f, 1.f, 0.f);
-        const float fov = rapid::radians(60.f);
+        constexpr float fov = rapid::radians(60.f);
         const float aspect = width/(float)height;
-        const float zn = 0.1f, zf = 100.f;
+        constexpr float zn = 0.1f, zf = 100.f;
         rapid::matrix view, proj;
         if (rhs)
         {
@@ -62,7 +62,7 @@ public:
 
     void updatePerspectiveTransform()
     {
-        const float speed = 0.05f;
+        constexpr float speed = 0.05f;
         const float step = timer->millisecondsElapsed() * speed;
         static float angle = 0.f;
         angle += rhs ? step : -step; // Preserve direction
@@ -87,7 +87,7 @@ public:
         };
         
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        unsigned char _1 = std::numeric_limits<unsigned char>::max();
+        constexpr auto _1 = std::numeric_limits<unsigned char>::max();
         const std::vector<Vertex> vertices = {
             {{ 0.0f,-1.0f}, {_1, 0, 0, _1}}, // top
             {{-1.0f, 1.0f}, {0, _1, 0, _1}}, // left

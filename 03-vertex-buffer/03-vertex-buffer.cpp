@@ -35,7 +35,7 @@ public:
         };
         
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        unsigned char _1 = std::numeric_limits<unsigned char>::max();
+        constexpr auto _1 = std::numeric_limits<unsigned char>::max();
         const std::vector<Vertex> vertices = {
             {{ 0.0f,-0.5f}, {_1, 0, 0, _1}}, // top
             {{-0.5f, 0.5f}, {0, _1, 0, _1}}, // left

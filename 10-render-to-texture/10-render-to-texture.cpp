@@ -62,8 +62,8 @@ public:
 
     void updateWorldTransform()
     {
+        constexpr float speed = 0.03f;
         static float angle = 0.f;
-        const float speed = 0.03f;
         const float step = timer->millisecondsElapsed() * speed;
         angle += step;
         const rapid::matrix roll = rapid::rotationZ(rapid::radians(angle));
