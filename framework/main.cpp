@@ -1,6 +1,7 @@
 #include <sstream>
 #include "application.h"
 #include "magma/misc/exception.h"
+#include "magma/helpers/stringize.h"
 
 void onError(
     const std::string& msg,
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
         std::ostringstream msg;
         msg << exc.file() << "(" << exc.line() << "):" << std::endl
             << std::endl
-            << exc.codeString() << std::endl
+            << magma::helpers::stringize(exc.getResult()) << std::endl
             << exc.what();
         onError(msg.str(), "Vulkan");
     }
