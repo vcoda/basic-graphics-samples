@@ -82,24 +82,16 @@ public:
     {
         struct Vertex
         {
-            rapid::float3 position;
+            rapid::float2 pos;
             unsigned char color[4];
         };
+        
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        constexpr unsigned char _1 = std::numeric_limits<unsigned char>::max();
+        unsigned char _1 = std::numeric_limits<unsigned char>::max();
         const std::vector<Vertex> vertices = {
-            {   // top
-                {0.0f, -1.0f, 0.0f},
-                {_1, 0, 0, _1}
-            },
-            {   // left
-                {-1.0f, 1.0f, 0.0f},
-                {0, 0, _1, _1 }
-            },
-            {   // right
-                {1.0f, 1.0f, 0.0f},
-                {0, _1, 0, _1 }
-            }
+            {{ 0.0f,-1.0f}, {_1, 0, 0, _1}}, // top
+            {{-1.0f, 1.0f}, {0, _1, 0, _1}}, // left
+            {{ 1.0f, 1.0f}, {0, 0, _1, _1}}  // right
         };
         vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
     }
@@ -139,7 +131,7 @@ public:
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "frontFace.o")
             },
-            magma::renderstates::pos3FloatCol4UNorm,
+            magma::renderstates::pos2FloatCol4UNorm,
             magma::renderstates::triangleList,
             rhs ? magma::renderstates::fillCullNoneCCW
                 : magma::renderstates::fillCullNoneCW,

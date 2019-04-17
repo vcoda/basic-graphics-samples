@@ -33,21 +33,13 @@ public:
             rapid::float2 pos;
             unsigned char color[4];
         };
+        
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        constexpr unsigned char _1 = std::numeric_limits<unsigned char>::max();
+        unsigned char _1 = std::numeric_limits<unsigned char>::max();
         const std::vector<Vertex> vertices = {
-            {   // top
-                {0.0f, -0.5f},
-                {_1, 0, 0, _1}
-            },
-            {   // left
-                {-0.5f, 0.5f},
-                {0, 0, _1, _1}
-            },
-            {   // right
-                {0.5f, 0.5f},
-                {0, _1, 0, _1}
-            }
+            {{ 0.0f,-0.5f}, {_1, 0, 0, _1}}, // top
+            {{-0.5f, 0.5f}, {0, _1, 0, _1}}, // left
+            {{ 0.5f, 0.5f}, {0, 0, _1, _1}}  // right
         };
         vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
     }
