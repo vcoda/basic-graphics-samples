@@ -8,7 +8,7 @@ namespace magma
     class VertexBuffer;
     class IndexBuffer;
     class SrcTransferBuffer;
-    class VertexInputState;
+    struct VertexInputState;
 }
 
 class Mesh : public NonCopyable

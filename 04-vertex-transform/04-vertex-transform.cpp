@@ -131,7 +131,7 @@ public:
                 VertexShader(device, "transform.o"),
                 FragmentShader(device, "frontFace.o")
             },
-            magma::renderstates::pos2FloatCol4UNorm,
+            magma::renderstates::pos2FCol4U8,
             magma::renderstates::triangleList,
             rhs ? magma::renderstates::fillCullNoneCCW
                 : magma::renderstates::fillCullNoneCW,

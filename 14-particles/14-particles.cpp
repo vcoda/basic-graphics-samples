@@ -124,13 +124,12 @@ public:
 
     void setupPipeline()
     {
-        const magma::VertexInputState vertexInput(
-            magma::VertexInputBinding(0, sizeof(ParticleSystem::ParticleVertex)),
-            {
-                magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ParticleSystem::ParticleVertex, position)),
-                magma::VertexInputAttribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ParticleSystem::ParticleVertex, color))
-            }
-        );
+        static constexpr magma::VertexInputBinding binding(0, sizeof(ParticleSystem::ParticleVertex));
+        static constexpr magma::VertexInputAttribute attributes[] = {
+            magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ParticleSystem::ParticleVertex, position)),
+            magma::VertexInputAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ParticleSystem::ParticleVertex, color))
+        };
+        static constexpr magma::VertexInputState vertexInput(binding, attributes);
         pipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
             std::vector<magma::PipelineShaderStage>
             {

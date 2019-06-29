@@ -109,9 +109,9 @@ public:
             fb.msaaColor = std::make_shared<magma::ColorAttachment2D>(device, fb.color->getFormat(), extent, 1, msaaSamples);
             fb.msaaColorView = std::make_shared<magma::ImageView>(fb.msaaColor);
             const magma::AttachmentDescription multisampleColorAttachment(fb.msaaColor->getFormat(), fb.msaaColor->getSamples(),
-                magma::attachments::colorClearStoreOptimal);
+                magma::attachments::colorClearStoreAttachment);
             const magma::AttachmentDescription resolveColorAttachment(fb.color->getFormat(), 1,
-                magma::attachments::colorDontCareStoreOptimal); // Don't care about clear as it will be used as MSAA resolve target
+                magma::attachments::colorDontCareStoreAttachment); // Don't care about clear as it will be used as MSAA resolve target
             fb.renderPass = std::make_shared<magma::RenderPass>(device,
                 std::initializer_list<magma::AttachmentDescription>
                 {
@@ -128,7 +128,7 @@ public:
         else
         {
             const magma::AttachmentDescription colorAttachment(fb.color->getFormat(), 1,
-                magma::attachments::colorClearStoreReadOnly);
+                magma::attachments::colorClearStoreShaderReadOnly);
             fb.renderPass = std::make_shared<magma::RenderPass>(device, colorAttachment);
             fb.framebuffer = std::make_shared<magma::Framebuffer>(fb.renderPass, fb.colorView);
         }

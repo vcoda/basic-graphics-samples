@@ -100,7 +100,7 @@ public:
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
             },
-            magma::renderstates::pos2Float,
+            magma::renderstates::pos2F,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,

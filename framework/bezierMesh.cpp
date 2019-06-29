@@ -105,17 +105,17 @@ void BezierPatchMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) cons
 
 const magma::VertexInputState& BezierPatchMesh::getVertexInput() const
 {
-    static const magma::VertexInputState vertexInput(
-    {
+    static constexpr magma::VertexInputBinding bindings[] = {
         magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
         magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
         magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
-    },
-    {
+    };
+    static constexpr magma::VertexInputAttribute attributes[] = {
         magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
         magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
         magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
-    });
+    };
+    static constexpr magma::VertexInputState vertexInput(bindings, attributes);
     return vertexInput;
 }
 

@@ -208,7 +208,7 @@ void VulkanApp::createRenderPass()
     const std::vector<VkSurfaceFormatKHR> surfaceFormats = physicalDevice->getSurfaceFormats(surface);
     const magma::AttachmentDescription colorAttachment(surfaceFormats[0].format, 1,
         magma::op::clearStore, // Clear color, store
-        magma::op::dontCareDontCare, // Stencil don't care
+        magma::op::dontCare, // Stencil don't care
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     if (depthBuffer)

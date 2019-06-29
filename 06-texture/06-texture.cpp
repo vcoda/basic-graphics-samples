@@ -203,7 +203,7 @@ public:
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "multitexture.o")
             },
-            magma::renderstates::pos2FloatTex2Float,
+            magma::renderstates::pos2FTex2F,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,

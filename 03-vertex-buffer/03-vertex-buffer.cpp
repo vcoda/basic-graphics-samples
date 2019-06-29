@@ -52,7 +52,7 @@ public:
                 VertexShader(device, "passthrough.o"),
                 FragmentShader(device, "fill.o")
             },
-            magma::renderstates::pos2FloatCol4UNorm,
+            magma::renderstates::pos2FCol4U8,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,

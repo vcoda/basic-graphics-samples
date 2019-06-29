@@ -45,7 +45,9 @@ void PlaneMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
 
 const magma::VertexInputState& PlaneMesh::getVertexInput() const
 {
-    static const magma::VertexInputState vertexInput(
+    return magma::renderstates::nullVertexInput;
+    /*
+    static constexpr magma::VertexInputState vertexInput(
     {
         magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
         magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
@@ -56,5 +58,5 @@ const magma::VertexInputState& PlaneMesh::getVertexInput() const
         magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
         magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
     });
-    return vertexInput;
+    return vertexInput;*/
 }
