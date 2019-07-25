@@ -126,7 +126,7 @@ public:
 
     void createSampler()
     {
-        bilinearSampler = std::make_shared<magma::Sampler>(device, magma::samplers::linearMipmapNearestClampToEdge);
+        bilinearSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinLinearMipNearestClampToEdge);
     }
 
     void createVertexBuffer()
@@ -208,7 +208,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRGB,
+            magma::renderstates::dontBlendWriteRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

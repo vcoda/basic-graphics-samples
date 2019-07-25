@@ -119,7 +119,7 @@ public:
                     resolveColorAttachment
                 });
             fb.framebuffer = std::make_shared<magma::Framebuffer>(fb.renderPass,
-                std::vector<std::shared_ptr<const magma::ImageView>>
+                std::vector<std::shared_ptr<magma::ImageView>>
                 {
                     fb.msaaColorView,
                     fb.colorView
@@ -156,7 +156,7 @@ public:
                 magma::bindings::FragmentStageBinding(1, imageSamplerDesc)
             });
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        nearestSampler = std::make_shared<magma::Sampler>(device, magma::samplers::nearestMipmapNearestClampToEdge);
+        nearestSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinMipNearestClampToEdge);
         descriptorSet->update(0, uniformBuffer);
         descriptorSet->update(1, fb.colorView, nearestSampler);
     }
@@ -175,7 +175,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::MultisampleState(static_cast<VkSampleCountFlagBits>(msaaSamples)),
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRGB,
+            magma::renderstates::dontBlendWriteRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             fb.renderPass);
@@ -190,7 +190,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::blendNormalWriteRGB,
+            magma::renderstates::blendNormalWriteRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

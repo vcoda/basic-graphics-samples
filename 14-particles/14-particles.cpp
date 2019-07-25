@@ -141,7 +141,7 @@ public:
             negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::blendNormalWriteRGB,
+            magma::renderstates::blendNormalWriteRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

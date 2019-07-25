@@ -184,7 +184,7 @@ public:
 
     void createSampler()
     {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::samplers::anisotropicClampToEdge);
+        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinLinearMipAnisotropicClampToEdge);
     }
 
     void createUniformBuffers()
@@ -234,7 +234,7 @@ public:
             negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLess,
-            magma::renderstates::dontBlendWriteRGB,
+            magma::renderstates::dontBlendWriteRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass);

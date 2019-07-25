@@ -239,7 +239,7 @@ void VulkanApp::createFramebuffer()
     }
     for (const auto& image : swapchain->getImages())
     {
-        std::vector<std::shared_ptr<const magma::ImageView>> attachments;
+        std::vector<std::shared_ptr<magma::ImageView>> attachments;
         std::shared_ptr<magma::ImageView> colorView(std::make_shared<magma::ImageView>(image));
         attachments.push_back(colorView);
         if (depthBuffer)

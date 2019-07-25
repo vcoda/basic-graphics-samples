@@ -178,7 +178,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRGB,
+            magma::renderstates::dontBlendWriteRgb,
             std::initializer_list<VkDynamicState>{},
             pipelineLayout,
             renderPass);
