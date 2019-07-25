@@ -27,11 +27,9 @@ public:
     void setupPipeline()
     {
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "position.o"),
-                FragmentShader(device, "fill.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "position.o"),
+                FragmentShaderFile(device, "fill.o")},
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,

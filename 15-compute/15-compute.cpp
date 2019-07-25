@@ -93,7 +93,7 @@ public:
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
     {
         return std::make_shared<magma::ComputePipeline>(device, pipelineCache,
-            ComputeShader(device, filename, entrypoint),
+            ComputeShaderFile(device, filename, entrypoint),
             pipelineLayout);
     }
 

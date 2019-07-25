@@ -138,11 +138,9 @@ public:
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
         return std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "transform.o"),
-                FragmentShader(device, "texture.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "transform.o"),
+                FragmentShaderFile(device, "texture.o")},
             mesh->getVertexInput(),
             magma::renderstates::triangleStrip,
             rasterizationState,

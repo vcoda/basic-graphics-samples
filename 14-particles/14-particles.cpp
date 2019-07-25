@@ -131,11 +131,9 @@ public:
         };
         static constexpr magma::VertexInputState vertexInput(binding, attributes);
         pipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "pointSize.o"),
-                FragmentShader(device, negateViewport ? "particleNeg.o" : "particle.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "pointSize.o"),
+                FragmentShaderFile(device, negateViewport ? "particleNeg.o" : "particle.o")},
             vertexInput,
             magma::renderstates::pointList,
             negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,

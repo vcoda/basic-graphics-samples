@@ -198,11 +198,9 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "passthrough.o"),
-                FragmentShader(device, "multitexture.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "passthrough.o"),
+                FragmentShaderFile(device, "multitexture.o")},
             magma::renderstates::pos2FTex2F,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCCW,

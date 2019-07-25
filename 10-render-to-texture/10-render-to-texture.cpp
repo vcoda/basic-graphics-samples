@@ -165,11 +165,9 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         rtPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "triangle.o"),
-                FragmentShader(device, "fill.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "triangle.o"),
+                FragmentShaderFile(device, "fill.o")},
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
@@ -180,11 +178,9 @@ public:
             pipelineLayout,
             fb.renderPass);
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "quad.o"),
-                FragmentShader(device, "texture.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "quad.o"),
+                FragmentShaderFile(device, "texture.o")},
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCCW,

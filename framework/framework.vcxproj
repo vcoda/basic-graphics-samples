@@ -159,6 +159,7 @@
     <ClInclude Include="alignedAllocator.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="bezierMesh.h" />
+    <ClInclude Include="spirvShaderFile.h" />
     <ClInclude Include="cubeMesh.h" />
     <ClInclude Include="knotMesh.h" />
     <ClInclude Include="mesh.h" />
@@ -166,7 +167,6 @@
     <ClInclude Include="linearAllocator.h" />
     <ClInclude Include="planeMesh.h" />
     <ClInclude Include="platform.h" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="vulkanApp.h" />
@@ -180,7 +180,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="linearAllocator.cpp" />
     <ClCompile Include="planeMesh.cpp" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="vulkanApp.cpp" />
     <ClCompile Include="winApp.cpp" />

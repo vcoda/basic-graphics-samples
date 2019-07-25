@@ -47,11 +47,9 @@ public:
     void setupPipeline()
     {
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "passthrough.o"),
-                FragmentShader(device, "fill.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "passthrough.o"),
+                FragmentShaderFile(device, "fill.o")},
             magma::renderstates::pos2FCol4U8,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,

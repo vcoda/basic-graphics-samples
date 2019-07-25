@@ -126,11 +126,9 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "transform.o"),
-                FragmentShader(device, "frontFace.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "transform.o"),
+                FragmentShaderFile(device, "frontFace.o")},
             magma::renderstates::pos2FCol4U8,
             magma::renderstates::triangleList,
             rhs ? magma::renderstates::fillCullNoneCCW

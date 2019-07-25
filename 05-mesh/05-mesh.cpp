@@ -100,11 +100,9 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         wireframeDrawPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                VertexShader(device, "transform.o"),
-                FragmentShader(device, "normal.o")
-            },
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "transform.o"),
+                FragmentShaderFile(device, "normal.o")},
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
