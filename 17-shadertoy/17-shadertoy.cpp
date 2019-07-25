@@ -55,7 +55,7 @@ public:
             rebuildCommandBuffers = false;
         }
         updateUniforms();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     virtual void onMouseMove(int x, int y) override

@@ -281,7 +281,7 @@ void VulkanApp::createSyncPrimitives()
     }
 }
 
-bool VulkanApp::submitCmdBuffer(uint32_t bufferIndex)
+bool VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
 {
     return queue->submit(commandBuffers[bufferIndex],
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
@@ -290,7 +290,7 @@ bool VulkanApp::submitCmdBuffer(uint32_t bufferIndex)
         waitFences[bufferIndex]);
 }
 
-VkFormat VulkanApp::getSupportedDepthFormat(bool hasStencil, bool optimalTiling) const
+VkFormat VulkanApp::getSupportedDepthFormat(bool hasStencil, bool optimalTiling) const noexcept
 {
     const std::vector<VkFormat> depthFormats = {
         VK_FORMAT_D32_SFLOAT_S8_UINT,

@@ -90,7 +90,7 @@ public:
 
     virtual void render(uint32_t bufferIndex) override
     {
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     void drawPoints()

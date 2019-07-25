@@ -35,7 +35,7 @@ public:
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
-        loadDDSTextureArray({"dice1.dds" , "dice2.dds", "dice3.dds", "dice4.dds", "dice5.dds", "dice6.dds"});
+        loadTextureArray({"dice1.dds" , "dice2.dds", "dice3.dds", "dice4.dds", "dice5.dds", "dice6.dds"});
         createSampler();
         createUniformBuffers();
         setupDescriptorSet();
@@ -48,7 +48,7 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     virtual void onKeyDown(char key, int repeat, uint32_t flags) override
@@ -116,7 +116,7 @@ public:
         mesh = std::make_unique<CubeMesh>(cmdBufferCopy);
     }
 
-    void loadDDSTextureArray(const std::vector<std::string>& filenames)
+    void loadTextureArray(const std::vector<std::string>& filenames)
     {
         std::vector<std::shared_ptr<std::ifstream>> files;
         std::streamoff totalSize = 0;

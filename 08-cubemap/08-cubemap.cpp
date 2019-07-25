@@ -44,8 +44,8 @@ public:
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
-        diffuse = loadDDSCubeMap("diff.dds");
-        specular = loadDDSCubeMap("spec.dds");
+        diffuse = loadCubeMap("diff.dds");
+        specular = loadCubeMap("spec.dds");
         createSampler();
         createUniformBuffer();
         setupDescriptorSet();
@@ -57,7 +57,7 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     void setupView()
@@ -92,7 +92,7 @@ public:
         mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 
-    TextureCube loadDDSCubeMap(const std::string& filename)
+    TextureCube loadCubeMap(const std::string& filename)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())

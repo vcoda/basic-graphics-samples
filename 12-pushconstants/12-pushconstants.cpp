@@ -44,7 +44,7 @@ public:
             cmdBuffer->endRenderPass();
         }
         cmdBuffer->end();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     void updateVertexColors()

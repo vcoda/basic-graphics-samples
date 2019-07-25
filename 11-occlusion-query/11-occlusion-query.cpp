@@ -39,7 +39,7 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
 
         // Show occlusion query result
         const std::vector<VkDeviceSize> results = occlusionQuery->getResults(0, 1, true);

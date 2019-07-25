@@ -44,7 +44,7 @@ public:
     {
         particles->update(timer->secondsElapsed());
         updatePerspectiveTransform();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     virtual void onKeyDown(char key, int repeat, uint32_t flags) override

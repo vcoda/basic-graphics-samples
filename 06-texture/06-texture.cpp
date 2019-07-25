@@ -37,8 +37,8 @@ public:
         VulkanApp(entry, TEXT("06 - Texture"), 512, 512)
     {
         initialize();
-        diffuse = loadDDSTexture("brick.dds");
-        lightmap = loadDDSTexture("spot.dds");
+        diffuse = loadTexture("brick.dds");
+        lightmap = loadTexture("spot.dds");
         createSampler();
         createVertexBuffer();
         createUniformBuffer();
@@ -50,7 +50,7 @@ public:
 
     virtual void render(uint32_t bufferIndex) override
     {
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     virtual void onKeyDown(char key, int repeat, uint32_t flags) override
@@ -88,7 +88,7 @@ public:
         });
     }
 
-    Texture loadDDSTexture(const std::string& filename)
+    Texture loadTexture(const std::string& filename)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())

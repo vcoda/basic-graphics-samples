@@ -35,7 +35,7 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
-        submitCmdBuffer(bufferIndex);
+        submitCommandBuffer(bufferIndex);
     }
 
     void setupView()

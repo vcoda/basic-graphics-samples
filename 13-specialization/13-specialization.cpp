@@ -11,11 +11,7 @@ class SpecializationApp : public VulkanApp
 {
     enum ShadingType
     {
-        NORMAL = 0,
-        DIFFUSE,
-        SPECULAR,
-        CELL,
-        ALBEDO,
+        NORMAL = 0, DIFFUSE, SPECULAR, CELL, ALBEDO,
         MAX_SHADER_VARIANTS
     };
 
