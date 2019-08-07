@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "nonCopyable.h"
+#include "magma/internal/noncopyable.h"
 
 namespace magma
 {
@@ -11,7 +11,7 @@ namespace magma
     struct VertexInputState;
 }
 
-class Mesh : public NonCopyable
+class Mesh : public magma::internal::NonCopyable
 {
 public:
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const = 0;

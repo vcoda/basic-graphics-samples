@@ -81,9 +81,6 @@
     <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="nonCopyable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="linearAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>

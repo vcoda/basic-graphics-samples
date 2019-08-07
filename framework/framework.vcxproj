@@ -163,7 +163,6 @@
     <ClInclude Include="cubeMesh.h" />
     <ClInclude Include="knotMesh.h" />
     <ClInclude Include="mesh.h" />
-    <ClInclude Include="nonCopyable.h" />
     <ClInclude Include="linearAllocator.h" />
     <ClInclude Include="planeMesh.h" />
     <ClInclude Include="platform.h" />
