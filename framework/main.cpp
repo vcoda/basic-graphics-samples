@@ -1,7 +1,6 @@
 #include <sstream>
 #include "application.h"
-#include "magma/misc/exception.h"
-#include "magma/helpers/stringize.h"
+#include "magma/magma.h"
 
 void onError(
     const std::string& msg,

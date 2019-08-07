@@ -4,9 +4,8 @@
 #include <memory>
 #include <fstream>
 #include <stdexcept>
-#include "magma/objects/device.h"
 #include "magma/objects/shaderModule.h"
-#include "magma/objects/shaderStages.h"
+#include "magma/shaders/shaderStages.h"
 
 template<typename ShaderStageType>
 class SpirvShaderFile

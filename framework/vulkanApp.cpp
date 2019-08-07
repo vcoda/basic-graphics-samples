@@ -10,7 +10,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     timer(std::make_unique<Timer>()),
     depthBuffer(depthBuffer)
 {
-    magma::Object::setAllocator(std::make_shared<LinearAllocator>());
+    magma::Object::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
 }
 
 VulkanApp::~VulkanApp()

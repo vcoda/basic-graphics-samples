@@ -2,7 +2,7 @@
 #include <vector>
 #include <cassert>
 #include "alignedAllocator.h"
-#include "magma/api/vulkan.h"
+#include <vulkan/vulkan.h>
 #include "gliml/gliml.h"
 
 namespace utilities
