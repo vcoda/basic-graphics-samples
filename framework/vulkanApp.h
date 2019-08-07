@@ -36,7 +36,6 @@ protected:
     virtual void createSyncPrimitives();
 
     bool submitCommandBuffer(uint32_t bufferIndex);
-    VkFormat getSupportedDepthFormat(bool hasStencil, bool optimalTiling) const noexcept;
 
 protected:
     enum { FrontBuffer = 0, BackBuffer };

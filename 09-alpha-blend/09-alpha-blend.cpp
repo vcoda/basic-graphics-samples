@@ -80,13 +80,13 @@ public:
 
     void loadTexture(const std::string& filename)
     {
-        utilities::aligned_vector<char> buffer = utilities::loadBinaryFile(filename);
+        aligned_vector<char> buffer = utilities::loadBinaryFile(filename);
         gliml::context ctx;
         ctx.enable_dxt(true);
         if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
             throw std::runtime_error("failed to load DDS texture");
         // Setup texture data description
-        const VkFormat format = utilities::getBCFormat(ctx);
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         std::vector<const void *> mipData;
         std::vector<VkDeviceSize> mipSizes;
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)

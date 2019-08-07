@@ -113,7 +113,7 @@ public:
             baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data; 
         });
         // Setup texture data description
-        const VkFormat format = utilities::getBCFormat(ctx);
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         const uint32_t dimension = ctx.image_width(0, 0);
         magma::ImageMipmapLayout mipOffsets;
         VkDeviceSize lastMipSize = 0;

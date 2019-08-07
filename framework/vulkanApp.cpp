@@ -1,8 +1,6 @@
-#include <algorithm>
-#include <iostream>
-#include <sstream>
 #include "vulkanApp.h"
 #include "linearAllocator.h"
+#include "utilities.h"
 
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
@@ -50,10 +48,6 @@ void VulkanApp::initialize()
     pipelineCache = std::make_shared<magma::PipelineCache>(device);
 }
 
-static VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
-    uint64_t object, size_t location, int32_t messageCode,
-    const char *pLayerPrefix, const char *pMessage, void *pUserData);
-
 void VulkanApp::createInstance()
 {
     const std::vector<const char *> layerNames = {
@@ -90,7 +84,7 @@ void VulkanApp::createInstance()
 
     debugReportCallback = std::make_unique<magma::DebugReportCallback>(
         instance,
-        reportCallback);
+        utilities::reportCallback);
 
     physicalDevice = instance->getPhysicalDevice(0);
     const VkPhysicalDeviceProperties& properties = physicalDevice->getProperties();
@@ -213,7 +207,7 @@ void VulkanApp::createRenderPass()
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     if (depthBuffer)
     {
-        const VkFormat depthFormat = getSupportedDepthFormat(false, true);
+        const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         const magma::AttachmentDescription depthStencilAttachment(depthFormat, 1,
             magma::op::clearStore, // Clear depth, store
             magma::op::clearDontCare, // Stencil don't care
@@ -233,7 +227,7 @@ void VulkanApp::createFramebuffer()
     const VkSurfaceCapabilitiesKHR surfaceCaps = physicalDevice->getSurfaceCapabilities(surface);
     if (depthBuffer)
     {
-        const VkFormat depthFormat = getSupportedDepthFormat(false, true);
+        const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         depthStencil = std::make_shared<magma::DepthStencilAttachment2D>(device, depthFormat, surfaceCaps.currentExtent, 1, 1);
         depthStencilView = std::make_shared<magma::ImageView>(depthStencil);
     }
@@ -288,41 +282,4 @@ bool VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
         presentFinished,
         renderFinished,
         waitFences[bufferIndex]);
-}
-
-VkFormat VulkanApp::getSupportedDepthFormat(bool hasStencil, bool optimalTiling) const noexcept
-{
-    const std::vector<VkFormat> depthFormats = {
-        VK_FORMAT_D32_SFLOAT_S8_UINT,
-        VK_FORMAT_D32_SFLOAT,
-        VK_FORMAT_D24_UNORM_S8_UINT,
-        VK_FORMAT_D16_UNORM_S8_UINT,
-        VK_FORMAT_D16_UNORM,
-    };
-    for (VkFormat format : depthFormats)
-    {
-        if (hasStencil && !magma::Format(format).depthStencil())
-            continue;
-        const VkFormatProperties properties = physicalDevice->getFormatProperties(format);
-        if (optimalTiling && (properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT))
-            return format;
-        else if (!optimalTiling && (properties.linearTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT))
-            return format;
-    }
-    return VK_FORMAT_UNDEFINED;
-}
-
-static VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
-    uint64_t object, size_t location, int32_t messageCode,
-    const char *pLayerPrefix, const char *pMessage, void *pUserData)
-{
-    if (strstr(pMessage, "Extension"))
-        return VK_FALSE;
-    std::stringstream msg;
-    msg << "[" << pLayerPrefix << "] " << pMessage << "\n";
-    if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
-        std::cerr << msg.str();
-    else
-        std::cout << msg.str();
-    return VK_FALSE;
 }

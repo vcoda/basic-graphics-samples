@@ -150,7 +150,7 @@ public:
 
     void loadShaders()
     {
-        utilities::aligned_vector<char> bytecode;
+        aligned_vector<char> bytecode;
         bytecode = utilities::loadBinaryFile("transform.o");
         vertexShader = std::make_shared<magma::ShaderModule>(device, (const uint32_t *)bytecode.data(), bytecode.size());
         bytecode = utilities::loadBinaryFile("specialized.o");

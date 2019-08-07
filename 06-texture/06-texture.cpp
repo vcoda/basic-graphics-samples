@@ -109,7 +109,7 @@ public:
             baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data; 
         });
         // Setup texture data description
-        const VkFormat format = utilities::getBCFormat(ctx);
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
         std::vector<VkDeviceSize> mipOffsets(1, 0);
         for (int level = 1; level < ctx.num_mipmaps(0); ++level)
