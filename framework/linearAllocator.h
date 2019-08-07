@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include "magma/internal/noncopyable.h"
 #include "magma/allocator/objectAllocator.h"
 
 class LinearAllocator : public magma::IObjectAllocator
