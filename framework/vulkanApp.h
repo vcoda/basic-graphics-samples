@@ -42,7 +42,7 @@ protected:
 
 protected:
     std::shared_ptr<magma::Instance> instance;
-    std::unique_ptr<magma::DebugReportCallback> debugReportCallback;
+	std::shared_ptr<magma::DebugReportCallback> debugReportCallback;
     std::shared_ptr<magma::Surface> surface;
     std::shared_ptr<magma::PhysicalDevice> physicalDevice;
     std::shared_ptr<magma::Device> device;
