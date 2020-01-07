@@ -1,6 +1,5 @@
 #pragma once
 #include "mesh.h"
-#include "rapid/rapid.h"
 
 class KnotMesh : public Mesh
 {

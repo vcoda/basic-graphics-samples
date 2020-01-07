@@ -123,7 +123,7 @@ void ParticleSystem::update(float dt)
     // Update vertex buffer
     if (!activeList.empty())
     {
-        if (ParticleVertex *pv = (ParticleVertex *)vertexBuffer->getMemory()->map(0, VK_WHOLE_SIZE))
+        if (ParticleVertex *pv = vertexBuffer->getMemory()->map<ParticleVertex>(0, VK_WHOLE_SIZE))
         {
             for (const auto& particle : activeList)
             {

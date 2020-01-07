@@ -12,7 +12,9 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
 }
 
 VulkanApp::~VulkanApp()
-{}
+{
+    commandPools[0]->freeCommandBuffers(commandBuffers);
+}
 
 void VulkanApp::onIdle()
 {
@@ -97,8 +99,8 @@ void VulkanApp::createInstance()
 void VulkanApp::createLogicalDevice()
 {
     const std::vector<float> defaultQueuePriorities = {1.0f};
-    const magma::DeviceQueueDescriptor graphicsQueue(VK_QUEUE_GRAPHICS_BIT, physicalDevice, defaultQueuePriorities);
-    const magma::DeviceQueueDescriptor transferQueue(VK_QUEUE_TRANSFER_BIT, physicalDevice, defaultQueuePriorities);
+    const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, defaultQueuePriorities);
+    const magma::DeviceQueueDescriptor transferQueue(physicalDevice, VK_QUEUE_TRANSFER_BIT, defaultQueuePriorities);
     std::vector<magma::DeviceQueueDescriptor> queueDescriptors;
     queueDescriptors.push_back(graphicsQueue);
     if (transferQueue.queueFamilyIndex != graphicsQueue.queueFamilyIndex)
@@ -194,6 +196,7 @@ void VulkanApp::createSwapchain(bool vSync)
     swapchain = std::make_shared<magma::Swapchain>(device, surface,
         std::min(2U, surfaceCaps.maxImageCount),
         surfaceFormats[0], surfaceCaps.currentExtent,
+        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
 		preTransform, compositeAlpha, presentMode, 0,
 		nullptr, debugReportCallback);
 }
@@ -251,13 +254,13 @@ void VulkanApp::createCommandBuffers()
     // Create draw command buffers
     commandBuffers = commandPools[0]->allocateCommandBuffers(static_cast<uint32_t>(framebuffers.size()), true);
     // Create image copy command buffer
-    cmdImageCopy = commandPools[0]->allocateCommandBuffer(true);
+    cmdImageCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
     try
     {
         std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         // Create buffer copy command buffer
-        cmdBufferCopy = commandPools[1]->allocateCommandBuffer(true);
+        cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
     }
     catch (...)
     {

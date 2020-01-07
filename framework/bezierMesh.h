@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "mesh.h"
-#include "rapid/rapid.h"
 
 // https://www.scratchapixel.com/lessons/advanced-rendering/bezier-curve-rendering-utah-teapot
 class BezierPatchMesh : public Mesh

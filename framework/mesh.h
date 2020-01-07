@@ -1,19 +1,21 @@
 #pragma once
 #include <memory>
-#include "magma/internal/noncopyable.h"
+#include "magma/magma.h"
+#include "rapid/rapid.h"
 
-namespace magma
-{
-    class CommandBuffer;
-    class VertexBuffer;
-    class IndexBuffer;
-    class SrcTransferBuffer;
-    struct VertexInputState;
-}
-
-class Mesh : public magma::internal::NonCopyable
+class Mesh : public magma::detail::NonCopyable
 {
 public:
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const = 0;
     virtual const magma::VertexInputState& getVertexInput() const = 0;
 };
+
+namespace magma
+{
+    namespace specialization
+    {
+        template<> struct VertexAttribute<rapid::float2> : public AttributeFormat<VK_FORMAT_R32G32_SFLOAT> {};
+        template<> struct VertexAttribute<rapid::float3> : public AttributeFormat<VK_FORMAT_R32G32B32_SFLOAT> {};
+        template<> struct VertexAttribute<rapid::float4> : public AttributeFormat<VK_FORMAT_R32G32B32A32_SFLOAT> {};
+    } // namespace specialization
+} // namespace magma

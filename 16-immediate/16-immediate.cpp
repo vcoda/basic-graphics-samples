@@ -1,41 +1,6 @@
 #include <xmmintrin.h>
 #include "../framework/vulkanApp.h"
 
-class AlignedAllocator : public magma::IAllocator
-{
-public:
-    virtual void *alloc(size_t size, size_t alignment,
-        VkSystemAllocationScope allocationScope) override
-    {
-        std::cout << "vkAllocationFunction(size=" << size << ", alignment=" << alignment << ")" << std::endl;
-        return _mm_malloc(size, alignment);
-    }
-
-    virtual void *realloc(void *original, size_t size, size_t /* alignment */,
-        VkSystemAllocationScope allocationScope) override
-    {
-        return ::realloc(original, size);
-    }
-
-    virtual void free(void *memory) override
-    {
-        std::cout << "vkFreeFunction(memory=0x" << memory << ")" << std::endl;
-        return _mm_free(memory);
-    }
-
-    virtual void internalAllocationNotification(size_t size,
-        VkInternalAllocationType allocationType,
-        VkSystemAllocationScope allocationScope) override
-    {
-    }
-
-    virtual void internalFreeNotification(size_t size,
-        VkInternalAllocationType allocationType,
-        VkSystemAllocationScope allocationScope) override
-    {
-    }
-};
-
 class ImmediateApp : public VulkanApp
 {
     std::unique_ptr<magma::aux::ImmediateRender> ir;
@@ -65,14 +30,14 @@ public:
 
     void createImmediateRender()
     {
-        std::shared_ptr<magma::IAllocator> allocator(std::make_shared<AlignedAllocator>());
-        ir = std::make_unique<magma::aux::ImmediateRender>(1024, device, pipelineCache, nullptr, renderPass, allocator);
+        constexpr uint32_t maxVertexCount = 1024;
+        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, device, pipelineCache, nullptr, renderPass);
         ir->setLineWidth(2.f);
     }
 
     virtual void createLogicalDevice() override
     {
-        const magma::DeviceQueueDescriptor graphicsQueue(VK_QUEUE_GRAPHICS_BIT, physicalDevice, {1.f});
+        const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
 
         VkPhysicalDeviceFeatures features = {VK_FALSE};
         features.fillModeNonSolid = VK_TRUE;

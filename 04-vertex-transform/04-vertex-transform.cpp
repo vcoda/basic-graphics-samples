@@ -85,7 +85,7 @@ public:
             rapid::float2 pos;
             unsigned char color[4];
         };
-        
+
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
         constexpr auto _1 = std::numeric_limits<unsigned char>::max();
         const std::vector<Vertex> vertices = {
@@ -129,7 +129,7 @@ public:
             std::vector<magma::PipelineShaderStage>{
                 VertexShaderFile(device, "transform.o"),
                 FragmentShaderFile(device, "frontFace.o")},
-            magma::renderstates::pos2FCol4U8,
+            magma::renderstates::pos2fColor4b,
             magma::renderstates::triangleList,
             rhs ? magma::renderstates::fillCullNoneCCW
                 : magma::renderstates::fillCullNoneCW,

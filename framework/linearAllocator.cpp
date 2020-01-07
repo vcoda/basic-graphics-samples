@@ -1,5 +1,5 @@
 #include "linearAllocator.h"
-#include "magma/internal/shared.h"
+#include "magma/detail/shared.h"
 
 LinearAllocator::LinearAllocator():
     bufferSize(1024 * 64),

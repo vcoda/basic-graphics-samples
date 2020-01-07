@@ -40,8 +40,8 @@ public:
     {
         const std::vector<float> priority = {1.0f};
         const std::vector<magma::DeviceQueueDescriptor> queueDescriptors = {
-            magma::DeviceQueueDescriptor(VK_QUEUE_COMPUTE_BIT, physicalDevice, priority),
-            magma::DeviceQueueDescriptor(VK_QUEUE_TRANSFER_BIT, physicalDevice, priority),
+            magma::DeviceQueueDescriptor(physicalDevice, VK_QUEUE_COMPUTE_BIT, priority),
+            magma::DeviceQueueDescriptor(physicalDevice, VK_QUEUE_TRANSFER_BIT, priority),
         };
         const std::vector<const char*> noLayers;
         std::vector<const char*> noExtensions;
@@ -53,11 +53,11 @@ public:
     {
         queue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
         commandPools[0] = std::make_shared<magma::CommandPool>(device, queue->getFamilyIndex());
-        computeCmdBuffer = commandPools[0]->allocateCommandBuffer(true);
+        computeCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
 
         std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
-        cmdBufferCopy = commandPools[1]->allocateCommandBuffer(true);
+        cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
 
         fence = std::make_shared<magma::Fence>(device, true);
     }
@@ -101,8 +101,12 @@ public:
     {   // Record command buffer
         computeCmdBuffer->begin();
         {   // Ensure that transfer write is finished before compute shader execution
+            const std::vector<magma::BufferMemoryBarrier> bufferMemoryBarriers = {
+                {inputBuffers[0], magma::barriers::transferWriteShaderRead},
+                {inputBuffers[0], magma::barriers::transferWriteShaderRead},
+            };
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                {inputBuffers[0], inputBuffers[1]}, magma::barriers::transferWriteShaderRead);
+                {}, bufferMemoryBarriers, {});
             // Bind input and output buffers
             computeCmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet, VK_PIPELINE_BIND_POINT_COMPUTE);
             // Bind pipeline

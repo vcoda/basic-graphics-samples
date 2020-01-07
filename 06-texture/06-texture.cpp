@@ -106,7 +106,7 @@ public:
             if (!ctx.load(data, static_cast<unsigned>(size)))
                 throw std::runtime_error("failed to load DDS texture");
             // Skip DDS header
-            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data; 
+            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
         });
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
@@ -136,6 +136,7 @@ public:
             rapid::float2 position;
             rapid::float2 uv;
         };
+
         const auto extent = diffuse.image->getMipExtent(0);
         const float width = static_cast<float>(extent.width);
         const float height = static_cast<float>(extent.height);
@@ -201,7 +202,7 @@ public:
             std::vector<magma::PipelineShaderStage>{
                 VertexShaderFile(device, "passthrough.o"),
                 FragmentShaderFile(device, "multitexture.o")},
-            magma::renderstates::pos2FTex2F,
+            magma::renderstates::pos2fTex2f,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,

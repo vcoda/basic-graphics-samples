@@ -15,7 +15,8 @@ class OcclusionQueryApp : public VulkanApp
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayouts[2];
     std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::shared_ptr<magma::GraphicsPipeline> teapotPipeline;
+    std::shared_ptr<magma::GraphicsPipeline> planePipeline;
 
     rapid::matrix viewProj;
     bool negateViewport = false;
@@ -90,7 +91,8 @@ public:
     {
         const uint32_t subdivisionDegree = 16;
         teapot = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
-        plane = std::make_unique<PlaneMesh>(6.f, 6.f, true, true, cmdBufferCopy);
+        constexpr bool twoSided = true;
+        plane = std::make_unique<PlaneMesh>(6.f, 6.f, twoSided, cmdBufferCopy);
     }
 
     void createUniformBuffer()
@@ -130,11 +132,24 @@ public:
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayouts);
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+        teapotPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
             std::vector<magma::PipelineShaderStage>{
                 VertexShaderFile(device, "transform.o"),
                 FragmentShaderFile(device, "fill.o")},
             teapot->getVertexInput(),
+            magma::renderstates::triangleList,
+            negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
+            magma::renderstates::noMultisample,
+            magma::renderstates::depthLessOrEqual,
+            magma::renderstates::dontBlendWriteRgb,
+            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
+            pipelineLayout,
+            renderPass);
+        planePipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+            std::vector<magma::PipelineShaderStage>{
+                VertexShaderFile(device, "transform.o"),
+                FragmentShaderFile(device, "fill.o")},
+            plane->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
@@ -160,11 +175,12 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindPipeline(graphicsPipeline);
                 // Occluder
+                cmdBuffer->bindPipeline(planePipeline);
                 cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, {0, 0});
                 plane->draw(cmdBuffer);
                 // Occludee
+                cmdBuffer->bindPipeline(teapotPipeline);
                 cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets,
                     {
                         transformUniforms->getDynamicOffset(1),

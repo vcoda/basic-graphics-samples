@@ -1,7 +1,4 @@
-#include <vector>
 #include "cubeMesh.h"
-#include "magma/magma.h"
-#include "rapid/rapid.h"
 
 CubeMesh::CubeMesh(std::shared_ptr<magma::CommandBuffer> cmdBuffer)
 {
@@ -86,14 +83,14 @@ void CubeMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
 
 const magma::VertexInputState& CubeMesh::getVertexInput() const
 {
-    static constexpr magma::VertexInputBinding bindings[] = {
+    static magma::VertexInputState vertexInput(
+    {
         magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
-        magma::VertexInputBinding(1, sizeof(rapid::float3))  // TexCoord
-    };
-    static constexpr magma::VertexInputAttribute attributes[] = {
+        magma::VertexInputBinding(1, sizeof(rapid::float3))  // TexCoord, Face
+    },
+    {
         magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
         magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0)
-    };
-    static constexpr magma::VertexInputState vertexInput(bindings, attributes);
+    });
     return vertexInput;
 }

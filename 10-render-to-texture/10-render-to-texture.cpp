@@ -36,7 +36,7 @@ public:
         createUniformBuffer();
         setupDescriptorSet();
         setupPipelines();
-        recordRTCommandBuffer();
+        recordOffscreenCommandBuffer();
         recordCommandBuffer(FrontBuffer);
         recordCommandBuffer(BackBuffer);
         timer->run();
@@ -192,9 +192,9 @@ public:
             renderPass);
     }
 
-    void recordRTCommandBuffer()
+    void recordOffscreenCommandBuffer()
     {
-        rtCmdBuffer = commandPools[0]->allocateCommandBuffer(true);
+        rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
         rtSemaphore = std::make_shared<magma::Semaphore>(device);
 
         rtCmdBuffer->begin();

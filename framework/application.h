@@ -9,9 +9,9 @@
 #include <windows.h>
 #endif
 #include "platform.h"
-#include "magma/internal/noncopyable.h"
+#include "magma/detail/noncopyable.h"
 
-class IApplication : public AlignAs<16>, public magma::internal::NonCopyable
+class IApplication : public AlignAs<16>, public magma::detail::NonCopyable
 {
 public:
     virtual void setWindowCaption(const std::tstring& caption) = 0;

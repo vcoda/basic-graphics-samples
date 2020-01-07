@@ -1,5 +1,4 @@
 #include "knotMesh.h"
-#include "magma/magma.h"
 
 KnotMesh::KnotMesh(uint32_t turns, uint32_t slices, uint32_t stacks, float radius, bool counterClockwise,
     std::shared_ptr<magma::CommandBuffer> cmdBuffer)
@@ -122,11 +121,8 @@ void KnotMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const
 
 const magma::VertexInputState& KnotMesh::getVertexInput() const
 {
-    static constexpr magma::VertexInputBinding binding(0, sizeof(Vertex));
-    static constexpr magma::VertexInputAttribute attributes[] = {
-        magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KnotMesh::Vertex, position)),
-        magma::VertexInputAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(KnotMesh::Vertex, normal))
-    };
-    static constexpr magma::VertexInputState vertexInput(binding, attributes);
+    static magma::VertexInputStructure<Vertex> vertexInput(0, {
+        {0, &Vertex::position},
+        {1, &Vertex::normal}});
     return vertexInput;
 }

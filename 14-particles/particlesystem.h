@@ -105,3 +105,12 @@ private:
 };
 
 ClassifyPoint classifyPoint(const rapid::vector3& point, const ParticleSystem::Plane& plane);
+
+namespace magma
+{
+    namespace specialization
+    {
+        template<> struct VertexAttribute<rapid::float3> :
+            public AttributeFormat<VK_FORMAT_R32G32B32_SFLOAT> {};
+    }
+}

@@ -1,7 +1,5 @@
 #include "bezierMesh.h"
 #include "bezier.inl"
-#include "magma/magma.h"
-#include "rapid/rapid.h"
 
 BezierPatchMesh::BezierPatchMesh(
     const uint32_t patches[][16],
@@ -96,26 +94,24 @@ void BezierPatchMesh::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) cons
     cmdBuffer->bindIndexBuffer(indexBuffer);
     for (const auto& patch : patches)
     {
-        cmdBuffer->bindVertexBuffer(0, patch->vertexBuffer);
-        cmdBuffer->bindVertexBuffer(1, patch->normalBuffer);
-        cmdBuffer->bindVertexBuffer(2, patch->texCoordBuffer);
+        cmdBuffer->bindVertexBuffers(0, {patch->vertexBuffer, patch->normalBuffer, patch->texCoordBuffer});
         cmdBuffer->drawIndexed(indexBuffer->getIndexCount(), 0, 0);
     }
 }
 
 const magma::VertexInputState& BezierPatchMesh::getVertexInput() const
 {
-    static constexpr magma::VertexInputBinding bindings[] = {
+    static const magma::VertexInputState vertexInput(
+    {
         magma::VertexInputBinding(0, sizeof(rapid::float3)), // Position
         magma::VertexInputBinding(1, sizeof(rapid::float3)), // Normal
         magma::VertexInputBinding(2, sizeof(rapid::float2))  // TexCoord
-    };
-    static constexpr magma::VertexInputAttribute attributes[] = {
+    },
+    {
         magma::VertexInputAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),
         magma::VertexInputAttribute(1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0),
         magma::VertexInputAttribute(2, 2, VK_FORMAT_R32G32_SFLOAT, 0)
-    };
-    static constexpr magma::VertexInputState vertexInput(bindings, attributes);
+    });
     return vertexInput;
 }
 

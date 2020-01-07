@@ -98,7 +98,7 @@ public:
             std::vector<magma::PipelineShaderStage>{
                 VertexShaderFile(device, "passthrough.o"),
                 FragmentShaderFile(device, "fill.o")},
-            magma::renderstates::pos2F,
+            magma::renderstates::pos2f,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,

@@ -4,7 +4,15 @@
 class PlaneMesh : public Mesh
 {
 public:
-    PlaneMesh(float width, float height, bool textured, bool twoSided,
+    struct Vertex
+    {
+        rapid::float3 position;
+        rapid::float3 normal;
+        rapid::float2 texCoord;
+    };
+
+public:
+    PlaneMesh(float width, float height, bool twoSided,
         std::shared_ptr<magma::CommandBuffer> cmdBuffer);
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const override;
     virtual const magma::VertexInputState& getVertexInput() const override;
