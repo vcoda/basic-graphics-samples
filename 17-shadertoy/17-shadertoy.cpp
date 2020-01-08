@@ -133,7 +133,7 @@ public:
             }
         };
 
-        const uint32_t pollFrequencyMs = 500;
+        constexpr uint32_t pollFrequencyMs = 500;
         watchdog = std::make_unique<FileWatchdog>(pollFrequencyMs);
         watchdog->watchFor("quad.vert", onModified);
         watchdog->watchFor("shader.frag", onModified);

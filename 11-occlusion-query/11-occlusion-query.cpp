@@ -89,7 +89,7 @@ public:
 
     void createMesh()
     {
-        const uint32_t subdivisionDegree = 16;
+        constexpr uint32_t subdivisionDegree = 16;
         teapot = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
         constexpr bool twoSided = true;
         plane = std::make_unique<PlaneMesh>(6.f, 6.f, twoSided, cmdBufferCopy);

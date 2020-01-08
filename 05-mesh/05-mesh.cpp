@@ -67,7 +67,7 @@ public:
 
     void createMesh()
     {
-        const uint32_t subdivisionDegree = 4;
+        constexpr uint32_t subdivisionDegree = 4;
         mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 
