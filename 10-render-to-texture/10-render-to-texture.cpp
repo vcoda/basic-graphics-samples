@@ -141,20 +141,18 @@ public:
 
     void setupDescriptorSet()
     {
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
-            std::vector<magma::Descriptor>
+        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
+        constexpr magma::Descriptor oneImageSampler = magma::descriptors::CombinedImageSampler(1);
+        descriptorPool = std::shared_ptr<magma::DescriptorPool>(new magma::DescriptorPool(device, 1,
             {
-                uniformBufferDesc,
-                imageSamplerDesc
-            });
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            std::initializer_list<magma::DescriptorSetLayout::Binding>
+                oneUniformBuffer,
+                oneImageSampler
+            }));
+        descriptorSetLayout = std::shared_ptr<magma::DescriptorSetLayout>(new magma::DescriptorSetLayout(device,
             {
-                magma::bindings::VertexStageBinding(0, uniformBufferDesc),
-                magma::bindings::FragmentStageBinding(1, imageSamplerDesc)
-            });
+                magma::bindings::VertexStageBinding(0, oneUniformBuffer),
+                magma::bindings::FragmentStageBinding(1, oneImageSampler)
+            }));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         nearestSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinMipNearestClampToEdge);
         descriptorSet->update(0, uniformBuffer);

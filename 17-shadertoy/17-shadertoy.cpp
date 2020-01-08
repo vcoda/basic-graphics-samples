@@ -146,18 +146,10 @@ public:
 
     void setupDescriptorSet()
     {
-        constexpr uint32_t maxDescriptorSets = 1;
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
-            std::vector<magma::Descriptor>
-            {
-                uniformBufferDesc,
-            });
+        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, oneUniformBuffer);
         descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            std::initializer_list<magma::DescriptorSetLayout::Binding>
-            {   // Bind built-in uniforms to slot 0 in fragment shader
-                magma::bindings::FragmentStageBinding(0, uniformBufferDesc),
-            });
+            magma::bindings::FragmentStageBinding(0, oneUniformBuffer));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, builtinUniforms);
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);

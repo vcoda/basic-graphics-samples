@@ -78,18 +78,13 @@ public:
 
     void setupDescriptorSet()
     {
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
-            std::vector<magma::Descriptor>{uniformBufferDesc});
+        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, oneUniformBuffer);
         descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc));
+            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
         // Specify push constant range
-        const magma::pushconstants::VertexConstantRange<PushConstants> pushConstantRange;
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout,
-            std::initializer_list<VkPushConstantRange>
-            {
-                pushConstantRange
-            });
+        constexpr magma::pushconstants::VertexConstantRange<PushConstants> pushConstantRange;
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout, pushConstantRange);
     }
 
     void setupPipeline()

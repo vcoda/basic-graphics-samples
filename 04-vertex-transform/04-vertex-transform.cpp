@@ -102,22 +102,16 @@ public:
     }
 
     void setupDescriptorSet()
-    {   // Create descriptor pool
-        constexpr uint32_t maxDescriptorSets = 1; // One set is enough for us
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
-            std::vector<magma::Descriptor>
-            {   // Allocate simply one uniform buffer
-                uniformBufferDesc
-            });
-        // Setup descriptor set layout:
-        // Here we describe that slot 0 in vertex shader will have uniform buffer binding
+    {   // Specify that we will use single uniform buffer
+        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
+        // Create descriptor pool with single set
+        constexpr uint32_t maxDescriptorSets = 1;
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets, oneUniformBuffer);
+        // Setup layout of descriptor set: here we describe that slot 0 in the vertex shader
+        // will have uniform buffer binding.
         descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            std::initializer_list<magma::DescriptorSetLayout::Binding>
-            {
-                magma::bindings::VertexStageBinding(0, uniformBufferDesc)
-            });
-        // Connect our uniform buffer to binding point
+            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
+        // Connect our uniform buffer to binding slot 0
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
     }

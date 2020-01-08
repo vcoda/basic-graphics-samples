@@ -147,21 +147,23 @@ public:
 
     void setupDescriptorSet()
     {
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::UniformBuffer(1);
-        const magma::Descriptor imageSamplerDesc = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
-            std::vector<magma::Descriptor>
+        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
+        constexpr magma::Descriptor oneImageSampler = magma::descriptors::CombinedImageSampler(1);
+        // Create descriptor pool
+        constexpr uint32_t maxDescriptorSets = 1;
+        descriptorPool = std::shared_ptr<magma::DescriptorPool>(new magma::DescriptorPool(device, maxDescriptorSets,
             {
-                uniformBufferDesc,
-                magma::descriptors::CombinedImageSampler(2)
-            });
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            std::initializer_list<magma::DescriptorSetLayout::Binding>
+                oneUniformBuffer,
+                magma::descriptors::CombinedImageSampler(2) // Allocate two combined image samplers
+            }));
+        // Setup descriptor set layout
+        descriptorSetLayout = std::shared_ptr<magma::DescriptorSetLayout>(new magma::DescriptorSetLayout(device,
             {
-                magma::bindings::VertexStageBinding(0, uniformBufferDesc),
-                magma::bindings::FragmentStageBinding(1, imageSamplerDesc),
-                magma::bindings::FragmentStageBinding(2, imageSamplerDesc)
-            });
+                magma::bindings::VertexStageBinding(0, oneUniformBuffer),  // Bind transforms to slot 0 in the vertex shader
+                magma::bindings::FragmentStageBinding(1, oneImageSampler), // Bind diffuse cubemap to slot 1 in the fragment shader
+                magma::bindings::FragmentStageBinding(2, oneImageSampler)  // Bind specular cubemap to slot 2 in the fragment shader
+            }));
+        // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformTransforms);
         descriptorSet->update(1, diffuse.imageView, anisotropicSampler);

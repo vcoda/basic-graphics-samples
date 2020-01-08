@@ -72,17 +72,14 @@ public:
 
     void setupDescriptorSet()
     {
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1,
-            std::vector<magma::Descriptor>{
-                magma::descriptors::StorageBuffer(3),
-            });
-        const magma::Descriptor storageBufferDesc = magma::descriptors::StorageBuffer(1);
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            std::initializer_list<magma::DescriptorSetLayout::Binding>{
-                magma::bindings::ComputeStageBinding(0, storageBufferDesc),
-                magma::bindings::ComputeStageBinding(1, storageBufferDesc),
-                magma::bindings::ComputeStageBinding(2, storageBufferDesc),
-            });
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, magma::descriptors::StorageBuffer(3));
+        constexpr magma::Descriptor oneStorageBuffer = magma::descriptors::StorageBuffer(1);
+        descriptorSetLayout = std::shared_ptr<magma::DescriptorSetLayout>(new magma::DescriptorSetLayout(device,
+            {
+                magma::bindings::ComputeStageBinding(0, oneStorageBuffer),
+                magma::bindings::ComputeStageBinding(1, oneStorageBuffer),
+                magma::bindings::ComputeStageBinding(2, oneStorageBuffer),
+            }));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, inputBuffers[0]);
         descriptorSet->update(1, inputBuffers[1]);

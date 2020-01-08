@@ -111,20 +111,16 @@ public:
 
     void setupDescriptorSet()
     {
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 2,
-            std::vector<magma::Descriptor>
-            {
-                magma::descriptors::DynamicUniformBuffer(2),
-            });
-        const magma::Descriptor uniformBufferDesc = magma::descriptors::DynamicUniformBuffer(1);
+        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 2, magma::descriptors::DynamicUniformBuffer(2));
+        constexpr magma::Descriptor oneDynamicUniformBuffer = magma::descriptors::DynamicUniformBuffer(1);
         // Setup first set layout
         descriptorSetLayouts[0] = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, uniformBufferDesc));
+            magma::bindings::VertexStageBinding(0, oneDynamicUniformBuffer));
         descriptorSets[0] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[0]);
         descriptorSets[0]->update(0, transformUniforms);
         // Setup second set layout
         descriptorSetLayouts[1] = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(1, uniformBufferDesc));
+            magma::bindings::VertexStageBinding(1, oneDynamicUniformBuffer));
         descriptorSets[1] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[1]);
         descriptorSets[1]->update(0, colorUniforms);
     }
