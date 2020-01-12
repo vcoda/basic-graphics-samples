@@ -112,18 +112,16 @@ public:
                 magma::attachments::colorClearStoreAttachment);
             const magma::AttachmentDescription resolveColorAttachment(fb.color->getFormat(), 1,
                 magma::attachments::colorDontCareStoreAttachment); // Don't care about clear as it will be used as MSAA resolve target
-            fb.renderPass = std::make_shared<magma::RenderPass>(device,
-                std::initializer_list<magma::AttachmentDescription>
+            fb.renderPass = std::shared_ptr<magma::RenderPass>(new magma::RenderPass(device,
                 {
                     multisampleColorAttachment,
                     resolveColorAttachment
-                });
-            fb.framebuffer = std::make_shared<magma::Framebuffer>(fb.renderPass,
-                std::vector<std::shared_ptr<magma::ImageView>>
+                }));
+            fb.framebuffer = std::shared_ptr<magma::Framebuffer>(new magma::Framebuffer(fb.renderPass,
                 {
                     fb.msaaColorView,
                     fb.colorView
-                });
+                }));
         }
         else
         {
