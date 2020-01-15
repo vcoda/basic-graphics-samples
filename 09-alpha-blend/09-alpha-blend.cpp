@@ -1,5 +1,5 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/cubeMesh.h"
+#include "../framework/shapeMesh.h"
 #include "../framework/utilities.h"
 
 class AlphaBlendApp : public VulkanApp

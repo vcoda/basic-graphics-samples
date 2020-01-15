@@ -42,9 +42,6 @@
     <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cubeMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\third-party\rapid\matrix.h">
       <Filter>Header Files\rapid</Filter>
     </ClInclude>
@@ -66,9 +63,6 @@
     <ClInclude Include="..\third-party\rapid\quaternion.h">
       <Filter>Header Files\rapid</Filter>
     </ClInclude>
-    <ClInclude Include="planeMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\third-party\rapid\plane.h">
       <Filter>Header Files\rapid</Filter>
     </ClInclude>
@@ -85,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="spirvShaderFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shapeMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,16 +101,13 @@
     <ClCompile Include="bezierMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cubeMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="planeMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="knotMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linearAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shapeMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

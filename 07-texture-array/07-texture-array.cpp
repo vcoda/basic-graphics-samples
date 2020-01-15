@@ -1,6 +1,6 @@
 #include <fstream>
 #include "../framework/vulkanApp.h"
-#include "../framework/cubeMesh.h"
+#include "../framework/shapeMesh.h"
 #include "../framework/utilities.h"
 
 // Use PgUp/PgDown to select texture lod

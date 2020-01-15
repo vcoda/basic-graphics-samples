@@ -43,11 +43,10 @@ TARGET16=16-immediate
 
 FRAMEWORK_OBJS= \
 	$(BUILD)/$(FRAMEWORK)/bezierMesh.o \
-	$(BUILD)/$(FRAMEWORK)/cubeMesh.o \
 	$(BUILD)/$(FRAMEWORK)/knotMesh.o \
-	$(BUILD)/$(FRAMEWORK)/main.o \
 	$(BUILD)/$(FRAMEWORK)/linearAllocator.o \
-	$(BUILD)/$(FRAMEWORK)/planeMesh.o \
+	$(BUILD)/$(FRAMEWORK)/main.o \
+	$(BUILD)/$(FRAMEWORK)/shapeMesh.o \
 	$(BUILD)/$(FRAMEWORK)/utilities.o \
 	$(BUILD)/$(FRAMEWORK)/vulkanApp.o \
 	$(BUILD)/$(FRAMEWORK)/xcbApp.o

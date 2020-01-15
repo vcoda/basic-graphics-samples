@@ -19,7 +19,24 @@ public:
 
 private:
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::VertexBuffer> normalBuffer;
-    std::shared_ptr<magma::VertexBuffer> texCoordBuffer;
     std::shared_ptr<magma::IndexBuffer> indexBuffer;
 };
+
+class CubeMesh : public Mesh
+{
+public:
+    struct Vertex
+    {
+        rapid::float3 position;
+        rapid::float3 texCoord;
+    };
+
+public:
+    CubeMesh(std::shared_ptr<magma::CommandBuffer> cmdBuffer);
+    virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const override;
+    virtual const magma::VertexInputState& getVertexInput() const override;
+
+private:
+    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
+};
+

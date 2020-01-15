@@ -1,6 +1,6 @@
 #include "../framework/vulkanApp.h"
 #include "../framework/bezierMesh.h"
-#include "../framework/planeMesh.h"
+#include "../framework/shapeMesh.h"
 #include "teapot.h"
 
 // Use L button + mouse to rotate scene
