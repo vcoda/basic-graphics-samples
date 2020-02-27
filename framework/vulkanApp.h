@@ -12,6 +12,7 @@ typedef XcbApp PlatformApp;
 #include "magma/magma.h"
 #include "rapid/rapid.h"
 #include "spirvShaderFile.h"
+#include "graphicsPipeline.h"
 #include "timer.h"
 
 class VulkanApp : public PlatformApp
