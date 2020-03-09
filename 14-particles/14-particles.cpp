@@ -18,7 +18,7 @@ class ParticlesApp : public VulkanApp
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
-    std::shared_ptr<magma::GraphicsPipeline> pipeline;
+    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     const float fov = rapid::radians(60.f);
     rapid::matrix viewProj;
@@ -120,19 +120,18 @@ public:
         const magma::VertexInputStructure<ParticleSystem::ParticleVertex> vertexInput(0, {
             {0, &ParticleSystem::ParticleVertex::position},
             {1, &ParticleSystem::ParticleVertex::color}});
-        pipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "pointSize.o"),
-                FragmentShaderFile(device, negateViewport ? "particleNeg.o" : "particle.o")},
+        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+            "pointSize.o",
+            negateViewport ? "particleNeg.o" : "particle.o",
             vertexInput,
             magma::renderstates::pointList,
             negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::blendNormalWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -157,7 +156,7 @@ public:
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
                 cmdBuffer->pushConstantBlock(pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, pushConstants);
-                cmdBuffer->bindPipeline(pipeline);
+                cmdBuffer->bindPipeline(graphicsPipeline);
                 particles->draw(cmdBuffer);
             }
             cmdBuffer->endRenderPass();

@@ -10,7 +10,7 @@ class MeshApp : public VulkanApp
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
-    std::shared_ptr<magma::GraphicsPipeline> wireframeDrawPipeline;
+    std::shared_ptr<magma::GraphicsPipeline> wireframePipeline;
 
     rapid::matrix viewProj;
     bool negateViewport = false;
@@ -94,19 +94,17 @@ public:
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
-        wireframeDrawPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "transform.o"),
-                FragmentShaderFile(device, "normal.o")},
+        wireframePipeline = std::make_shared<GraphicsPipeline>(device,
+            "transform.o", "normal.o",
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -124,7 +122,7 @@ public:
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
-                cmdBuffer->bindPipeline(wireframeDrawPipeline);
+                cmdBuffer->bindPipeline(wireframePipeline);
                 mesh->draw(cmdBuffer);
             }
             cmdBuffer->endRenderPass();

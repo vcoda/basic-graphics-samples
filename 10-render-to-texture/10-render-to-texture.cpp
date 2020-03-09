@@ -160,39 +160,34 @@ public:
     void setupPipelines()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
-        rtPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "triangle.o"),
-                FragmentShaderFile(device, "fill.o")},
+        rtPipeline = std::make_shared<GraphicsPipeline>(device,
+            "triangle.o", "fill.o",
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
             magma::MultisampleState(static_cast<VkSampleCountFlagBits>(msaaSamples)),
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            fb.renderPass);
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "quad.o"),
-                FragmentShaderFile(device, "texture.o")},
+            fb.renderPass, 0,
+            pipelineCache);
+        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+            "quad.o", "texture.o",
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::blendNormalWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordOffscreenCommandBuffer()
     {
         rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
         rtSemaphore = std::make_shared<magma::Semaphore>(device);
-
         rtCmdBuffer->begin();
         {
             rtCmdBuffer->setRenderArea(0, 0, fb.framebuffer->getExtent());

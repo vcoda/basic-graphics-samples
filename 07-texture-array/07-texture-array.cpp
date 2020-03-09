@@ -222,19 +222,17 @@ public:
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "transform.o"),
-                FragmentShaderFile(device, "textureArray.o")},
+        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+            "transform.o", "textureArray.o",
             mesh->getVertexInput(),
             magma::renderstates::triangleStrip,
             negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLess,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)

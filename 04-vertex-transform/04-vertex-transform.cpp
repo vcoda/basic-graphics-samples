@@ -119,10 +119,8 @@ public:
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "transform.o"),
-                FragmentShaderFile(device, "frontFace.o")},
+        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+            "transform.o", "frontFace.o",
             magma::renderstates::pos2fColor4b,
             magma::renderstates::triangleList,
             rhs ? magma::renderstates::fillCullNoneCCW
@@ -130,9 +128,9 @@ public:
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)

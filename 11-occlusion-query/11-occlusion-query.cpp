@@ -128,32 +128,28 @@ public:
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayouts);
-        teapotPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "transform.o"),
-                FragmentShaderFile(device, "fill.o")},
+        teapotPipeline = std::make_shared<GraphicsPipeline>(device,
+            "transform.o", "fill.o",
             teapot->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
-        planePipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "transform.o"),
-                FragmentShaderFile(device, "fill.o")},
+            renderPass, 0,
+            pipelineCache);
+        planePipeline = std::make_shared<GraphicsPipeline>(device,
+            "transform.o", "fill.o",
             plane->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)

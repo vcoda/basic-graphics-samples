@@ -135,19 +135,17 @@ public:
 
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
-        return std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "transform.o"),
-                FragmentShaderFile(device, "texture.o")},
+        return std::make_shared<GraphicsPipeline>(device,
+            "transform.o", "texture.o",
             mesh->getVertexInput(),
             magma::renderstates::triangleStrip,
             rasterizationState,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::blendNormalWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)

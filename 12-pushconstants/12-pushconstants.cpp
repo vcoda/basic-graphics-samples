@@ -89,19 +89,17 @@ public:
 
     void setupPipeline()
     {
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>{
-                VertexShaderFile(device, "passthrough.o"),
-                FragmentShaderFile(device, "fill.o")},
+        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+            "passthrough.o", "fill.o",
             magma::renderstates::pos2f,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendWriteRgb,
-            std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 };
 
