@@ -100,7 +100,7 @@ private:
     bool airResistence = true;
     float velocityScale = 1.f;
 
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
+    std::shared_ptr<magma::DynamicVertexBuffer> vertexBuffer;
     std::shared_ptr<magma::IndirectBuffer> drawParams;
 };
 

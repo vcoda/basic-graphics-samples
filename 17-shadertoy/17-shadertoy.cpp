@@ -157,12 +157,12 @@ public:
 
     void setupPipeline()
     {
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
-            std::vector<magma::PipelineShaderStage>
-            {
-                magma::VertexShaderStage(vertexShader, "main"),
-                magma::FragmentShaderStage(fragmentShader, "main")
-            },
+        std::vector<magma::PipelineShaderStage> pipelineShaders = {
+            magma::VertexShaderStage(vertexShader, "main"),
+            magma::FragmentShaderStage(fragmentShader, "main")
+        };
+        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device,
+            pipelineShaders,
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleStrip,
             magma::TesselationState(),
@@ -170,10 +170,11 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             std::initializer_list<VkDynamicState>{},
             pipelineLayout,
-            renderPass);
+            renderPass, 0,
+            pipelineCache);
     }
 
     void recordCommandBuffer(uint32_t index)
@@ -184,7 +185,7 @@ public:
             cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
             {
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->draw(4, 0);
             }

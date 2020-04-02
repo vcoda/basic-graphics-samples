@@ -142,7 +142,7 @@ public:
             rasterizationState,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::blendNormalWriteRgb,
+            magma::renderstates::blendNormalRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -158,11 +158,11 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(cullFrontPipeline, descriptorSet);
                 // Draw back faced triangles
                 cmdBuffer->bindPipeline(cullFrontPipeline);
                 mesh->draw(cmdBuffer);
-                // Draw front facing triangles
+                // Draw front faced triangles
                 cmdBuffer->bindPipeline(cullBackPipeline);
                 mesh->draw(cmdBuffer);
             }

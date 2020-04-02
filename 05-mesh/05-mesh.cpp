@@ -4,7 +4,6 @@
 
 class MeshApp : public VulkanApp
 {
-    std::unique_ptr<BezierPatchMesh> mesh;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
@@ -12,6 +11,7 @@ class MeshApp : public VulkanApp
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> wireframePipeline;
 
+    std::unique_ptr<BezierPatchMesh> mesh;
     rapid::matrix viewProj;
     bool negateViewport = false;
 
@@ -101,7 +101,7 @@ public:
             negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -121,7 +121,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(wireframePipeline, descriptorSet);
                 cmdBuffer->bindPipeline(wireframePipeline);
                 mesh->draw(cmdBuffer);
             }

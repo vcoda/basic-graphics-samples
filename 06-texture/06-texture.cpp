@@ -160,7 +160,7 @@ public:
                 {1.f, 1.f},
             }
         };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
+        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
 
     void createUniformBuffer()
@@ -204,7 +204,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -220,7 +220,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(4, 0);

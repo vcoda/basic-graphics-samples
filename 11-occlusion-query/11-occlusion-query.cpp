@@ -29,7 +29,7 @@ public:
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createOcclusionQuery();
-        createMesh();
+        createMeshes();
         createUniformBuffer();
         setupDescriptorSet();
         setupPipeline();
@@ -87,7 +87,7 @@ public:
         occlusionQuery = std::make_shared<magma::OcclusionQuery>(device, 1);
     }
 
-    void createMesh()
+    void createMeshes()
     {
         constexpr uint32_t subdivisionDegree = 16;
         teapot = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
@@ -135,7 +135,7 @@ public:
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -146,7 +146,7 @@ public:
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -169,11 +169,11 @@ public:
                 cmdBuffer->setScissor(0, 0, width, height);
                 // Occluder
                 cmdBuffer->bindPipeline(planePipeline);
-                cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets, {0, 0});
+                cmdBuffer->bindDescriptorSets(planePipeline, descriptorSets, {0, 0});
                 plane->draw(cmdBuffer);
                 // Occludee
                 cmdBuffer->bindPipeline(teapotPipeline);
-                cmdBuffer->bindDescriptorSets(pipelineLayout, descriptorSets,
+                cmdBuffer->bindDescriptorSets(teapotPipeline, descriptorSets,
                     {
                         transformUniforms->getDynamicOffset(1),
                         colorUniforms->getDynamicOffset(1)

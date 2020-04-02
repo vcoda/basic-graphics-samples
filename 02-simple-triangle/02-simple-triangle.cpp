@@ -33,7 +33,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             nullptr,
             renderPass, 0,
             pipelineCache);

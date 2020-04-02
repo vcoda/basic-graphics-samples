@@ -3,7 +3,7 @@
 #include "magma/magma.h"
 #include "rapid/rapid.h"
 
-class Mesh : public magma::detail::NonCopyable
+class Mesh : public magma::core::NonCopyable
 {
 public:
     virtual void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer) const = 0;

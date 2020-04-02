@@ -167,7 +167,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::MultisampleState(static_cast<VkSampleCountFlagBits>(msaaSamples)),
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             fb.renderPass, 0,
             pipelineCache);
@@ -178,7 +178,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::blendNormalWriteRgb,
+            magma::renderstates::blendNormalRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -195,7 +195,7 @@ public:
             {
                 rtCmdBuffer->setViewport(magma::Viewport(0, 0, fb.framebuffer->getExtent()));
                 rtCmdBuffer->setScissor(magma::Scissor(0, 0, fb.framebuffer->getExtent()));
-                rtCmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                rtCmdBuffer->bindDescriptorSet(rtPipeline, descriptorSet);
                 rtCmdBuffer->bindPipeline(rtPipeline);
                 rtCmdBuffer->draw(3, 0);
             }
@@ -214,7 +214,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->draw(4, 0);
             }

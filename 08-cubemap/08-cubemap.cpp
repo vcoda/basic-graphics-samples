@@ -180,7 +180,7 @@ public:
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -200,7 +200,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 mesh->draw(cmdBuffer);
             }

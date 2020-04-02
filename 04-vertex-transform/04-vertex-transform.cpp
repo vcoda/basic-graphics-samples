@@ -73,11 +73,6 @@ public:
         });
     }
 
-    virtual void createLogicalDevice() override
-    {
-        device = physicalDevice->createDefaultDevice();
-    }
-
     void createVertexBuffer()
     {
         struct Vertex
@@ -93,7 +88,7 @@ public:
             {{-1.0f, 1.0f}, {0, _1, 0, _1}}, // left
             {{ 1.0f, 1.0f}, {0, 0, _1, _1}}  // right
         };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
+        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
 
     void createUniformBuffer()
@@ -127,7 +122,7 @@ public:
                 : magma::renderstates::fillCullNoneCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -143,7 +138,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(3, 0);

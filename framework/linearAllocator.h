@@ -3,7 +3,7 @@
 #include <map>
 #include "magma/allocator/objectAllocator.h"
 
-class LinearAllocator : public magma::IObjectAllocator
+class LinearAllocator : public magma::memory::IObjectAllocator
 {
 public:
     LinearAllocator();

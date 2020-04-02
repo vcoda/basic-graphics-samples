@@ -14,7 +14,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::shared_ptr<magma::RenderPass> renderPass,
     uint32_t subpass /* 0 */,
     std::shared_ptr<magma::PipelineCache> pipelineCache /* nullptr */):
-    magma::GraphicsPipeline(device, std::move(pipelineCache),
+    magma::GraphicsPipeline(device,
     std::vector<magma::PipelineShaderStage>{
         magma::VertexShaderStage(loadShader(device, vertexShaderFileName), "main"),
         magma::FragmentShaderStage(loadShader(device, fragmentShaderFileName), "main")},
@@ -24,7 +24,8 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::initializer_list<VkDynamicState>{
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR},
-    layout, renderPass, subpass, nullptr, 0, nullptr)
+    layout, renderPass, subpass,
+    std::move(pipelineCache), nullptr, nullptr, 0)
 {}
 
 std::shared_ptr<magma::ShaderModule> GraphicsPipeline::loadShader(

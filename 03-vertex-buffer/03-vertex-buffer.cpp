@@ -21,11 +21,6 @@ public:
         submitCommandBuffer(bufferIndex);
     }
 
-    virtual void createLogicalDevice() override
-    {
-        device = physicalDevice->createDefaultDevice();
-    }
-
     void createVertexBuffer()
     {
         struct Vertex
@@ -41,7 +36,7 @@ public:
             {{-0.5f, 0.5f}, {0, _1, 0, _1}}, // left
             {{ 0.5f, 0.5f}, {0, 0, _1, _1}}  // right
         };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
+        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
 
     void setupPipeline()
@@ -53,7 +48,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             nullptr,
             renderPass, 0,
             pipelineCache);

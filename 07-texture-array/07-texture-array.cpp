@@ -145,7 +145,7 @@ public:
                     throw std::runtime_error("failed to load DDS texture");
                 ctxArray.push_back(ctx);
                 // Skip DDS header
-                baseMipOffsets.push_back(reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data); 
+                baseMipOffsets.push_back(reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data);
                 data += size;
             }
         });
@@ -229,7 +229,7 @@ public:
             negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLess,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -249,7 +249,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 mesh->draw(cmdBuffer);
             }

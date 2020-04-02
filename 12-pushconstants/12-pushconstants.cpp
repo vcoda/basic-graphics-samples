@@ -60,11 +60,6 @@ public:
         pushConstants.vertexColors[2] = rapid::float4(0.f, 0.f, 1.f - c, 1.f);
     }
 
-    virtual void createLogicalDevice() override
-    {
-        device = physicalDevice->createDefaultDevice();
-    }
-
     void createVertexBuffer()
     {
         constexpr auto _1 = std::numeric_limits<unsigned char>::max();
@@ -73,7 +68,7 @@ public:
             {-0.5f, 0.5f},
             { 0.5f, 0.5f}
         };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(device, vertices);
+        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
 
     void setupDescriptorSet()
@@ -96,7 +91,7 @@ public:
             magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

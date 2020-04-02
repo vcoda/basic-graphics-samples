@@ -6,7 +6,7 @@
 
 // Use Space to toggle between albedo and shading.
 // Use 1, 2, 3 to change shading branch.
-// Use mouse to rotate knot.
+// Use L button + mouse to rotate knot.
 class SpecializationApp : public VulkanApp
 {
     enum ShadingType
@@ -152,9 +152,9 @@ public:
     {
         aligned_vector<char> bytecode;
         bytecode = utilities::loadBinaryFile("transform.o");
-        vertexShader = std::make_shared<magma::ShaderModule>(device, (const uint32_t *)bytecode.data(), bytecode.size());
+        vertexShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
         bytecode = utilities::loadBinaryFile("specialized.o");
-        fragmentShader = std::make_shared<magma::ShaderModule>(device, (const uint32_t *)bytecode.data(), bytecode.size());
+        fragmentShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
     }
 
     void createUniformBuffer()
@@ -193,18 +193,19 @@ public:
             magma::VertexShaderStage(vertexShader, "main"),
             specializeFragmentStage(shadingType, "main")
         };
-        auto pipeline(std::make_shared<magma::GraphicsPipeline>(device, pipelineCache,
+        pipelines.emplace_back(
+            std::make_shared<magma::GraphicsPipeline>(device,
             shaderStages,
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
             magma::renderstates::noMultisample,
             magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendWriteRgb,
+            magma::renderstates::dontBlendRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
-            renderPass));
-        pipelines.push_back(pipeline);
+            renderPass, 0,
+            pipelineCache));
     }
 
     void recordCommandBuffer(uint32_t bufferIndex, uint32_t pipelineIndex)
@@ -221,7 +222,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet);
+                cmdBuffer->bindDescriptorSet(pipelines[pipelineIndex], descriptorSet);
                 cmdBuffer->bindPipeline(pipelines[pipelineIndex]);
                 mesh->draw(cmdBuffer);
             }

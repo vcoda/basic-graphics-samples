@@ -15,7 +15,6 @@ class ComputeApp : public VulkanApp
     std::shared_ptr<magma::ComputePipeline> computeSum;
     std::shared_ptr<magma::ComputePipeline> computeMul;
     std::shared_ptr<magma::ComputePipeline> computePower;
-    std::shared_ptr<magma::CommandBuffer> computeCmdBuffer;
     std::shared_ptr<magma::Fence> fence;
 
 public:
@@ -53,7 +52,7 @@ public:
     {
         queue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
         commandPools[0] = std::make_shared<magma::CommandPool>(device, queue->getFamilyIndex());
-        computeCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
+        commandBuffers = commandPools[0]->allocateCommandBuffers(1, true);
 
         std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
@@ -66,7 +65,7 @@ public:
     {
         inputBuffers[0] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
         inputBuffers[1] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
-        outputBuffer = std::make_shared<magma::StorageBuffer>(device, sizeof(float) * numbers.size());
+        outputBuffer = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, nullptr, sizeof(float) * numbers.size());
         readbackBuffer = std::make_shared<magma::DstTransferBuffer>(device, sizeof(float) * numbers.size());
     }
 
@@ -89,13 +88,14 @@ public:
 
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
     {
-        return std::make_shared<magma::ComputePipeline>(device, pipelineCache,
+        return std::make_shared<magma::ComputePipeline>(device,
             ComputeShaderFile(device, filename, entrypoint),
-            pipelineLayout);
+            pipelineLayout, pipelineCache);
     }
 
     void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
     {   // Record command buffer
+        std::shared_ptr<magma::CommandBuffer> computeCmdBuffer = commandBuffers[0];
         computeCmdBuffer->begin();
         {   // Ensure that transfer write is finished before compute shader execution
             const std::vector<magma::BufferMemoryBarrier> bufferMemoryBarriers = {
@@ -105,7 +105,7 @@ public:
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 {}, bufferMemoryBarriers, {});
             // Bind input and output buffers
-            computeCmdBuffer->bindDescriptorSet(pipelineLayout, descriptorSet, VK_PIPELINE_BIND_POINT_COMPUTE);
+            computeCmdBuffer->bindDescriptorSet(pipeline, descriptorSet);
             // Bind pipeline
             computeCmdBuffer->bindPipeline(pipeline);
             // Run compute shader
