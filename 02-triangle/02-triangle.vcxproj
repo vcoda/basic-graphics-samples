@@ -19,9 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="02-simple-triangle.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="fill.frag">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling fragment shader</Message>
@@ -53,13 +50,16 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).o</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="02-triangle.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{27a8fc58-1bb6-4e50-8c68-4c20736f1af5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Vulkan_Project1</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
-    <ProjectName>02-simple-triangle</ProjectName>
+    <ProjectName>02-triangle</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

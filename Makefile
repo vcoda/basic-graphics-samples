@@ -9,7 +9,7 @@ BASE_CFLAGS=-std=c++14 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(INCLUDE_DIR)
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
 	CFLAGS=$(BASE_CFLAGS) -O0 -g -D_DEBUG
-    MAGMA_LIB=magmad
+	MAGMA_LIB=magmad
 else
 	CFLAGS=$(BASE_CFLAGS) -O3 -DNDEBUG
 	MAGMA_LIB=magma
@@ -23,7 +23,7 @@ FRAMEWORK=framework
 # Sample app dir/exe names
 
 TARGET01=01-clear
-TARGET02=02-simple-triangle
+TARGET02=02-triangle
 TARGET03=03-vertex-buffer
 TARGET04=04-vertex-transform
 TARGET05=05-mesh
@@ -180,7 +180,7 @@ shaders-15: $(TARGET15)/sum.o $(TARGET15)/mul.o $(TARGET15)/power.o
 # Sample app builds: make output directory, build executable, compile shaders
 
 01-clear:				builddir magma $(TARGET01)/$(TARGET01)
-02-simple-triangle:		builddir magma $(TARGET02)/$(TARGET02) shaders-02
+02-triangle:			builddir magma $(TARGET02)/$(TARGET02) shaders-02
 03-vertex-buffer:		builddir magma $(TARGET03)/$(TARGET03) shaders-03
 04-vertex-transform:	builddir magma $(TARGET04)/$(TARGET04) shaders-04
 05-mesh:				builddir magma $(TARGET05)/$(TARGET05) shaders-05

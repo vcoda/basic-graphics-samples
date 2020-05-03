@@ -1,12 +1,12 @@
 #include "../framework/vulkanApp.h"
 
-class SimpleTriangleApp : public VulkanApp
+class TriangleApp : public VulkanApp
 {
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
 public:
-    SimpleTriangleApp(const AppEntry& entry):
-        VulkanApp(entry, TEXT("02 - Simple triangle"), 512, 512)
+    TriangleApp(const AppEntry& entry):
+        VulkanApp(entry, TEXT("02 - Triangle"), 512, 512)
     {
         initialize();
         setupPipeline();
@@ -60,5 +60,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<SimpleTriangleApp>(entry);
+    return std::make_unique<TriangleApp>(entry);
 }
