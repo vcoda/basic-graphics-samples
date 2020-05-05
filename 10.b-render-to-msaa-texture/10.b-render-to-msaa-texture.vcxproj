@@ -19,10 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="10-render-to-texture.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="quad.vert">
+    <CustomBuild Include="passthrough.vert">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
@@ -37,7 +34,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).o</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).o</Outputs>
     </CustomBuild>
-    <CustomBuild Include="texture.frag">
+    <CustomBuild Include="tex.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
@@ -85,13 +82,16 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).o</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="10.b-render-to-msaa-texture.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{8ac89896-0c22-457c-ad75-c495a973cdd9}</ProjectGuid>
+    <ProjectGuid>{2DF25ACC-07D2-4E01-8007-B6D26F99F60A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>render_to_texture</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
-    <ProjectName>10-render-to-texture</ProjectName>
+    <ProjectName>10.b-render-to-msaa-texture</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

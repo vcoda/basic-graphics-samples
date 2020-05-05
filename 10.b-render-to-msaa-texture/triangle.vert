@@ -28,7 +28,6 @@ void main()
     );
     vec2 c = (v[0] + v[1] + v[2])/3.;
     vec2 pos = v[gl_VertexIndex] - c;
-    float scale = 1.7;
     oColor = colors[gl_VertexIndex];
-    gl_Position = world * vec4(pos * scale, 0., 1.);
+    gl_Position = world * vec4(pos, 0., 1.);
 }

@@ -12,21 +12,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="texture.frag">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="quad.vert">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="fill.frag">
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="triangle.vert">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="tex.frag">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="passthrough.vert">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="10-render-to-texture.cpp">
+    <ClCompile Include="10.b-render-to-msaa-texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
