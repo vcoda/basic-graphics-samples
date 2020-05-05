@@ -51,7 +51,10 @@ VkFormat getSupportedDepthFormat(std::shared_ptr<magma::PhysicalDevice> physical
     };
     for (VkFormat format : depthFormats)
     {
-        if (hasStencil && !magma::Format(format).depthStencil())
+        const magma::Format fmt(format);
+        if (hasStencil && !fmt.depthStencil())
+            continue;
+        if (!hasStencil && !fmt.depth())
             continue;
         const VkFormatProperties properties = physicalDevice->getFormatProperties(format);
         if (optimalTiling && (properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT))
