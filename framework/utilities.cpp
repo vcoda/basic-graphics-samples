@@ -62,6 +62,21 @@ VkFormat getSupportedDepthFormat(std::shared_ptr<magma::PhysicalDevice> physical
     return VK_FORMAT_UNDEFINED;
 }
 
+uint32_t getSupportedMultisampleLevel(std::shared_ptr<magma::PhysicalDevice> physicalDevice, VkFormat format)
+{
+    const VkImageFormatProperties formatProperties = physicalDevice->getImageFormatProperties(
+        format, VK_IMAGE_TYPE_2D, true, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
+    for (VkSampleCountFlags bit : {
+        VK_SAMPLE_COUNT_8_BIT,
+        VK_SAMPLE_COUNT_4_BIT,
+        VK_SAMPLE_COUNT_2_BIT})
+    {
+        if ((formatProperties.sampleCounts & bit) == bit)
+            return bit;
+    }
+    return 1;
+}
+
 VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
     uint64_t object, size_t location, int32_t messageCode,
     const char *pLayerPrefix, const char *pMessage, void *pUserData)

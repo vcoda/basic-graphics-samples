@@ -26,6 +26,8 @@ namespace utilities
     VkFormat getBlockCompressedFormat(const gliml::context& ctx);
     VkFormat getSupportedDepthFormat(std::shared_ptr<magma::PhysicalDevice> physicalDevice,
         bool hasStencil, bool optimalTiling);
+    uint32_t getSupportedMultisampleLevel(std::shared_ptr<magma::PhysicalDevice> physicalDevice,
+        VkFormat format);
 
     VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
         uint64_t object, size_t location, int32_t messageCode,
