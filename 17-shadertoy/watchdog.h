@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <chrono>
 
 class FileWatchdog
 {
@@ -21,26 +22,24 @@ class FileWatchdog
     std::list<Item> itemList;
 
 public:
-    FileWatchdog(uint32_t pollFrequency)
+    FileWatchdog(const std::chrono::milliseconds pollFrequency)
     {
         watchThread = std::thread([this, pollFrequency]()
         {   // Dedicated thread that periodically checks files for modification
             while (true)
-            {
-                Sleep(pollFrequency);
+            {   // Do not abuse processor time
+                std::this_thread::sleep_for(pollFrequency);
+                std::lock_guard<std::mutex> guard(itemListAccess);
+                for (Item& item : itemList)
                 {
-                    std::lock_guard<std::mutex> guard(itemListAccess);
-                    for (Item& item : itemList)
+                    struct _stat stat;
+                    const int result = _stat(item.name.c_str(), &stat);
+                    if (0 == result)
                     {
-                        struct _stat stat;
-                        const int result = _stat(item.name.c_str(), &stat);
-                        if (0 == result)
+                        if (item.lastModifiedTime != stat.st_mtime)
                         {
-                            if (item.lastModifiedTime != stat.st_mtime)
-                            {
-                                item.onModified(item.name);
-                                item.lastModifiedTime = stat.st_mtime;
-                            }
+                            item.onModified(item.name);
+                            item.lastModifiedTime = stat.st_mtime;
                         }
                     }
                 }
