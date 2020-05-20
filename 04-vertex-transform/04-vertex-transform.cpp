@@ -120,7 +120,7 @@ public:
             magma::renderstates::triangleList,
             rhs ? magma::renderstates::fillCullNoneCCW
                 : magma::renderstates::fillCullNoneCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,
@@ -133,7 +133,6 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
             {
                 cmdBuffer->setViewport(0, 0, width, height);

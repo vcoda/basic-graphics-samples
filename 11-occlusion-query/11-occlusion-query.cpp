@@ -133,7 +133,7 @@ public:
             teapot->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,
@@ -144,7 +144,7 @@ public:
             plane->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,
@@ -158,7 +158,6 @@ public:
         cmdBuffer->begin();
         {
             cmdBuffer->resetQueryPool(occlusionQuery);
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
                     magma::clears::grayColor,

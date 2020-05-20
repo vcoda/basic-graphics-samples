@@ -178,7 +178,7 @@ public:
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,
@@ -189,7 +189,6 @@ public:
     void recordCommandBuffer(uint32_t index)
     {
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
-        cmdBuffer->setRenderArea(0, 0, width, height);
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],

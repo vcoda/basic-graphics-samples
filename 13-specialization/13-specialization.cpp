@@ -199,7 +199,7 @@ public:
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
@@ -213,7 +213,6 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[bufferIndex][pipelineIndex];
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex],
                 {
                     magma::clears::grayColor,

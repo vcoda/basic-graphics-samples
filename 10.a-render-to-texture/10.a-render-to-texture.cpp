@@ -158,7 +158,7 @@ public:
             magma::renderstates::nullVertexInput,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,
@@ -169,7 +169,7 @@ public:
             magma::renderstates::pos2fTex2f,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,
@@ -182,10 +182,10 @@ public:
         rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
         rtCmdBuffer->begin();
         {
-            rtCmdBuffer->setRenderArea(0, 0, fb.framebuffer->getExtent());
+            constexpr magma::ClearColor clearColor(0.35f, 0.53f, 0.7f, 1.0f);
             rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer,
                 {
-                    magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f),
+                    clearColor,
                     magma::clears::depthOne
                 });
             {
@@ -206,7 +206,6 @@ public:
         std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
                     magma::clears::grayColor

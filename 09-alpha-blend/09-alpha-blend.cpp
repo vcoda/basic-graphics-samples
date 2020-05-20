@@ -140,7 +140,7 @@ public:
             mesh->getVertexInput(),
             magma::renderstates::triangleStrip,
             rasterizationState,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::blendNormalRgb,
             pipelineLayout,
@@ -153,7 +153,6 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f)});
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);

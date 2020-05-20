@@ -168,7 +168,7 @@ public:
             magma::TesselationState(),
             magma::ViewportState(0, 0, width, height),
             magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendRgb,
             std::initializer_list<VkDynamicState>{},
@@ -182,7 +182,6 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
             {
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);

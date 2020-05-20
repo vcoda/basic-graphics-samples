@@ -31,7 +31,6 @@ public:
         // To show push constants in dynamic, we have to rebuild command buffer each frame
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex], {magma::clears::grayColor});
             {
                 cmdBuffer->setViewport(0, 0, width, height);
@@ -89,7 +88,7 @@ public:
             magma::renderstates::pos2f,
             magma::renderstates::triangleList,
             magma::renderstates::fillCullBackCCW,
-            magma::renderstates::noMultisample,
+            magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendRgb,
             pipelineLayout,

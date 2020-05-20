@@ -264,7 +264,6 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->setRenderArea(0, 0, width, height);
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
