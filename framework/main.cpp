@@ -36,26 +36,35 @@ int main(int argc, char *argv[])
         app->show();
         app->run();
     }
-    catch (const magma::BadResult& exc)
+    catch (const magma::exception::ErrorResult& exc)
     {
         std::ostringstream msg;
-        msg << exc.file() << "(" << exc.line() << "):" << std::endl
+        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
             << std::endl
-            << magma::helpers::stringize(exc.getResult()) << std::endl
+            << magma::helpers::stringize(exc.error()) << std::endl
             << exc.what();
         onError(msg.str(), "Vulkan");
     }
-    catch (const magma::NotImplemented& exc)
+    catch (const magma::exception::ReflectionErrorResult& exc)
     {
         std::ostringstream msg;
-        msg << exc.file() << "(" << exc.line() << "):" << std::endl
+        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
+            << std::endl
+            << magma::helpers::stringize(exc.error()) << std::endl
+            << exc.what();
+        onError(msg.str(), "SPIRV-Reflect");
+    }
+    catch (const magma::exception::NotImplemented& exc)
+    {
+        std::ostringstream msg;
+        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
             << "Error: " << exc.what();
         onError(msg.str(), "Not implemented");
     }
-    catch (const magma::Exception& exc)
+    catch (const magma::exception::Exception& exc)
     {
         std::ostringstream msg;
-        msg << exc.file() << "(" << exc.line() << "):" << std::endl
+        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
             << "Error: " << exc.what();
         onError(msg.str(), "Magma");
     }

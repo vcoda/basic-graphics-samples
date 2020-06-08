@@ -16,8 +16,8 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::shared_ptr<magma::PipelineCache> pipelineCache /* nullptr */):
     magma::GraphicsPipeline(device,
     std::vector<magma::PipelineShaderStage>{
-        magma::VertexShaderStage(loadShader(device, vertexShaderFileName), "main"),
-        magma::FragmentShaderStage(loadShader(device, fragmentShaderFileName), "main")},
+        loadShader(device, vertexShaderFileName),
+        loadShader(device, fragmentShaderFileName)},
     vertexInputState,inputAssemblyState, rasterizationState,
     multisampleState, depthStencilState, colorBlendState,
     // Define dynamic states that are used by default
@@ -28,7 +28,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::move(pipelineCache), nullptr, nullptr, 0)
 {}
 
-std::shared_ptr<magma::ShaderModule> GraphicsPipeline::loadShader(
+magma::PipelineShaderStage GraphicsPipeline::loadShader(
     std::shared_ptr<magma::Device> device, const char *shaderFileName) const
 {
     std::ifstream file(shaderFileName, std::ios::in | std::ios::binary);
@@ -37,7 +37,10 @@ std::shared_ptr<magma::ShaderModule> GraphicsPipeline::loadShader(
     std::vector<char> bytecode((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     if (bytecode.size() % sizeof(magma::SpirvWord))
         throw std::runtime_error("size of \"" + std::string(shaderFileName) + "\" bytecode must be a multiple of SPIR-V word");
-    return std::make_shared<magma::ShaderModule>(std::move(device),
+    std::shared_ptr<magma::ShaderModule> module = std::make_shared<magma::ShaderModule>(device,
         reinterpret_cast<const magma::SpirvWord *>(bytecode.data()), bytecode.size(),
-        0, 0, nullptr, device->getAllocator());
+        0, 0, true, device->getAllocator());
+    const VkShaderStageFlagBits stage = module->getReflection()->getShaderStage();
+    const char *const entrypoint = module->getReflection()->getEntryPointName(0);
+    return magma::PipelineShaderStage(stage, module, entrypoint);
 }

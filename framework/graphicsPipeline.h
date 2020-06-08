@@ -19,6 +19,6 @@ public:
         std::shared_ptr<magma::PipelineCache> pipelineCache = nullptr);
 
 private:
-    std::shared_ptr<magma::ShaderModule> loadShader(std::shared_ptr<magma::Device> device,
+    magma::PipelineShaderStage loadShader(std::shared_ptr<magma::Device> device,
         const char *shaderFileName) const;
 };
