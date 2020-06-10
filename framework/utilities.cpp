@@ -42,14 +42,12 @@ VkFormat getBlockCompressedFormat(const gliml::context& ctx)
 
 VkFormat getSupportedDepthFormat(std::shared_ptr<magma::PhysicalDevice> physicalDevice, bool hasStencil, bool optimalTiling)
 {
-    const std::vector<VkFormat> depthFormats = {
+    for (VkFormat format : {
         VK_FORMAT_D32_SFLOAT_S8_UINT,
         VK_FORMAT_D32_SFLOAT,
         VK_FORMAT_D24_UNORM_S8_UINT,
         VK_FORMAT_D16_UNORM_S8_UINT,
-        VK_FORMAT_D16_UNORM,
-    };
-    for (VkFormat format : depthFormats)
+        VK_FORMAT_D16_UNORM})
     {
         const magma::Format fmt(format);
         if (hasStencil && !fmt.depthStencil())
