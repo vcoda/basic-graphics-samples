@@ -42,5 +42,5 @@ magma::PipelineShaderStage GraphicsPipeline::loadShader(
         0, 0, true, device->getAllocator());
     const VkShaderStageFlagBits stage = module->getReflection()->getShaderStage();
     const char *const entrypoint = module->getReflection()->getEntryPointName(0);
-    return magma::PipelineShaderStage(stage, module, entrypoint);
+    return magma::PipelineShaderStage(stage, std::move(module), entrypoint);
 }

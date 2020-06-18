@@ -84,7 +84,7 @@ void VulkanApp::createInstance()
         VK_API_VERSION_1_0,
         layerNames, extensionNames);
 
-	debugReportCallback = std::make_shared<magma::DebugReportCallback>(
+    debugReportCallback = std::make_shared<magma::DebugReportCallback>(
         instance,
         utilities::reportCallback);
 
@@ -197,8 +197,8 @@ void VulkanApp::createSwapchain(bool vSync)
         std::min(2U, surfaceCaps.maxImageCount),
         surfaceFormats[0], surfaceCaps.currentExtent,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
-		preTransform, compositeAlpha, presentMode, 0,
-		nullptr, debugReportCallback);
+        preTransform, compositeAlpha, presentMode, 0,
+        nullptr, debugReportCallback);
 }
 
 void VulkanApp::createRenderPass()

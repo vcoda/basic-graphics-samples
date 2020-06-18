@@ -127,7 +127,7 @@ TODO
 Shows how to setup command buffer for simple framebuffer clear.
 <br><br><br><br><br>
 
-### [02 - Triangle](02-simple-triangle/)
+### [02 - Triangle](02-triangle/)
 <img src="./screenshots/02.jpg" height="128px" align="left">
 Draws triangle primitive from vertices generated in vertex shader.
 <br><br><br><br><br>
@@ -159,20 +159,25 @@ Utilizes "texture array" hardware feature to apply multiple textures inside sing
 Different texture LODs could be viewed.
 <br><br><br><br>
 
-### [08 - CubeMap](08-cubemap/)
+### [08 - Cubemap texture](08-texture-cube/)
 <img src="./screenshots/08.jpg" height="128px" align="left">
 Shows how to load DXT cubemap textures and perform environment mapping in fragment shader.
 <br><br><br><br><br>
 
-### [09 - Alpha blending](09-alpha-blend/)
+### [09 - Volume texture](09-texture-volume/)
 <img src="./screenshots/09.jpg" height="128px" align="left">
-Good old alpha blending.
+Loads volumetric data into 3D texture and performs ray casting with large number of samples to accomodate resulting color.
 <br><br><br><br><br>
 
-### [10 - Render to texture](10-render-to-texture/)
-<img src="./screenshots/10.jpg" height="128px" align="left">
-Performs render to multisampled texture and resolve operation using RenderPass.
+### [10.a - Render to texture](10.a-render-to-texture/)
+<img src="./screenshots/10a.jpg" height="128px" align="left">
+Performs render to texture using color and depth attachments. Framebuffer defines render pass, color/depth image views and dimensions.
 Looks like AMD hardware uses compute queue for resolving, because it slows down my machine when ethereum miner is running.
+<br><br><br>
+
+### [10.b - Render to multisample texture](10.b-render-to-msaa-texture/)
+<img src="./screenshots/10b.jpg" height="128px" align="left">
+Performs render to multisampled texture and resolve operation using RenderPass.
 <br><br><br>
 
 ### [11 - Occlusion query](11-occlusion-query/)
@@ -180,10 +185,10 @@ Looks like AMD hardware uses compute queue for resolving, because it slows down 
 Simplest usage of hardware occlusion queries.
 <br><br><br><br><br>
 
-### [12 - Push constants](12-pushconstants/)
+### [12 - Alpha blending](12-alpha-blend/)
 <img src="./screenshots/12.jpg" height="128px" align="left">
-Shows how to use push constants - a limited register file inside GPU. Push constants are updated when command buffer is sent to GPU.
-<br><br><br><br>
+Good old alpha blending.
+<br><br><br><br><br>
 
 ### [13 - Specialization constants](13-specialization/)
 <img src="./screenshots/13.jpg" height="128px" align="left">
@@ -191,19 +196,19 @@ Shows how to force shader compiler to perform static branching using specializat
 For each fragment shader branch, there is a separate pipeline instance.
 <br><br><br><br>
 
-### [14 - Particles](14-particles/)
+### [14 - Push constants](14-pushconstants/)
 <img src="./screenshots/14.jpg" height="128px" align="left">
+Shows how to use push constants - a limited register file inside GPU. Push constants are updated when command buffer is sent to GPU.
+<br><br><br><br>
+
+### [15 - Particles](15-particles/)
+<img src="./screenshots/15.jpg" height="128px" align="left">
 This sample shows how to use gl_PointSize built-in variable to draw particles that are properly scaled with distance.
 As number of particles varies, vertex count put to indirect buffer to fetch from instead of specify it in vkCmdDraw() function with command buffer rebuild.
 Particle engine initially implemented by Kevin Harris and adopted by me for rendering with Vulkan.
 <br><br>
 
-### [15 - Compute shader](15-compute/)
-<img src="./screenshots/15.jpg" width="256px" align="left">
-Compute shaders are core part of Vulkan. This sample performs arithmetic computations on two set of numbers using GPU compute shader.
-<br><br>
-
-### [16 - Immediate mode](16-immediate/)
+### [16 - Immediate mode](16-immediate-mode/)
 <img src="./screenshots/16.jpg" height="128px" align="left">
 Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was useful to (quickly) draw something on the screen.
 This sample shows how to use Magma's immediate render to draw different primitives without VB mapping, data copy, state management etc.
@@ -215,6 +220,11 @@ Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan 
 This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
 and apply changes immediately, which may be useful for shader development. Example fragment shader taken from 
 https://www.shadertoy.com/view/4tl3z4 (written by Reinder Nijhofftaken).
+<br><br>
+
+### [18 - Compute shader](18-compute/)
+<img src="./screenshots/18.jpg" width="256px" align="left">
+Compute shaders are core part of Vulkan. This sample performs arithmetic computations on two set of numbers using GPU compute shader.
 <br><br>
 
 ## Known issues

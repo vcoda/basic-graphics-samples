@@ -65,7 +65,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{814d440a-ed4c-4eaf-be4e-4776989dec2e}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>_08_texture_array</RootNamespace>
+    <RootNamespace>_07_texture_array</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectName>07-texture-array</ProjectName>
   </PropertyGroup>

@@ -155,7 +155,7 @@ public:
         for (size_t i = 1; i < ctxArray.size(); ++i)
         {
             const gliml::context& ctx = ctxArray[i];
-			MAGMA_ASSERT(utilities::getBlockCompressedFormat(ctx) == format);
+            MAGMA_ASSERT(utilities::getBlockCompressedFormat(ctx) == format);
             MAGMA_ASSERT(static_cast<uint32_t>(ctx.image_width(0, 0)) == extent.width);
             MAGMA_ASSERT(static_cast<uint32_t>(ctx.image_height(0, 0)) == extent.height);
         }

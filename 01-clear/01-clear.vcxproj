@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C9546E11-638C-4A05-8767-7E77B84AF8CB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>My01clear</RootNamespace>
+    <RootNamespace>_01_clear</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
