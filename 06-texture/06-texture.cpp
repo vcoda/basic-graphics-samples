@@ -97,7 +97,7 @@ public:
         file.seekg(0, std::ios::beg);
         gliml::context ctx;
         VkDeviceSize baseMipOffset = 0;
-        std::shared_ptr<magma::Buffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
+        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
         magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
         {   // Read data to buffer
             file.read(reinterpret_cast<char *>(data), size);
@@ -111,14 +111,15 @@ public:
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
-        std::vector<VkDeviceSize> mipOffsets(1, 0);
+        magma::Image::MipmapLayout mipOffsets(1, 0);
         for (int level = 1; level < ctx.num_mipmaps(0); ++level)
         {   // Compute relative offset
             const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
             mipOffsets.push_back(mipOffset);
         }
         // Upload texture data from buffer
-        auto image = std::make_shared<magma::Image2D>(device, format, extent, buffer, baseMipOffset, mipOffsets, cmdImageCopy);
+        magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
+        auto image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, buffer, mipOffsets, bufferLayout);
         // Create image view for shader
         auto imageView = std::make_shared<magma::ImageView>(image);
         return Texture{image, imageView};

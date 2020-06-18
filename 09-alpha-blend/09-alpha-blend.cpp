@@ -87,8 +87,8 @@ public:
             throw std::runtime_error("failed to load DDS texture");
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::vector<const void *> mipData;
-        std::vector<VkDeviceSize> mipSizes;
+        magma::Image::MipmapData mipData;
+        magma::Image::MipmapLayout mipSizes;
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {
             const void *imageData = ctx.image_data(0, level);
@@ -98,7 +98,7 @@ public:
         }
         // Upload texture data
         const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
-        image = std::make_shared<magma::Image2D>(device, format, extent, mipData, mipSizes, cmdImageCopy);
+        image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, mipData, mipSizes);
         // Create image view for shader
         imageView = std::make_shared<magma::ImageView>(image);
     }

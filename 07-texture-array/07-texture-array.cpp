@@ -130,7 +130,7 @@ public:
         }
         std::vector<gliml::context> ctxArray;
         std::vector<VkDeviceSize> baseMipOffsets;
-        std::shared_ptr<magma::Buffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, totalSize);
+        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, totalSize);
         magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
         {   // Read all data to single buffer
             for (auto& file : files)
@@ -177,7 +177,7 @@ public:
         }
         // Upload texture array data from buffer
         const uint32_t arrayLayers = MAGMA_COUNT(ctxArray);
-        imageArray = std::make_shared<magma::Image2DArray>(device, format, extent, arrayLayers, buffer, 0, mipOffsets, cmdImageCopy);
+        imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy, format, extent, arrayLayers, buffer, mipOffsets);
         // Create image view for pixel shader
         imageArrayView = std::make_shared<magma::ImageView>(imageArray);
     }

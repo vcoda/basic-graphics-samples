@@ -102,7 +102,7 @@ public:
         gliml::context ctx;
         VkDeviceSize baseMipOffset = 0;
         // Allocate transfer buffer
-        std::shared_ptr<magma::Buffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
+        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
         magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
         {   // Read data from file
             file.read(reinterpret_cast<char *>(data), size);
@@ -110,12 +110,12 @@ public:
             if (!ctx.load(data, static_cast<unsigned>(size)))
                 throw std::runtime_error("failed to load DDS texture");
             // Skip DDS header
-            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data; 
+            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
         });
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         const uint32_t dimension = ctx.image_width(0, 0);
-        magma::ImageMipmapLayout mipOffsets;
+        magma::Image::MipmapLayout mipOffsets;
         VkDeviceSize lastMipSize = 0;
         for (int face = 0; face < ctx.num_faces(); ++face)
         {
@@ -129,7 +129,8 @@ public:
             lastMipSize = ctx.image_size(face, mipLevels - 1);
         }
         // Upload texture data from buffer
-        auto image = std::make_shared<magma::ImageCube>(device, format, dimension, ctx.num_mipmaps(0), buffer, baseMipOffset, mipOffsets, cmdImageCopy);
+        magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
+        auto image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, dimension, ctx.num_mipmaps(0), buffer, mipOffsets, bufferLayout);
         // Create image view for fragment shader
         auto imageView = std::make_shared<magma::ImageView>(image);
         return TextureCube{image, imageView};
