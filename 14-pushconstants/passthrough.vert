@@ -1,15 +1,15 @@
 #version 450
 
+layout(push_constant) uniform PushConstants
+{
+    vec4 vertexColors[3];
+};
+
 layout(location = 0) in vec4 position;
 
 layout(location = 0) out vec4 oColor;
 out gl_PerVertex {
     vec4 gl_Position;
-};
-
-layout(push_constant) uniform PushConstants
-{
-    vec4 vertexColors[3];
 };
 
 void main()

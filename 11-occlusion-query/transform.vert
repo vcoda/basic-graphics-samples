@@ -1,22 +1,21 @@
 #version 450
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 texCoord;
-
 layout(set = 0, binding = 0) uniform Transform
 {
     mat4 worldViewProj;
 };
+
 layout(set = 1, binding = 1) uniform Color
 {
     vec4 color;
 };
 
-layout(location = 0) out vec4 oColor;
+layout(location = 0) in vec4 position;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 texCoord;
 
-out gl_PerVertex
-{
+layout(location = 0) out vec4 oColor;
+out gl_PerVertex {
     vec4 gl_Position;
 };
 

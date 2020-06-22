@@ -6,9 +6,7 @@ layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 color;
 
 layout(location = 0) out vec4 oColor;
-
-out gl_PerVertex
-{
+out gl_PerVertex {
     vec4 gl_Position;
 };
 

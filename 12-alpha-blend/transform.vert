@@ -1,18 +1,17 @@
 #version 450
 
+layout(binding = 0) uniform Transforms
+{
+    mat4 worldViewProj;
+};
+
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 texCoord; // .z = face index
 
 layout(location = 0) out vec2 oTexCoord;
 layout(location = 1) out vec3 oFaceColor;
-out gl_PerVertex
-{
+out gl_PerVertex {
     vec4 gl_Position;
-};
-
-layout(binding = 0) uniform Transforms
-{
-    mat4 worldViewProj;
 };
 
 vec3 faceColors[6] =

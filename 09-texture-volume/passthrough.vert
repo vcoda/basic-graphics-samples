@@ -1,10 +1,9 @@
 #version 450
 
 layout(location = 0) in vec4 position;
-layout(location = 0) out vec2 oTexCoord;
 
-out gl_PerVertex
-{
+layout(location = 0) out vec2 oTexCoord;
+out gl_PerVertex {
     vec4 gl_Position;
 };
 

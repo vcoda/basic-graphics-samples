@@ -1,12 +1,12 @@
 #version 450
 
+layout(binding = 1) uniform samplerCube envDiff;
+layout(binding = 2) uniform samplerCube envSpec;
+
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 
 layout(location = 0) out vec4 oColor;
-
-layout(binding = 1) uniform samplerCube envDiff;
-layout(binding = 2) uniform samplerCube envSpec;
 
 float fresnelApprox(vec3 I, vec3 N, float bias, float scale, float power)
 {

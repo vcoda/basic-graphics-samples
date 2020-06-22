@@ -1,13 +1,13 @@
 #version 450
 
-layout(location = 0) out vec4 fragColor;
-
 layout(binding = 0) uniform BuiltInUniforms
 {
     vec2 iResolution;
     vec2 iMouse;
     float iTime;
 };
+
+layout(location = 0) out vec4 fragColor;
 
 // Simple path tracer. Created by Reinder Nijhoff 2014
 // @reindernijhoff

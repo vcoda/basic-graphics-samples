@@ -1,8 +1,5 @@
 #version 450
 
-layout(location = 0) in vec2 texCoord;
-layout(location = 0) out vec4 oColor;
-
 layout(binding = 0) uniform TexParameters
 {
     float lod;
@@ -11,6 +8,9 @@ layout(binding = 0) uniform TexParameters
 
 layout(binding = 1) uniform sampler2D diffuse;
 layout(binding = 2) uniform sampler2D lightmap;
+
+layout(location = 0) in vec2 texCoord;
+layout(location = 0) out vec4 oColor;
 
 void main()
 {

@@ -3,19 +3,21 @@
 #define MAX_SAMPLES 1024.
 #define ASPECT (1.)
 
-layout(location = 0) in vec2 texCoord;
-layout(location = 0) out vec4 oColor;
-
-layout(binding = 0) uniform Transforms {
+layout(binding = 0) uniform Transforms
+{
     mat4 normal;
 };
 
-layout(binding = 1) uniform IntegrationParameters {
+layout(binding = 1) uniform IntegrationParameters
+{
     float power;
 };
 
 layout(binding = 2) uniform sampler3D volume;
 layout(binding = 3) uniform sampler1D lookup;
+
+layout(location = 0) in vec2 texCoord;
+layout(location = 0) out vec4 oColor;
 
 struct Ray
 {
@@ -77,11 +79,11 @@ void main()
         vec4 color = texture(lookup, intensity);
         if (color.a > 0.)
         {   // accomodate for variable sampling rates
-    	    color.a = 1. - pow(1. - color.a, power);
+            color.a = 1. - pow(1. - color.a, power);
             float alpha = (1. - accum.a) * color.a;
             accum.rgb += color.rgb * alpha;
             accum.a += alpha;
-    	}
+        }
     }
 
     vec3 bgColor = vec3(1., 1., 1.);

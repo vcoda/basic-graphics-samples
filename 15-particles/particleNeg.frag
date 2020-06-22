@@ -1,15 +1,15 @@
 #version 450
 
+layout(push_constant) uniform PushConstants
+{
+    vec2 resolution;
+};
+
 layout(location = 0) in vec2 pos;
 layout(location = 1) in float pointSize;
 layout(location = 2) in vec3 color;
 
 layout(location = 0) out vec4 oColor;
-
-layout(push_constant) uniform PushConstants
-{
-    vec2 resolution;
-};
 
 void main()
 {
