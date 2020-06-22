@@ -167,7 +167,7 @@ Shows how to load DXT cubemap textures and perform environment mapping in fragme
 ### [09 - Volume texture](09-texture-volume/)
 <img src="./screenshots/09.jpg" height="128px" align="left">
 Loads volumetric data into 3D texture and performs ray casting with large number of samples to accomodate resulting color.
-<br><br><br><br><br>
+<br><br><br><br>
 
 ### [10.a - Render to texture](10.a-render-to-texture/)
 <img src="./screenshots/10a.jpg" height="128px" align="left">
@@ -178,7 +178,7 @@ Looks like AMD hardware uses compute queue for resolving, because it slows down 
 ### [10.b - Render to multisample texture](10.b-render-to-msaa-texture/)
 <img src="./screenshots/10b.jpg" height="128px" align="left">
 Performs render to multisampled texture and resolve operation using RenderPass.
-<br><br><br>
+<br><br><br><br><br>
 
 ### [11 - Occlusion query](11-occlusion-query/)
 <img src="./screenshots/11.jpg" height="128px" align="left">
