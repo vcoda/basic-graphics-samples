@@ -25,7 +25,7 @@ struct Ray
     vec3 dir;
 };
 
-vec2 boxTntersection(Ray r)
+vec2 boxIntersection(Ray r)
 {
     vec3 m = 1./r.dir;
     vec3 n = m * r.o;
@@ -57,7 +57,7 @@ void main()
     // transform ray to local space
     r.o = mat3(normal) * r.o;
     r.dir = mat3(normal) * r.dir;
-    vec2 t = boxTntersection(r);
+    vec2 t = boxIntersection(r);
     if (t.x < 0.)
         discard;
 
