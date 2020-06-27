@@ -2,17 +2,17 @@
 #include "../framework/knotMesh.h"
 #include "../framework/utilities.h"
 
-#define CAPTION "13 - Specialization constants"
+#define CAPTION_STRING(name) TEXT("13 - Specialization constants ("##name##")")
 
 // Use Space to toggle between albedo and shading.
 // Use 1, 2, 3 to change shading branch.
 // Use L button + mouse to rotate knot.
 class SpecializationApp : public VulkanApp
 {
-    enum ShadingType
+    enum ShadingType : uint32_t
     {
-        NORMAL = 0, DIFFUSE, SPECULAR, CELL, ALBEDO,
-        MAX_SHADER_VARIANTS
+        Normal = 0, Diffuse, Specular, CellShade, Albedo,
+        MaxShaderVariants
     };
 
     struct Constants
@@ -30,6 +30,14 @@ class SpecializationApp : public VulkanApp
         rapid::matrix normalMatrix;
     };
 
+    const std::unordered_map<ShadingType, std::tstring> captions = {
+        {ShadingType::Normal, CAPTION_STRING("Normals")},
+        {ShadingType::Diffuse, CAPTION_STRING("Diffuse")},
+        {ShadingType::Specular, CAPTION_STRING("Specular")},
+        {ShadingType::CellShade, CAPTION_STRING("Cell-shading")},
+        {ShadingType::Albedo, CAPTION_STRING("Albedo")}
+    };
+
     std::unique_ptr<KnotMesh> mesh;
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
@@ -44,13 +52,13 @@ class SpecializationApp : public VulkanApp
     rapid::matrix view;
     rapid::matrix proj;
     bool negateViewport = false;
-    ShadingType shadingType = ShadingType::NORMAL;
+    ShadingType shadingType = ShadingType::Normal;
     bool colorFill = true; // Albedo
-    int pipelineIndex = ShadingType::ALBEDO;
+    int pipelineIndex = ShadingType::Albedo;
 
 public:
     SpecializationApp(const AppEntry& entry):
-        VulkanApp(entry, TEXT(CAPTION), 512, 512, true)
+        VulkanApp(entry, CAPTION_STRING("Albedo"), 512, 512, true)
     {
         initialize();
         negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
@@ -59,13 +67,9 @@ public:
         loadShaders();
         createUniformBuffer();
         setupDescriptorSet();
-        setupPipeline(NORMAL);
-        setupPipeline(DIFFUSE);
-        setupPipeline(SPECULAR);
-        setupPipeline(CELL);
-        setupPipeline(ALBEDO);
-        for (uint32_t i = 0; i < MAX_SHADER_VARIANTS; ++i)
+        for (uint32_t i = 0; i < ShadingType::MaxShaderVariants; ++i)
         {
+            setupPipeline(ShadingType(i));
             recordCommandBuffer(FrontBuffer, i);
             recordCommandBuffer(BackBuffer, i);
         }
@@ -86,33 +90,26 @@ public:
     {
         switch (key)
         {
-        case '1': shadingType = ShadingType::NORMAL; break;
-        case '2': shadingType = ShadingType::DIFFUSE; break;
-        case '3': shadingType = ShadingType::SPECULAR; break;
-        case '4': shadingType = ShadingType::CELL; break;
+        case '1': shadingType = ShadingType::Normal; break;
+        case '2': shadingType = ShadingType::Diffuse; break;
+        case '3': shadingType = ShadingType::Specular; break;
+        case '4': shadingType = ShadingType::CellShade; break;
         case AppKey::Space: colorFill = !colorFill;
             break;
         }
         if (colorFill)
-            pipelineIndex = ShadingType::ALBEDO;
+            pipelineIndex = ShadingType::Albedo;
         else
             pipelineIndex = shadingType;
-        switch (pipelineIndex)
-        {
-        case ShadingType::NORMAL: setWindowCaption(TEXT(CAPTION" (Normals)")); break;
-        case ShadingType::DIFFUSE: setWindowCaption(TEXT(CAPTION" (Diffuse)")); break;
-        case ShadingType::SPECULAR: setWindowCaption(TEXT(CAPTION" (Specular)")); break;
-        case ShadingType::CELL: setWindowCaption(TEXT(CAPTION" (Cell-shading)")); break;
-        case ShadingType::ALBEDO: setWindowCaption(TEXT(CAPTION" (Albedo)")); break;
-        }
+        setWindowCaption(captions.at(ShadingType(pipelineIndex)));
         VulkanApp::onKeyDown(key, repeat, flags);
     }
 
     virtual void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
-        commandBuffers[FrontBuffer] = commandPools[0]->allocateCommandBuffers(MAX_SHADER_VARIANTS, true);
-        commandBuffers[BackBuffer] = commandPools[0]->allocateCommandBuffers(MAX_SHADER_VARIANTS, true);
+        commandBuffers[FrontBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxShaderVariants, true);
+        commandBuffers[BackBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxShaderVariants, true);
     }
 
     void setupView()
@@ -176,11 +173,10 @@ public:
     magma::FragmentShaderStage specializeFragmentStage(ShadingType shadingType, const char *entrypoint) const
     {
         Constants constants;
-        constants.colorFill = MAGMA_BOOLEAN(ShadingType::ALBEDO == shadingType);
+        constants.colorFill = MAGMA_BOOLEAN(ShadingType::Albedo == shadingType);
         constants.shadingType = static_cast<int>(shadingType);
         std::shared_ptr<magma::Specialization> specialization(std::make_shared<magma::Specialization>(constants,
-            std::initializer_list<magma::SpecializationEntry>
-            {
+            std::initializer_list<magma::SpecializationEntry>{
                 magma::SpecializationEntry(0, &Constants::colorFill),
                 magma::SpecializationEntry(1, &Constants::shadingType)
             }));
