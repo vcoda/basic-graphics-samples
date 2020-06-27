@@ -13,17 +13,12 @@ class MeshApp : public VulkanApp
 
     std::unique_ptr<BezierPatchMesh> mesh;
     rapid::matrix viewProj;
-    bool negateViewport = false;
 
 public:
     MeshApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("05 - Mesh"), 512, 512, true)
     {
         initialize();
-
-        // https://stackoverflow.com/questions/48036410/why-doesnt-vulkan-use-the-standard-cartesian-coordinate-system
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
-
         setupView();
         createMesh();
         createUniformBuffer();

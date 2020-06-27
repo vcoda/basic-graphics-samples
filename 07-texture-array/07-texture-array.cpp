@@ -25,14 +25,12 @@ class TextureArrayApp : public VulkanApp
 
     rapid::matrix viewProj;
     float lod = 0.f;
-    bool negateViewport = false;
 
 public:
     TextureArrayApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("07 - Texture array"), 512, 512, true)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
         loadTextureArray({"dice1.dds" , "dice2.dds", "dice3.dds", "dice4.dds", "dice5.dds", "dice6.dds"});

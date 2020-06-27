@@ -51,7 +51,6 @@ class SpecializationApp : public VulkanApp
 
     rapid::matrix view;
     rapid::matrix proj;
-    bool negateViewport = false;
     ShadingType shadingType = ShadingType::Normal;
     bool colorFill = true; // Albedo
     int pipelineIndex = ShadingType::Albedo;
@@ -61,7 +60,6 @@ public:
         VulkanApp(entry, CAPTION_STRING("Albedo"), 512, 512, true)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
         loadShaders();

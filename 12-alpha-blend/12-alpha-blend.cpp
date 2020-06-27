@@ -17,14 +17,12 @@ class AlphaBlendApp : public VulkanApp
     std::shared_ptr<magma::GraphicsPipeline> cullBackPipeline;
 
     rapid::matrix viewProj;
-    bool negateViewport = false;
 
 public:
     AlphaBlendApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("12 - Alpha blending"), 512, 512)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
         loadTexture("logo.dds");

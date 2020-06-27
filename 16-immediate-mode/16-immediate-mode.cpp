@@ -4,14 +4,12 @@
 class ImmediateModeApp : public VulkanApp
 {
     std::unique_ptr<magma::aux::ImmediateRender> ir;
-    bool negateViewport = false;
 
 public:
     ImmediateModeApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("16 - Immediate mode"), 512, 512)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         createImmediateRender();
         drawPoints();
         drawLines();

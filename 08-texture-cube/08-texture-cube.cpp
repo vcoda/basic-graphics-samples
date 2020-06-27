@@ -34,14 +34,12 @@ class TextureCubeApp : public VulkanApp
 
     rapid::matrix view;
     rapid::matrix proj;
-    bool negateViewport = false;
 
 public:
     TextureCubeApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("08 - Cubemap texture"), 512, 512, true)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createMesh();
         diffuse = loadCubeMap("diff.dds");

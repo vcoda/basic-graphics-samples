@@ -19,14 +19,12 @@ class OcclusionQueryApp : public VulkanApp
     std::shared_ptr<magma::GraphicsPipeline> planePipeline;
 
     rapid::matrix viewProj;
-    bool negateViewport = false;
 
 public:
     OcclusionQueryApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("11 - Occlusion query"), 512, 512, true)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         setupView();
         createOcclusionQuery();
         createMeshes();

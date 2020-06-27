@@ -69,4 +69,5 @@ protected:
 
     std::unique_ptr<Timer> timer;
     bool depthBuffer;
+    bool negateViewport;
 };

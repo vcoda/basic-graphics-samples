@@ -6,7 +6,8 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     bool depthBuffer /* false */):
     PlatformApp(entry, caption, width, height),
     timer(std::make_unique<Timer>()),
-    depthBuffer(depthBuffer)
+    depthBuffer(depthBuffer),
+    negateViewport(false)
 {
     magma::memory::Allocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
 }
@@ -94,6 +95,9 @@ void VulkanApp::createInstance()
 
     instanceExtensions = std::make_unique<magma::InstanceExtensions>();
     extensions = std::make_unique<magma::PhysicalDeviceExtensions>(physicalDevice);
+
+    // https://stackoverflow.com/questions/48036410/why-doesnt-vulkan-use-the-standard-cartesian-coordinate-system
+    negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
 }
 
 void VulkanApp::createLogicalDevice()

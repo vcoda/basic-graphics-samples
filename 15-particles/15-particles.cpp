@@ -22,14 +22,12 @@ class ParticlesApp : public VulkanApp
 
     const float fov = rapid::radians(60.f);
     rapid::matrix viewProj;
-    bool negateViewport = false;
 
 public:
     ParticlesApp(const AppEntry& entry):
         VulkanApp(entry, TEXT("15 - Particles"), 512, 512, true)
     {
         initialize();
-        negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
         initParticleSystem();
         setupView();
         createUniformBuffer();
