@@ -20,7 +20,7 @@ class ParticlesApp : public VulkanApp
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
-    const float fov = rapid::radians(60.f);
+    static constexpr float fov = rapid::radians(60.f);
     rapid::matrix viewProj;
 
 public:
