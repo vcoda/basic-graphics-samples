@@ -63,12 +63,12 @@ public:
         particles->setNumToRelease(10);
         particles->setReleaseInterval(0.05f);
         particles->setLifeCycle(5.0f);
-        particles->setPosition(rapid::float3(0.0f, 0.0f, 0.0f));
-        particles->setVelocity(rapid::float3(0.0f, 0.0f, 0.0f));
-        particles->setGravity(rapid::float3(0.0f, -9.8f, 0.0f));
-        particles->setWind(rapid::float3(0.0f, 0.0f, 0.0f));
-        particles->setVelocityScale(20.0f);
-        particles->setCollisionPlane(rapid::float3(0.0f, 1.0f, 0.0f), rapid::float3(0.0f, 0.0f, 0.0f));
+        particles->setPosition(rapid::float3(0.f, 0.f, 0.f));
+        particles->setVelocity(rapid::float3(0.f, 0.f, 0.f));
+        particles->setGravity(rapid::float3(0.f, -9.8f, 0.f));
+        particles->setWind(rapid::float3(0.f, 0.f, 0.f));
+        particles->setVelocityScale(20.f);
+        particles->setCollisionPlane(rapid::float3(0.f, 1.f, 0.f), rapid::float3(0.f, 0.f, 0.f));
         particles->initialize(device);
     }
 

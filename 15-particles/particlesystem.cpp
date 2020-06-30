@@ -157,7 +157,7 @@ float ParticleSystem::randomScalar(float min, float max)
 rapid::float3 ParticleSystem::randomVector()
 {
     rapid::float3 v;
-    v.z = randomScalar(-1.0f, 1.0f);
+    v.z = randomScalar(-1.f, 1.f);
     float radius = sqrtf(1.f - v.z * v.z); // Get radius of this circle
     float t = randomScalar(-rapid::constants::pi, rapid::constants::pi); // Pick a random point on a circle
     v.x = (float)cosf(t) * radius; // Compute matching X and Y for our Z
