@@ -81,11 +81,12 @@ public:
 
     void updateUniforms()
     {
-        magma::helpers::mapScoped<UniformBlock>(uniformBuffer, true, [this](auto *block)
-        {
-            block->lod = lod;
-            block->multitexture = multitexture;
-        });
+        magma::helpers::mapScoped<UniformBlock>(uniformBuffer,
+            [this](auto *block)
+            {
+                block->lod = lod;
+                block->multitexture = multitexture;
+            });
     }
 
     Texture loadTexture(const std::string& filename)

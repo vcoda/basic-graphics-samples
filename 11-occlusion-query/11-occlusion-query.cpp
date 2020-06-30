@@ -72,12 +72,12 @@ public:
         const rapid::matrix transMesh = rapid::translation(0.f, -2.f, 0.f);
         const rapid::matrix worldPlane = transPlane * pitch * yaw;
         const rapid::matrix worldMesh = transMesh * pitch * yaw;
-        magma::helpers::mapScoped<rapid::matrix>(transformUniforms, true,
+        magma::helpers::mapScoped<rapid::matrix>(transformUniforms,
             [this, &worldPlane, &worldMesh](magma::helpers::AlignedUniformArray<rapid::matrix>& transforms)
-        {
-            transforms[0] = worldPlane * viewProj;
-            transforms[1] = worldMesh * viewProj;
-        });
+            {
+                transforms[0] = worldPlane * viewProj;
+                transforms[1] = worldMesh * viewProj;
+            });
     }
 
     void createOcclusionQuery()
@@ -98,10 +98,9 @@ public:
         transformUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::matrix>>(device, 2);
         updatePerspectiveTransform();
         colorUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::vector4>>(device, 2);
-        // Update only once
-        magma::helpers::mapScoped<rapid::vector4>(colorUniforms, false,
+        magma::helpers::mapScoped<rapid::vector4>(colorUniforms,
             [](magma::helpers::AlignedUniformArray<rapid::vector4>& colors)
-        {
+        {   // Update only once
             colors[0] = rapid::vector4(0.f, 0.f, 1.f, 1.f);
             colors[1] = rapid::vector4(1.f, 0.f, 0.f, 1.f);
         });

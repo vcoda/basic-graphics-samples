@@ -94,18 +94,20 @@ public:
         const rapid::matrix yaw = rapid::rotationY(radians);
         const rapid::matrix roll = rapid::rotationZ(radians);
         const rapid::matrix world = pitch * yaw * roll;
-        magma::helpers::mapScoped<rapid::matrix>(uniformWorldViewProj, true, [this, &world](auto *worldViewProj)
-        {
-            *worldViewProj = world * viewProj;
-        });
+        magma::helpers::mapScoped<rapid::matrix>(uniformWorldViewProj,
+            [this, &world](auto *worldViewProj)
+            {
+                *worldViewProj = world * viewProj;
+            });
     }
 
     void updateLod()
     {
-        magma::helpers::mapScoped<TexParameters>(uniformTexParameters, true, [this](auto *block)
-        {
-            block->lod = lod;
-        });
+        magma::helpers::mapScoped<TexParameters>(uniformTexParameters,
+            [this](auto *block)
+            {
+                block->lod = lod;
+            });
         std::cout << "Texture LOD: " << lod << "\n";
     }
 

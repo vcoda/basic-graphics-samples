@@ -123,16 +123,16 @@ void ParticleSystem::update(float dt)
     // Update vertex buffer
     if (!activeList.empty())
     {
-        if (ParticleVertex *pv = vertexBuffer->getMemory()->map<ParticleVertex>(0, VK_WHOLE_SIZE))
-        {
-            for (const auto& particle : activeList)
+        magma::helpers::mapScoped<ParticleVertex>(vertexBuffer,
+            [this](auto *pv)
             {
-                particle.position.store(&pv->position);
-                pv->color = particle.color;
-                ++pv;
-            }
-            vertexBuffer->getMemory()->unmap();
-        }
+                for (const auto& particle : activeList)
+                {
+                    particle.position.store(&pv->position);
+                    pv->color = particle.color;
+                    ++pv;
+                }
+            });
         drawParams->writeDrawCommand(static_cast<uint32_t>(activeList.size()), 0);
     }
 }

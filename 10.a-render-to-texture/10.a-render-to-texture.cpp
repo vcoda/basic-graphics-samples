@@ -65,10 +65,11 @@ public:
         const float step = timer->millisecondsElapsed() * speed;
         angle += step;
         const rapid::matrix roll = rapid::rotationZ(rapid::radians(angle));
-        magma::helpers::mapScoped<rapid::matrix>(uniformBuffer, true, [&roll](auto *world)
-        {
-            *world = roll;
-        });
+        magma::helpers::mapScoped<rapid::matrix>(uniformBuffer,
+            [&roll](auto *world)
+            {
+                *world = roll;
+            });
     }
 
     void createFramebuffer(const VkExtent2D& extent)
