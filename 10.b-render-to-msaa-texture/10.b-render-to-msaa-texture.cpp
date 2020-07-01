@@ -89,17 +89,26 @@ public:
         // Create color resolve attachment
         fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1);
         fb.colorResolveView = std::make_shared<magma::ImageView>(fb.colorResolve);
-
+        // Don't care about initial layout
+        constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // Define that multisample color attachment can be cleared and can store shader output
         const magma::AttachmentDescription colorMsaaAttachment(fb.colorMsaa->getFormat(), fb.colorMsaa->getSamples(),
-            magma::attachments::colorClearStoreAttachment);
+            magma::op::clearStore, // Color clear, store
+            magma::op::dontCare,
+            initialLayout,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL); // Stay as color attachment
         // Define that multisample depth attachment can be cleared and can store shader output
         const magma::AttachmentDescription depthMsaaAttachment(fb.depthMsaa->getFormat(), fb.depthMsaa->getSamples(),
-            magma::attachments::depthClearStoreAttachment);
-        // Don't care about clear as it will be used as MSAA resolve target
+            magma::op::clearStore, // Depth clear, store
+            magma::op::dontCare, // Don't care about stencil
+            initialLayout,
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL); // Stay as depth/stencil attachment
+        // Define that resolve attachment doesn't care about clear and should be read-only image
         const magma::AttachmentDescription colorResolveAttachment(fb.colorResolve->getFormat(), 1,
-            magma::attachments::colorDontCareStoreShaderReadOnly);
-
+            magma::op::dontCare, // Don't care about clear as it will be used as MSAA resolve target
+            magma::op::dontCare,
+            initialLayout,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Should be read-only in the shader when a render pass instance ends
         // Render pass defines attachment formats, load/store operations and final layouts
         fb.renderPass = std::shared_ptr<magma::RenderPass>(new magma::RenderPass(
             device, {colorMsaaAttachment, depthMsaaAttachment, colorResolveAttachment}));

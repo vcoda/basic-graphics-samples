@@ -81,12 +81,20 @@ public:
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         fb.depth = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, 1);
         fb.depthView = std::make_shared<magma::ImageView>(fb.depth);
-
+        // Don't care about initial layout
+        constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // Define that color attachment can be cleared, can store shader output and should be read-only image
-        const magma::AttachmentDescription colorAttachment(fb.color->getFormat(), 1, magma::attachments::colorClearStoreShaderReadOnly);
+        const magma::AttachmentDescription colorAttachment(fb.color->getFormat(), 1,
+            magma::op::clearStore, // Color clear, store
+            magma::op::dontCare,
+            initialLayout,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Should be read-only in the shader when a render pass instance ends
         // Define that depth attachment can be cleared and can store shader output
-        const magma::AttachmentDescription depthAttachment(fb.depth->getFormat(), 1, magma::attachments::depthClearStoreAttachment);
-
+        const magma::AttachmentDescription depthAttachment(fb.depth->getFormat(), 1,
+            magma::op::clearStore, // Depth clear, store
+            magma::op::dontCare, // Don't care about stencil
+            initialLayout,
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL); // Stay as depth/stencil attachment
         // Render pass defines attachment formats, load/store operations and final layouts
         fb.renderPass = std::shared_ptr<magma::RenderPass>(new magma::RenderPass(
             device, {colorAttachment, depthAttachment}));
