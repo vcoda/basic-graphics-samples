@@ -56,7 +56,7 @@ protected:
     std::shared_ptr<magma::CommandBuffer> cmdImageCopy;
     std::shared_ptr<magma::CommandBuffer> cmdBufferCopy;
 
-    std::shared_ptr<magma::DepthStencilAttachment2D> depthStencil;
+    std::shared_ptr<magma::DepthStencilAttachment> depthStencil;
     std::shared_ptr<magma::ImageView> depthStencilView;
     std::shared_ptr<magma::RenderPass> renderPass;
     std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;

@@ -7,11 +7,11 @@ class RenderToMsaaTextureApp : public VulkanApp
 
     struct Framebuffer
     {
-        std::shared_ptr<magma::ColorAttachment2D> colorMsaa;
+        std::shared_ptr<magma::ColorAttachment> colorMsaa;
         std::shared_ptr<magma::ImageView> colorMsaaView;
-        std::shared_ptr<magma::DepthStencilAttachment2D> depthMsaa;
+        std::shared_ptr<magma::DepthStencilAttachment> depthMsaa;
         std::shared_ptr<magma::ImageView> depthMsaaView;
-        std::shared_ptr<magma::ColorAttachment2D> colorResolve;
+        std::shared_ptr<magma::ColorAttachment> colorResolve;
         std::shared_ptr<magma::ImageView> colorResolveView;
         std::shared_ptr<magma::RenderPass> renderPass;
         std::shared_ptr<magma::Framebuffer> framebuffer;
@@ -80,14 +80,14 @@ public:
         // Choose supported multisample level
         fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, VK_FORMAT_R8G8B8A8_UNORM);
         // Create multisample color attachment
-        fb.colorMsaa = std::make_shared<magma::ColorAttachment2D>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount);
+        fb.colorMsaa = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount);
         fb.colorMsaaView = std::make_shared<magma::ImageView>(fb.colorMsaa);
         // Create multisample depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        fb.depthMsaa = std::make_shared<magma::DepthStencilAttachment2D>(device, depthFormat, extent, 1, fb.sampleCount);
+        fb.depthMsaa = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount);
         fb.depthMsaaView = std::make_shared<magma::ImageView>(fb.depthMsaa);
         // Create color resolve attachment
-        fb.colorResolve = std::make_shared<magma::ColorAttachment2D>(device, fb.colorMsaa->getFormat(), extent, 1, 1);
+        fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1);
         fb.colorResolveView = std::make_shared<magma::ImageView>(fb.colorResolve);
 
         // Define that multisample color attachment can be cleared and can store shader output

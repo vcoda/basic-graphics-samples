@@ -236,7 +236,7 @@ void VulkanApp::createFramebuffer()
     if (depthBuffer)
     {
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        depthStencil = std::make_shared<magma::DepthStencilAttachment2D>(device, depthFormat, surfaceCaps.currentExtent, 1, 1);
+        depthStencil = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, surfaceCaps.currentExtent, 1, 1);
         depthStencilView = std::make_shared<magma::ImageView>(depthStencil);
     }
     for (const auto& image : swapchain->getImages())

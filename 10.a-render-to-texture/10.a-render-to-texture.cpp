@@ -7,9 +7,9 @@ class RenderToTextureApp : public VulkanApp
 
     struct Framebuffer
     {
-        std::shared_ptr<magma::ColorAttachment2D> color;
+        std::shared_ptr<magma::ColorAttachment> color;
         std::shared_ptr<magma::ImageView> colorView;
-        std::shared_ptr<magma::DepthStencilAttachment2D> depth;
+        std::shared_ptr<magma::DepthStencilAttachment> depth;
         std::shared_ptr<magma::ImageView> depthView;
         std::shared_ptr<magma::RenderPass> renderPass;
         std::shared_ptr<magma::Framebuffer> framebuffer;
@@ -75,11 +75,11 @@ public:
     void createFramebuffer(const VkExtent2D& extent)
     {
         // Create color attachment
-        fb.color = std::make_shared<magma::ColorAttachment2D>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1);
+        fb.color = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1);
         fb.colorView = std::make_shared<magma::ImageView>(fb.color);
         // Create depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        fb.depth = std::make_shared<magma::DepthStencilAttachment2D>(device, depthFormat, extent, 1, 1);
+        fb.depth = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, 1);
         fb.depthView = std::make_shared<magma::ImageView>(fb.depth);
 
         // Define that color attachment can be cleared, can store shader output and should be read-only image
