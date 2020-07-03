@@ -24,7 +24,6 @@ public:
     virtual void render(uint32_t bufferIndex) = 0;
     virtual void onIdle() override;
     virtual void onPaint() override;
-    virtual void onKeyDown(char key, int repeat, uint32_t flags) override;
 
 protected:
     virtual void initialize();

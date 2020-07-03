@@ -34,11 +34,6 @@ void VulkanApp::onPaint()
     device->waitIdle(); // Flush
 }
 
-void VulkanApp::onKeyDown(char key, int repeat, uint32_t flags)
-{
-    PlatformApp::onKeyDown(key, repeat, flags);
-}
-
 void VulkanApp::initialize()
 {
     createInstance();
