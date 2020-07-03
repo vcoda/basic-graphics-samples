@@ -32,6 +32,7 @@ void VulkanApp::onPaint()
     }
     queue->present(swapchain, bufferIndex, renderFinished);
     device->waitIdle(); // Flush
+    std::this_thread::sleep_for(std::chrono::milliseconds(5)); // Cap fps
 }
 
 void VulkanApp::initialize()
