@@ -78,9 +78,6 @@
     <ClInclude Include="linearAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spirvShaderFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shapeMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -147,14 +147,11 @@ void VulkanApp::createSwapchain(bool vSync)
         preTransform = surfaceCaps.currentTransform;
     // Find supported alpha composite
     VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[] =
-    {
+    for (const auto alphaFlag : {
         VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
         VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
         VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
-        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
-    };
-    for (auto alphaFlag : compositeAlphaFlags)
+        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR})
     {
         if (surfaceCaps.supportedCompositeAlpha & alphaFlag)
         {
@@ -170,17 +167,13 @@ void VulkanApp::createSwapchain(bool vSync)
         presentMode = VK_PRESENT_MODE_FIFO_KHR;
     else
     {   // Search for first appropriate present mode
-        const VkPresentModeKHR modes[] =
-        {
+        bool found = false;
+        for (const auto mode : {
             VK_PRESENT_MODE_IMMEDIATE_KHR,  // AMD
             VK_PRESENT_MODE_MAILBOX_KHR,    // NVidia, Intel
-            VK_PRESENT_MODE_FIFO_RELAXED_KHR
-        };
-        bool found = false;
-        for (auto mode : modes)
+            VK_PRESENT_MODE_FIFO_RELAXED_KHR})
         {
-            if (std::find(presentModes.begin(), presentModes.end(), mode)
-                != presentModes.end())
+            if (std::find(presentModes.begin(), presentModes.end(), mode) != presentModes.end())
             {
                 presentMode = mode;
                 found = true;
@@ -204,15 +197,15 @@ void VulkanApp::createRenderPass()
 {
     const std::vector<VkSurfaceFormatKHR> surfaceFormats = physicalDevice->getSurfaceFormats(surface);
     const magma::AttachmentDescription colorAttachment(surfaceFormats[0].format, 1,
-        magma::op::clearStore, // Clear color, store
-        magma::op::dontCare, // Stencil don't care
+        magma::op::clearStore, // Color clear, store
+        magma::op::dontCare,
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     if (depthBuffer)
     {
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         const magma::AttachmentDescription depthStencilAttachment(depthFormat, 1,
-            magma::op::clearStore, // Clear depth, store
+            magma::op::clearStore, // Depth clear, store
             magma::op::clearDontCare, // Stencil don't care
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -260,8 +253,7 @@ void VulkanApp::createCommandBuffers()
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         // Create buffer copy command buffer
         cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
-    }
-    catch (...)
+    } catch (...)
     {
         std::cout << "Transfer queue not present\n";
     }

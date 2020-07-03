@@ -1,5 +1,6 @@
 #include <iomanip>
 #include "../framework/vulkanApp.h"
+#include "../framework/utilities.h"
 
 class ComputeApp : public VulkanApp
 {
@@ -89,8 +90,10 @@ public:
 
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
     {
+        const aligned_vector<char> bytecode = utilities::loadBinaryFile(filename);
+        auto computeShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
         return std::make_shared<magma::ComputePipeline>(device,
-            ComputeShaderFile(device, filename, entrypoint),
+            magma::ComputeShaderStage(computeShader, entrypoint),
             pipelineLayout, pipelineCache);
     }
 

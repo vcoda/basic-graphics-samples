@@ -21,6 +21,12 @@ typedef XcbApp NativeApp;
 
 class VulkanApp : public NativeApp
 {
+protected:
+    enum {
+        FrontBuffer = 0,
+        BackBuffer
+    };
+
 public:
     VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
         bool depthBuffer = false);
@@ -41,10 +47,6 @@ protected:
 
     bool submitCommandBuffer(uint32_t bufferIndex);
 
-protected:
-    enum { FrontBuffer = 0, BackBuffer };
-
-protected:
     std::shared_ptr<magma::Instance> instance;
     std::shared_ptr<magma::DebugReportCallback> debugReportCallback;
     std::shared_ptr<magma::Surface> surface;

@@ -161,7 +161,6 @@
     <ClInclude Include="bezierMesh.h" />
     <ClInclude Include="graphicsPipeline.h" />
     <ClInclude Include="shapeMesh.h" />
-    <ClInclude Include="spirvShaderFile.h" />
     <ClInclude Include="knotMesh.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="linearAllocator.h" />
