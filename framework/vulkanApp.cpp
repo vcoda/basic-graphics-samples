@@ -4,7 +4,7 @@
 
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
-    PlatformApp(entry, caption, width, height),
+    NativeApp(entry, caption, width, height),
     timer(std::make_unique<Timer>()),
     depthBuffer(depthBuffer),
     negateViewport(false)

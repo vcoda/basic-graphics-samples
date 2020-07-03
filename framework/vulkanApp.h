@@ -1,21 +1,25 @@
 #pragma once
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 #include "winApp.h"
-typedef Win32App PlatformApp;
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
 #include "xlibApp.h"
-typedef XlibApp PlatformApp;
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
 #include "xcbApp.h"
-typedef XcbApp PlatformApp;
 #endif // VK_USE_PLATFORM_XCB_KHR
 #include "magma/magma.h"
 #include "rapid/rapid.h"
-#include "spirvShaderFile.h"
 #include "graphicsPipeline.h"
 #include "timer.h"
 
-class VulkanApp : public PlatformApp
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+typedef Win32App NativeApp;
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+typedef XlibApp NativeApp;
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+typedef XcbApp NativeApp;
+#endif // VK_USE_PLATFORM_XCB_KHR
+
+class VulkanApp : public NativeApp
 {
 public:
     VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
