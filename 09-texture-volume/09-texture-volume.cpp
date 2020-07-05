@@ -191,7 +191,7 @@ public:
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "quad.o", "raycast.o",
-            magma::renderstates::pos2f,
+            magma::renderstates::nullVertexInput,
             magma::renderstates::triangleStrip,
             magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
