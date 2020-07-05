@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="passthrough.vert">
+    <CustomBuild Include="raycast.frag">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="raycast.frag">
+    <CustomBuild Include="quad.vert">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>

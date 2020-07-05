@@ -19,7 +19,6 @@ class TextureVolumeApp : public VulkanApp
     Texture lookup;
     std::shared_ptr<magma::Sampler> nearestSampler;
     std::shared_ptr<magma::Sampler> trilinearSampler;
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::UniformBuffer<IntegrationParameters>> uniformParameters;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
@@ -38,7 +37,6 @@ public:
         volume = loadVolumeTexture("head256.raw", 256, 256, 225);
         lookup = loadTransferFunctionTexture("tff.dat", 256);
         createSampler();
-        createVertexBuffer();
         createUniformBuffers();
         setupDescriptorSet();
         setupPipeline();
@@ -154,14 +152,6 @@ public:
         trilinearSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinMipLinearClampToEdge);
     }
 
-    void createVertexBuffer()
-    {
-        const std::vector<rapid::float2> vertices = {
-            {-1.f, -1.f}, {-1.f, 1.f}, {1.f, -1.f}, {1.f, 1.f}
-        };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
-    }
-
     void createUniformBuffers()
     {
         uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
@@ -200,10 +190,10 @@ public:
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "passthrough.o", "raycast.o",
+            "quad.o", "raycast.o",
             magma::renderstates::pos2f,
             magma::renderstates::triangleStrip,
-            magma::renderstates::fillCullNoneCCW,
+            magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,
             magma::renderstates::dontBlendRgb,
@@ -223,7 +213,6 @@ public:
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
-                cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(4, 0);
             }
             cmdBuffer->endRenderPass();
