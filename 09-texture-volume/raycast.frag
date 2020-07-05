@@ -1,15 +1,13 @@
 #version 450
 
 #define MAX_SAMPLES 1024.
-#define ASPECT (1.)
+#define ASPECT_RATIO (1.)
 
-layout(binding = 0) uniform Transforms
-{
+layout(binding = 0) uniform Transforms {
     mat4 normal;
 };
 
-layout(binding = 1) uniform IntegrationParameters
-{
+layout(binding = 1) uniform IntegrationParameters {
     float power;
 };
 
@@ -25,7 +23,7 @@ struct Ray
     vec3 dir;
 };
 
-vec2 boxIntersection(Ray r)
+vec2 rayBoxIntersection(Ray r)
 {
     vec3 m = 1./r.dir;
     vec3 n = m * r.o;
@@ -52,12 +50,12 @@ void main()
     vec2 p = texCoord * 2. - 1.;
     Ray r;
     r.o = vec3(0., 0., -5.);
-    r.dir = normalize(vec3(p.x * ASPECT, p.y, 3.));
+    r.dir = normalize(vec3(p.x * ASPECT_RATIO, p.y, 3.));
 
     // transform ray to local space
     r.o = mat3(normal) * r.o;
     r.dir = mat3(normal) * r.dir;
-    vec2 t = boxIntersection(r);
+    vec2 t = rayBoxIntersection(r);
     if (t.x < 0.)
         discard;
 
