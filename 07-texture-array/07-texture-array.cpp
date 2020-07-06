@@ -12,7 +12,6 @@ class TextureArrayApp : public VulkanApp
     };
 
     std::unique_ptr<CubeMesh> mesh;
-    std::shared_ptr<magma::Image2DArray> imageArray;
     std::shared_ptr<magma::ImageView> imageArrayView;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
@@ -54,7 +53,7 @@ public:
         switch (key)
         {
         case AppKey::PgUp:
-            if (lod < imageArray->getMipLevels() - 1)
+            if (lod < imageArrayView->getImage()->getMipLevels() - 1)
             {
                 lod += 1.f;
                 updateLod();
@@ -177,9 +176,10 @@ public:
         }
         // Upload texture array data from buffer
         const uint32_t arrayLayers = MAGMA_COUNT(ctxArray);
-        imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy, format, extent, arrayLayers, buffer, mipOffsets);
-        // Create image view for pixel shader
-        imageArrayView = std::make_shared<magma::ImageView>(imageArray);
+        std::shared_ptr<magma::Image2DArray> imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy,
+            format, extent, arrayLayers, buffer, mipOffsets);
+        // Create image view for fragment shader
+        imageArrayView = std::make_shared<magma::ImageView>(std::move(imageArray));
     }
 
     void createSampler()
