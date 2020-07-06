@@ -5,21 +5,14 @@
 // Use Space to enable/disable multitexturing
 class TextureApp : public VulkanApp
 {
-    struct Texture
-    {
-        std::shared_ptr<magma::Image2D> image;
-        std::shared_ptr<magma::ImageView> imageView;
-    };
-
     struct alignas(16) UniformBlock
     {
         float lod;
         bool multitexture;
     };
 
-    Texture diffuse;
-    Texture lightmap;
-
+    std::shared_ptr<magma::ImageView> diffuse;
+    std::shared_ptr<magma::ImageView> lightmap;
     std::shared_ptr<magma::Sampler> bilinearSampler;
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
@@ -58,7 +51,7 @@ public:
         switch (key)
         {
         case AppKey::PgUp:
-            if (lod < diffuse.image->getMipLevels() - 1)
+            if (lod < diffuse->getImage()->getMipLevels() - 1)
             {
                 lod += 1.f;
                 updateUniforms();
@@ -89,7 +82,7 @@ public:
             });
     }
 
-    Texture loadTexture(const std::string& filename)
+    std::shared_ptr<magma::ImageView> loadTexture(const std::string& filename)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -120,10 +113,9 @@ public:
         }
         // Upload texture data from buffer
         magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
-        auto image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, buffer, mipOffsets, bufferLayout);
+        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, buffer, mipOffsets, bufferLayout);
         // Create image view for shader
-        auto imageView = std::make_shared<magma::ImageView>(image);
-        return Texture{image, imageView};
+        return std::make_shared<magma::ImageView>(std::move(image));
     }
 
     void createSampler()
@@ -139,7 +131,7 @@ public:
             rapid::float2 uv;
         };
 
-        const auto extent = diffuse.image->getMipExtent(0);
+        const auto extent = diffuse->getImage()->getMipExtent(0);
         const float width = static_cast<float>(extent.width);
         const float height = static_cast<float>(extent.height);
         constexpr float hw = 0.5f;
@@ -192,8 +184,8 @@ public:
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
-        descriptorSet->update(1, diffuse.imageView, bilinearSampler);
-        descriptorSet->update(2, lightmap.imageView, bilinearSampler);
+        descriptorSet->update(1, diffuse, bilinearSampler);
+        descriptorSet->update(2, lightmap, bilinearSampler);
     }
 
     void setupPipeline()
