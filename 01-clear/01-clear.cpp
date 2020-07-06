@@ -9,7 +9,7 @@ public:
         initialize();
         int i = 0;
         // Prepare draw command buffers
-        for (auto& cmdBuffer : commandBuffers)
+        for (std::shared_ptr<magma::CommandBuffer> cmdBuffer : commandBuffers)
         {
             cmdBuffer->begin();
             {
