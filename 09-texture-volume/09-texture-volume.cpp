@@ -4,19 +4,13 @@
 // Use PgUp/PgDown to change accomodation power
 class TextureVolumeApp : public VulkanApp
 {
-    struct Texture
-    {
-        std::shared_ptr<magma::Image> image;
-        std::shared_ptr<magma::ImageView> imageView;
-    };
-
     struct alignas(16) IntegrationParameters
     {
         float power;
     };
 
-    Texture volume;
-    Texture lookup;
+    std::shared_ptr<magma::ImageView> volume;
+    std::shared_ptr<magma::ImageView> lookup;
     std::shared_ptr<magma::Sampler> nearestSampler;
     std::shared_ptr<magma::Sampler> trilinearSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
@@ -97,7 +91,7 @@ public:
         std::cout << "Power: " << power << "\n";
     }
 
-    Texture loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth)
+    std::shared_ptr<magma::ImageView> loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -119,13 +113,12 @@ public:
             });
         // Upload volume data from buffer
         const VkExtent3D extent{width, height, depth};
-        auto image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, extent, std::move(buffer));
+        std::shared_ptr<magma::Image3D> image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, extent, std::move(buffer));
         // Create image view for shader
-        auto imageView = std::make_shared<magma::ImageView>(image);
-        return {image, imageView};
+        return std::make_shared<magma::ImageView>(std::move(image));
     }
 
-    Texture loadTransferFunctionTexture(const std::string& filename, uint32_t width)
+    std::shared_ptr<magma::ImageView> loadTransferFunctionTexture(const std::string& filename, uint32_t width)
     {
         std::ifstream file(filename, std::ifstream::in);
         if (!file.is_open())
@@ -140,10 +133,9 @@ public:
             });
         // Upload texture data from buffer
         magma::Image::MipmapLayout mipSizes{0};
-        auto image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, width, std::move(buffer), mipSizes);
+        std::shared_ptr<magma::Image1D> image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, width, std::move(buffer), mipSizes);
         // Create image view for shader
-        auto imageView = std::make_shared<magma::ImageView>(image);
-        return {image, imageView};
+        return std::make_shared<magma::ImageView>(std::move(image));
     }
 
     void createSampler()
@@ -182,8 +174,8 @@ public:
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformBuffer);
         descriptorSet->update(1, uniformParameters);
-        descriptorSet->update(2, volume.imageView, trilinearSampler);
-        descriptorSet->update(3, lookup.imageView, nearestSampler);
+        descriptorSet->update(2, volume, trilinearSampler);
+        descriptorSet->update(3, lookup, nearestSampler);
     }
 
     void setupPipeline()
