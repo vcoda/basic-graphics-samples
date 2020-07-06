@@ -7,12 +7,6 @@
 // Use L button + mouse to rotate scene
 class TextureCubeApp : public VulkanApp
 {
-    struct TextureCube
-    {
-        std::shared_ptr<magma::ImageCube> image;
-        std::shared_ptr<magma::ImageView> imageView;
-    };
-
     struct TransformMatrices
     {
         rapid::matrix worldView;
@@ -21,9 +15,8 @@ class TextureCubeApp : public VulkanApp
     };
 
     std::unique_ptr<BezierPatchMesh> mesh;
-    TextureCube diffuse;
-    TextureCube specular;
-
+    std::shared_ptr<magma::ImageView> diffuse;
+    std::shared_ptr<magma::ImageView> specular;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<TransformMatrices>> uniformTransforms;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
@@ -91,7 +84,7 @@ public:
         mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
     }
 
-    TextureCube loadCubeMap(const std::string& filename)
+    std::shared_ptr<magma::ImageView> loadCubeMap(const std::string& filename)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -128,10 +121,9 @@ public:
         }
         // Upload texture data from buffer
         magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
-        auto image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, dimension, ctx.num_mipmaps(0), buffer, mipOffsets, bufferLayout);
+        std::shared_ptr<magma::ImageCube> image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, dimension, ctx.num_mipmaps(0), buffer, mipOffsets, bufferLayout);
         // Create image view for fragment shader
-        auto imageView = std::make_shared<magma::ImageView>(image);
-        return TextureCube{image, imageView};
+        return std::make_shared<magma::ImageView>(std::move(image));
     }
 
     void createSampler()
@@ -165,8 +157,8 @@ public:
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         descriptorSet->update(0, uniformTransforms);
-        descriptorSet->update(1, diffuse.imageView, anisotropicSampler);
-        descriptorSet->update(2, specular.imageView, anisotropicSampler);
+        descriptorSet->update(1, diffuse, anisotropicSampler);
+        descriptorSet->update(2, specular, anisotropicSampler);
     }
 
     void setupPipeline()
