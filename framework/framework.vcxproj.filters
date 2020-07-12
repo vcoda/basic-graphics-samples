@@ -36,12 +36,6 @@
     <ClInclude Include="utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bezierMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\third-party\rapid\matrix.h">
       <Filter>Header Files\rapid</Filter>
     </ClInclude>
@@ -69,16 +63,10 @@
     <ClInclude Include="alignedAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="knotMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="linearAllocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shapeMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphicsPipeline.h">
@@ -98,16 +86,7 @@
     <ClCompile Include="utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bezierMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="knotMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="linearAllocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="shapeMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphicsPipeline.cpp">

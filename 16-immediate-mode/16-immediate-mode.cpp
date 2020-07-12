@@ -1,4 +1,3 @@
-#include <xmmintrin.h>
 #include "../framework/vulkanApp.h"
 
 class ImmediateModeApp : public VulkanApp

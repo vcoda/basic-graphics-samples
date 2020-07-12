@@ -158,11 +158,7 @@
     <ClInclude Include="..\third-party\rapid\vector4.h" />
     <ClInclude Include="alignedAllocator.h" />
     <ClInclude Include="application.h" />
-    <ClInclude Include="bezierMesh.h" />
     <ClInclude Include="graphicsPipeline.h" />
-    <ClInclude Include="shapeMesh.h" />
-    <ClInclude Include="knotMesh.h" />
-    <ClInclude Include="mesh.h" />
     <ClInclude Include="linearAllocator.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="timer.h" />
@@ -172,12 +168,9 @@
     <ClInclude Include="winApp.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bezierMesh.cpp" />
     <ClCompile Include="graphicsPipeline.cpp" />
-    <ClCompile Include="knotMesh.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="linearAllocator.cpp" />
-    <ClCompile Include="shapeMesh.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="vulkanApp.cpp" />
     <ClCompile Include="winApp.cpp" />
