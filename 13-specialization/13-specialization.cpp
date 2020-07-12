@@ -1,6 +1,6 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/knotMesh.h"
 #include "../framework/utilities.h"
+#include "quadric/include/knot.h"
 
 #define CAPTION_STRING(name) TEXT("13 - Specialization constants ("##name##")")
 
@@ -38,7 +38,7 @@ class SpecializationApp : public VulkanApp
         {ShadingType::Albedo, CAPTION_STRING("Albedo")}
     };
 
-    std::unique_ptr<KnotMesh> mesh;
+    std::unique_ptr<quadric::Knot> mesh;
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
     std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
@@ -138,10 +138,10 @@ public:
 
     void createMesh()
     {
-        constexpr uint32_t slices = 32;
-        constexpr uint32_t stacks = 256;
         constexpr float radius = 0.25f;
-        mesh = std::make_unique<KnotMesh>(3, slices, stacks, radius, false, cmdBufferCopy);
+        constexpr uint32_t sides = 32;
+        constexpr uint32_t rings = 256;
+        mesh = std::make_unique<quadric::Knot>(radius, 3, sides, rings, false, cmdBufferCopy);
     }
 
     void loadShaders()
@@ -193,7 +193,7 @@ public:
             shaderStages,
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
+            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,

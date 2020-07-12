@@ -1,13 +1,12 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/bezierMesh.h"
-#include "../framework/shapeMesh.h"
-#include "teapot.h"
+#include "quadric/include/plane.h"
+#include "quadric/include/teapot.h"
 
 // Use L button + mouse to rotate scene
 class OcclusionQueryApp : public VulkanApp
 {
-    std::unique_ptr<BezierPatchMesh> teapot;
-    std::unique_ptr<PlaneMesh> plane;
+    std::unique_ptr<quadric::Plane> plane;
+    std::unique_ptr<quadric::Teapot> teapot;
     std::shared_ptr<magma::QueryPool> occlusionQuery;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::matrix>> transformUniforms;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::vector4>> colorUniforms;
@@ -70,7 +69,7 @@ public:
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix transPlane = rapid::translation(0.f, 0.f, 2.f);
         const rapid::matrix transMesh = rapid::translation(0.f, -2.f, 0.f);
-        const rapid::matrix worldPlane = transPlane * pitch * yaw;
+        const rapid::matrix worldPlane = rapid::rotationX(rapid::radians(90.f)) * transPlane * pitch * yaw;
         const rapid::matrix worldMesh = transMesh * pitch * yaw;
         magma::helpers::mapScoped<rapid::matrix>(transformUniforms,
             [this, &worldPlane, &worldMesh](magma::helpers::AlignedUniformArray<rapid::matrix>& transforms)
@@ -87,10 +86,10 @@ public:
 
     void createMeshes()
     {
-        constexpr uint32_t subdivisionDegree = 16;
-        teapot = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
         constexpr bool twoSided = true;
-        plane = std::make_unique<PlaneMesh>(6.f, 6.f, twoSided, cmdBufferCopy);
+        plane = std::make_unique<quadric::Plane>(6.f, 6.f, twoSided, cmdBufferCopy);
+        constexpr uint16_t subdivisionDegree = 16;
+        teapot = std::make_unique<quadric::Teapot>(subdivisionDegree, cmdBufferCopy);
     }
 
     void createUniformBuffer()
@@ -129,7 +128,7 @@ public:
             "transform.o", "fill.o",
             teapot->getVertexInput(),
             magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
+            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,
@@ -140,7 +139,7 @@ public:
             "transform.o", "fill.o",
             plane->getVertexInput(),
             magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
+            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,

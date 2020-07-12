@@ -1,10 +1,10 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/shapeMesh.h"
 #include "../framework/utilities.h"
+#include "quadric/include/cube.h"
 
 class AlphaBlendApp : public VulkanApp
 {
-    std::unique_ptr<CubeMesh> mesh;
+    std::unique_ptr<quadric::Cube> mesh;
     std::shared_ptr<magma::Image2D> image;
     std::shared_ptr<magma::ImageView> imageView;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
@@ -74,7 +74,7 @@ public:
 
     void createMesh()
     {
-        mesh = std::make_unique<CubeMesh>(cmdBufferCopy);
+        mesh = std::make_unique<quadric::Cube>(cmdBufferCopy);
     }
 
     void loadTexture(const std::string& filename)
@@ -137,7 +137,7 @@ public:
         return std::make_shared<GraphicsPipeline>(device,
             "transform.o", "texture.o",
             mesh->getVertexInput(),
-            magma::renderstates::triangleStrip,
+            magma::renderstates::triangleList,
             rasterizationState,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthAlwaysDontWrite,

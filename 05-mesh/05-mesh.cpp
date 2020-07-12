@@ -1,9 +1,9 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/bezierMesh.h"
-#include "teapot.h"
+#include "quadric/include/teapot.h"
 
 class MeshApp : public VulkanApp
 {
+    std::unique_ptr<quadric::Teapot> mesh;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
@@ -11,7 +11,6 @@ class MeshApp : public VulkanApp
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> wireframePipeline;
 
-    std::unique_ptr<BezierPatchMesh> mesh;
     rapid::matrix viewProj;
 
 public:
@@ -63,8 +62,8 @@ public:
 
     void createMesh()
     {
-        constexpr uint32_t subdivisionDegree = 4;
-        mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
+        constexpr uint16_t subdivisionDegree = 4;
+        mesh = std::make_unique<quadric::Teapot>(subdivisionDegree, cmdBufferCopy);
     }
 
     void createUniformBuffer()
@@ -94,7 +93,7 @@ public:
             "transform.o", "normal.o",
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
+            negateViewport ? magma::renderstates::lineCullBackCCW : magma::renderstates::lineCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,

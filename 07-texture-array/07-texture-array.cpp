@@ -1,7 +1,7 @@
 #include <fstream>
 #include "../framework/vulkanApp.h"
-#include "../framework/shapeMesh.h"
 #include "../framework/utilities.h"
+#include "quadric/include/cube.h"
 
 // Use PgUp/PgDown to select texture lod
 class TextureArrayApp : public VulkanApp
@@ -11,7 +11,7 @@ class TextureArrayApp : public VulkanApp
         float lod;
     };
 
-    std::unique_ptr<CubeMesh> mesh;
+    std::unique_ptr<quadric::Cube> mesh;
     std::shared_ptr<magma::ImageView> imageArrayView;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
@@ -112,7 +112,7 @@ public:
 
     void createMesh()
     {
-        mesh = std::make_unique<CubeMesh>(cmdBufferCopy);
+        mesh = std::make_unique<quadric::Cube>(cmdBufferCopy);
     }
 
     void loadTextureArray(const std::vector<std::string>& filenames)
@@ -225,7 +225,7 @@ public:
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform.o", "textureArray.o",
             mesh->getVertexInput(),
-            magma::renderstates::triangleStrip,
+            magma::renderstates::triangleList,
             negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthLess,

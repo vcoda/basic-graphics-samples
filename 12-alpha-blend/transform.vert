@@ -6,7 +6,8 @@ layout(binding = 0) uniform Transforms
 };
 
 layout(location = 0) in vec4 position;
-layout(location = 1) in vec3 texCoord; // .z = face index
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 texCoord;
 
 layout(location = 0) out vec2 oTexCoord;
 layout(location = 1) out vec3 oFaceColor;
@@ -29,6 +30,7 @@ void main()
     float u = texCoord.s;
     float v = (texCoord.t * 2. - 0.5)/0.77; // fix aspect ratio
     oTexCoord = vec2(u, v);
-    oFaceColor = faceColors[int(texCoord.p)];
+    int cubeFace = gl_VertexIndex >> 2;
+    oFaceColor = faceColors[cubeFace];
     gl_Position = worldViewProj * position;
 }

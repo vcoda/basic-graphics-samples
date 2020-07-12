@@ -10,3 +10,6 @@
 	path = third-party/gliml
 	url = https://github.com/floooh/gliml.git
 	branch = master
+[submodule "third-party/quadric"]
+	path = third-party/quadric
+	url = https://github.com/vcoda/quadric.git

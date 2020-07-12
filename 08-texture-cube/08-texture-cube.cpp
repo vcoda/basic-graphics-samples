@@ -1,8 +1,7 @@
 #include <fstream>
 #include "../framework/vulkanApp.h"
-#include "../framework/bezierMesh.h"
 #include "../framework/utilities.h"
-#include "teapot.h"
+#include "quadric/include/teapot.h"
 
 // Use L button + mouse to rotate scene
 class TextureCubeApp : public VulkanApp
@@ -14,7 +13,7 @@ class TextureCubeApp : public VulkanApp
         rapid::matrix normal;
     };
 
-    std::unique_ptr<BezierPatchMesh> mesh;
+    std::unique_ptr<quadric::Teapot> mesh;
     std::shared_ptr<magma::ImageView> diffuse;
     std::shared_ptr<magma::ImageView> specular;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
@@ -80,8 +79,8 @@ public:
 
     void createMesh()
     {
-        constexpr uint32_t subdivisionDegree = 16;
-        mesh = std::make_unique<BezierPatchMesh>(teapotPatches, kTeapotNumPatches, teapotVertices, subdivisionDegree, cmdBufferCopy);
+        constexpr uint16_t subdivisionDegree = 16;
+        mesh = std::make_unique<quadric::Teapot>(subdivisionDegree, cmdBufferCopy);
     }
 
     std::shared_ptr<magma::ImageView> loadCubeMap(const std::string& filename)
@@ -168,7 +167,7 @@ public:
             "transform.o", "envmap.o",
             mesh->getVertexInput(),
             magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCW : magma::renderstates::fillCullBackCCW,
+            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
             magma::renderstates::dontMultisample,
             magma::renderstates::depthLessOrEqual,
             magma::renderstates::dontBlendRgb,
