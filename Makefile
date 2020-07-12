@@ -2,22 +2,26 @@ CC=g++
 GLSLC=$(VULKAN_SDK)/bin/glslangValidator
 
 PLATFORM=VK_USE_PLATFORM_XCB_KHR
+CONSTEXPR_DEPTH_FLAGS=-ftemplate-depth=2048 -fconstexpr-depth=2048
 INCLUDE_DIR=-I$(VULKAN_SDK)/include -Ithird-party -Ithird-party/rapid
-LIBRARY_DIR=-L$(VULKAN_SDK)/lib -Lthird-party/magma
+LIBRARY_DIR=-L$(VULKAN_SDK)/lib -Lthird-party/magma -Lthird-party/quadric
 
-BASE_CFLAGS=-std=c++14 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(INCLUDE_DIR)
+BASE_CFLAGS=-std=c++14 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(CONSTEXPR_DEPTH_FLAGS) $(INCLUDE_DIR)
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
 	CFLAGS=$(BASE_CFLAGS) -O0 -g -D_DEBUG
 	MAGMA_LIB=magmad
+	QUADRIC_LIB=quadricd
 else
 	CFLAGS=$(BASE_CFLAGS) -O3 -DNDEBUG
 	MAGMA_LIB=magma
+	QUADRIC_LIB=quadric
 endif
-LDFLAGS=$(LIBRARY_DIR) -lxcb -lvulkan -l$(MAGMA_LIB) -lpthread
+LDFLAGS=$(LIBRARY_DIR) -lpthread -lxcb -lvulkan -l$(QUADRIC_LIB) -l$(MAGMA_LIB)
 
 BUILD=build
 MAGMA=third-party/magma
+QUADRIC=third-party/quadric
 FRAMEWORK=framework
 
 # Sample app dir/exe names
@@ -44,11 +48,9 @@ TARGET18=18-compute
 # Framework object files
 
 FRAMEWORK_OBJS= \
-	$(BUILD)/$(FRAMEWORK)/bezierMesh.o \
-	$(BUILD)/$(FRAMEWORK)/knotMesh.o \
-	$(BUILD)/$(FRAMEWORK)/linearAllocator.o \
+	$(BUILD)/$(FRAMEWORK)/graphicsPipeline.o \
 	$(BUILD)/$(FRAMEWORK)/main.o \
-	$(BUILD)/$(FRAMEWORK)/shapeMesh.o \
+	$(BUILD)/$(FRAMEWORK)/linearAllocator.o \
 	$(BUILD)/$(FRAMEWORK)/utilities.o \
 	$(BUILD)/$(FRAMEWORK)/vulkanApp.o \
 	$(BUILD)/$(FRAMEWORK)/xcbApp.o
@@ -140,7 +142,7 @@ builddir:
 	@mkdir -p $(BUILD)/$(MAGMA)/objects
 	@mkdir -p $(BUILD)/$(MAGMA)/shaders
 	@mkdir -p $(BUILD)/$(MAGMA)/states
-	@mkdir -p $(BUILD)/$(MAGMA)/utilities
+	@mkdir -p $(BUILD)/$(QUADRIC)
 	@mkdir -p $(BUILD)/$(FRAMEWORK)
 	@mkdir -p $(BUILD)/$(TARGET01)
 	@mkdir -p $(BUILD)/$(TARGET02)
@@ -164,23 +166,26 @@ builddir:
 magma:
 	$(MAKE) -C $(MAGMA) magma
 
+quadric:
+	$(MAKE) -C $(QUADRIC) quadric
+
 # Sample app shaders
 
-shaders-02: $(TARGET02)/position.o	$(TARGET02)/fill.o
+shaders-02: $(TARGET02)/position.o		$(TARGET02)/fill.o
 shaders-03: $(TARGET03)/passthrough.o	$(TARGET03)/fill.o
-shaders-04: $(TARGET04)/transform.o	$(TARGET04)/frontFace.o
-shaders-05: $(TARGET05)/transform.o	$(TARGET05)/normal.o
+shaders-04: $(TARGET04)/transform.o		$(TARGET04)/frontFace.o
+shaders-05: $(TARGET05)/transform.o		$(TARGET05)/normal.o
 shaders-06: $(TARGET06)/passthrough.o	$(TARGET06)/multitexture.o
-shaders-07: $(TARGET07)/transform.o	$(TARGET07)/textureArray.o
-shaders-08: $(TARGET08)/transform.o	$(TARGET08)/envmap.o
-shaders-09: $(TARGET09)/passthrough.o	$(TARGET09)/raycast.o
-shaders-10a: $(TARGET10a)/passthrough.o $(TARGET10a)/triangle.o	$(TARGET10a)/fill.o $(TARGET10a)/tex.o
-shaders-10b: $(TARGET10b)/passthrough.o $(TARGET10b)/triangle.o	$(TARGET10b)/fill.o $(TARGET10b)/tex.o
-shaders-11: $(TARGET11)/transform.o	$(TARGET11)/fill.o
-shaders-12: $(TARGET12)/transform.o	$(TARGET12)/texture.o
-shaders-13: $(TARGET13)/transform.o	$(TARGET13)/specialized.o
+shaders-07: $(TARGET07)/transform.o		$(TARGET07)/textureArray.o
+shaders-08: $(TARGET08)/transform.o		$(TARGET08)/envmap.o
+shaders-09: $(TARGET09)/quad.o			$(TARGET09)/raycast.o
+shaders-10a: $(TARGET10a)/pasthrough.o	$(TARGET10a)/triangle.o		$(TARGET10a)/fill.o $(TARGET10a)/tex.o
+shaders-10b: $(TARGET10b)/passthrough.o	$(TARGET10b)/triangle.o		$(TARGET10b)/fill.o $(TARGET10b)/tex.o
+shaders-11: $(TARGET11)/transform.o		$(TARGET11)/fill.o
+shaders-12: $(TARGET12)/transform.o		$(TARGET12)/texture.o
+shaders-13: $(TARGET13)/transform.o		$(TARGET13)/specialized.o
 shaders-14: $(TARGET14)/passthrough.o	$(TARGET14)/fill.o
-shaders-15: $(TARGET15)/pointSize.o	$(TARGET15)/particle.o $(TARGET15)/particleNeg.o
+shaders-15: $(TARGET15)/pointSize.o		$(TARGET15)/particle.o		$(TARGET15)/particleNeg.o
 
 $(TARGET18)/sum.o: $(TARGET18)/arithmetic.comp
 	$(GLSLC) -V $(TARGET18)/arithmetic.comp -e sum --source-entrypoint main -o $(TARGET18)/sum.o
@@ -189,30 +194,30 @@ $(TARGET18)/mul.o: $(TARGET18)/arithmetic.comp
 	$(GLSLC) -V $(TARGET18)/arithmetic.comp -e mul --source-entrypoint main -o $(TARGET18)/mul.o
 
 $(TARGET18)/power.o: $(TARGET18)/arithmetic.comp
-	$(GLSLC) -V $(TARGET15)/arithmetic.comp -e power --source-entrypoint main -o $(TARGET18)/power.o
+	$(GLSLC) -V $(TARGET18)/arithmetic.comp -e power --source-entrypoint main -o $(TARGET18)/power.o
 
 shaders-18: $(TARGET18)/sum.o $(TARGET18)/mul.o $(TARGET18)/power.o
 
 # Sample app builds: make output directory, build executable, compile shaders
 
-01-clear:			builddir magma $(TARGET01)/$(TARGET01)
-02-triangle:			builddir magma $(TARGET02)/$(TARGET02) shaders-02
-03-vertex-buffer:		builddir magma $(TARGET03)/$(TARGET03) shaders-03
+01-clear:					builddir magma $(TARGET01)/$(TARGET01)
+02-triangle:				builddir magma $(TARGET02)/$(TARGET02) shaders-02
+03-vertex-buffer:			builddir magma $(TARGET03)/$(TARGET03) shaders-03
 04-vertex-transform:		builddir magma $(TARGET04)/$(TARGET04) shaders-04
-05-mesh:			builddir magma $(TARGET05)/$(TARGET05) shaders-05
-06-texture:			builddir magma $(TARGET06)/$(TARGET06) shaders-06
-07-texture-array:		builddir magma $(TARGET07)/$(TARGET07) shaders-07
-08-texture-cube:		builddir magma $(TARGET08)/$(TARGET08) shaders-08
-09-texture-volume:		builddir magma $(TARGET09)/$(TARGET09) shaders-09
+05-mesh:					builddir magma quadric $(TARGET05)/$(TARGET05) shaders-05
+06-texture:					builddir magma $(TARGET06)/$(TARGET06) shaders-06
+07-texture-array:			builddir magma quadric $(TARGET07)/$(TARGET07) shaders-07
+08-texture-cube:			builddir magma quadric $(TARGET08)/$(TARGET08) shaders-08
+09-texture-volume:			builddir magma $(TARGET09)/$(TARGET09) shaders-09
 10a-render-to-texture:		builddir magma $(TARGET10a)/$(TARGET10a) shaders-10a
-10b-render-to-texture:		builddir magma $(TARGET10b)/$(TARGET10b) shaders-10b
-11-occlusion-query:		builddir magma $(TARGET11)/$(TARGET11) shaders-11
-12-alpha-blend:			builddir magma $(TARGET12)/$(TARGET12) shaders-12
-13-specialization:		builddir magma $(TARGET13)/$(TARGET13) shaders-13
-14-pushconstants:		builddir magma $(TARGET14)/$(TARGET14) shaders-14
-15-particles:			builddir magma $(TARGET15)/$(TARGET15) shaders-15
-16-immediate:			builddir magma $(TARGET16)/$(TARGET16)
-18-compute:			builddir magma $(TARGET18)/$(TARGET18) shaders-18
+10b-render-to-msaa-texture:	builddir magma $(TARGET10b)/$(TARGET10b) shaders-10b
+11-occlusion-query:			builddir magma quadric $(TARGET11)/$(TARGET11) shaders-11
+12-alpha-blend:				builddir magma quadric $(TARGET12)/$(TARGET12) shaders-12
+13-specialization:			builddir magma quadric $(TARGET13)/$(TARGET13) shaders-13
+14-pushconstants:			builddir magma $(TARGET14)/$(TARGET14) shaders-14
+15-particles:				builddir magma $(TARGET15)/$(TARGET15) shaders-15
+16-immediate-mode:			builddir magma $(TARGET16)/$(TARGET16)
+18-compute:					builddir magma $(TARGET18)/$(TARGET18) shaders-18
 
 # Build all samples
 
@@ -239,6 +244,7 @@ all:$(TARGET01) \
 
 clean:
 	$(MAKE) -C $(MAGMA) clean
+	$(MAKE) -C $(QUADRIC) clean
 	@find . -name '*.o' -delete
 	@rm -rf $(DEPS) \
 	$(TARGET01)/$(TARGET01) \
