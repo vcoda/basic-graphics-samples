@@ -207,7 +207,7 @@ void VulkanApp::createRenderPass()
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         const magma::AttachmentDescription depthStencilAttachment(depthFormat, 1,
             magma::op::clearStore, // Depth clear, store
-            magma::op::clearDontCare, // Stencil don't care
+            magma::op::dontCare, // Stencil don't care
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         const std::initializer_list<magma::AttachmentDescription> attachments = {colorAttachment, depthStencilAttachment};
