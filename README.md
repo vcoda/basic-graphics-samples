@@ -96,6 +96,7 @@ ii  amdgpu-pro                      17.10-446706         amd64                Me
 To build all samples, go to the repo root directory and run Make script:
 ```
 make magma
+make quadric
 make all
 ```
 or to build particular sample, type
@@ -103,7 +104,7 @@ or to build particular sample, type
 make <NN-sample-name>
 ```
 Optionally use can use -jN flag (where N is the number of threads) to run multi-threaded compilation.
-There is debug build by default. For release build, set DEBUG variable to false, e. g.:
+There is debug build by default. For release build, set DEBUG variable to 0, e. g.:
 ```
 make all DEBUG=0
 ```
@@ -139,7 +140,7 @@ Draws triangle primitive with per-vertex colors using vertex buffer.
 
 ### [04 - Vertex transform](04-vertex-transform/)
 <img src="./screenshots/04.jpg" height="128px" align="left">
-Shows how to setup perspective transformation and apply it to vertices in the vertex shader.
+Shows how to setup perspective transformation and apply it to the vertices in the vertex shader.
 <br><br><br><br><br>
 
 ### [05 - Mesh](05-mesh/)
@@ -161,7 +162,7 @@ Different texture LODs could be viewed.
 
 ### [08 - Cubemap texture](08-texture-cube/)
 <img src="./screenshots/08.jpg" height="128px" align="left">
-Shows how to load DXT cubemap textures and perform environment mapping in fragment shader.
+Shows how to load cubemap .dds textures and perform environment mapping in the fragment shader.
 <br><br><br><br><br>
 
 ### [09 - Volume texture](09-texture-volume/)
@@ -177,12 +178,12 @@ Looks like AMD hardware uses compute queue for resolving, because it slows down 
 
 ### [10.b - Render to multisample texture](10.b-render-to-msaa-texture/)
 <img src="./screenshots/10b.jpg" height="128px" align="left">
-Performs render to multisampled texture and resolve operation using RenderPass.
+Performs render to multisample texture with resolve operation using RenderPass.
 <br><br><br><br><br>
 
 ### [11 - Occlusion query](11-occlusion-query/)
 <img src="./screenshots/11.jpg" height="128px" align="left">
-Simplest usage of hardware occlusion queries.
+Simple usage of hardware occlusion queries.
 <br><br><br><br><br>
 
 ### [12 - Alpha blending](12-alpha-blend/)
@@ -198,7 +199,7 @@ For each fragment shader branch, there is a separate pipeline instance.
 
 ### [14 - Push constants](14-pushconstants/)
 <img src="./screenshots/14.jpg" height="128px" align="left">
-Shows how to use push constants - a limited register file inside GPU. Push constants are updated when command buffer is sent to GPU.
+Uses push constants - a limited storage inside command buffer. Push constants are updated when command buffer is recorded.
 <br><br><br><br>
 
 ### [15 - Particles](15-particles/)
