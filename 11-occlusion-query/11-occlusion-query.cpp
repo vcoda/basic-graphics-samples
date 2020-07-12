@@ -44,9 +44,7 @@ public:
         if (!results.empty())
         {
             const std::tstring caption = TEXT("11 - Occlusion query samples passed : ") + std::to_tstring(results[0]);
-            static int i = 0;
-            if (i++ % 100 == 0) // Update periodically, every frame may be slow
-                setWindowCaption(caption);
+            setWindowCaption(caption);
         }
     }
 
