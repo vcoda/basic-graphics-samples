@@ -130,7 +130,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "15-particles", "15-particle
 		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844} = {D9B732E5-C6FC-4DBB-8CF9-6E880C260844}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quadric", "..\quadric\projects\vs\quadric.vcxproj", "{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quadric", "third-party\quadric\projects\vs\quadric.vcxproj", "{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
