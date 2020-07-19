@@ -24,8 +24,11 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::initializer_list<VkDynamicState>{
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR},
-    layout, renderPass, subpass,
-    std::move(pipelineCache), nullptr, nullptr, 0)
+    std::move(layout),
+    std::move(renderPass),
+    subpass,
+    std::move(pipelineCache),
+    nullptr, nullptr, 0)
 {}
 
 magma::PipelineShaderStage GraphicsPipeline::loadShader(
@@ -37,9 +40,10 @@ magma::PipelineShaderStage GraphicsPipeline::loadShader(
     std::vector<char> bytecode((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     if (bytecode.size() % sizeof(magma::SpirvWord))
         throw std::runtime_error("size of \"" + std::string(shaderFileName) + "\" bytecode must be a multiple of SPIR-V word");
-    std::shared_ptr<magma::ShaderModule> module = std::make_shared<magma::ShaderModule>(device,
+    auto allocator = device->getAllocator();
+    std::shared_ptr<magma::ShaderModule> module(std::make_shared<magma::ShaderModule>(std::move(device),
         reinterpret_cast<const magma::SpirvWord *>(bytecode.data()), bytecode.size(),
-        0, 0, true, device->getAllocator());
+        0, 0, true, std::move(allocator)));
     const VkShaderStageFlagBits stage = module->getReflection()->getShaderStage();
     const char *const entrypoint = module->getReflection()->getEntryPointName(0);
     return magma::PipelineShaderStage(stage, std::move(module), entrypoint);
