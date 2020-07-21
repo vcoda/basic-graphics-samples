@@ -108,7 +108,7 @@ public:
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL); // Stay as depth/stencil attachment
         // Define that resolve attachment doesn't care about clear and should be read-only image
         const magma::AttachmentDescription colorResolveAttachment(fb.colorResolve->getFormat(), 1,
-            magma::op::dontCare, // Don't care about clear as it will be used as MSAA resolve target
+            magma::op::store, // Don't care about clear as it will be used as MSAA resolve target
             magma::op::dontCare,
             initialLayout,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Should be read-only in the shader when a render pass instance ends
