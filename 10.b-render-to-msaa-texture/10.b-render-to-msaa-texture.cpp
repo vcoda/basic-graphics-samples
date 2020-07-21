@@ -93,13 +93,16 @@ public:
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // Define that multisample color attachment can be cleared and can store shader output
         const magma::AttachmentDescription colorMsaaAttachment(fb.colorMsaa->getFormat(), fb.colorMsaa->getSamples(),
-            magma::op::clearStore, // Color clear, store
+            // Typically, after the multisampled image is resolved, we don't need the
+            // multisampled image anymore. Therefore, the multisampled image must be
+            // discarded by using STORE_OP_DONT_CARE.
+            magma::op::clear, // Color clear, don't care about store
             magma::op::dontCare,
             initialLayout,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL); // Stay as color attachment
         // Define that multisample depth attachment can be cleared and can store shader output
         const magma::AttachmentDescription depthMsaaAttachment(fb.depthMsaa->getFormat(), fb.depthMsaa->getSamples(),
-            magma::op::clearStore, // Depth clear, store
+            magma::op::clear, // Depth clear, don't care about store
             magma::op::dontCare, // Don't care about stencil
             initialLayout,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL); // Stay as depth/stencil attachment
