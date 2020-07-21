@@ -97,7 +97,7 @@ public:
             // multisampled image anymore. Therefore, the multisampled image must be
             // discarded by using STORE_OP_DONT_CARE.
             magma::op::clear, // Color clear, don't care about store
-            magma::op::dontCare,
+            magma::op::dontCare, // Inapplicable
             initialLayout,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL); // Stay as color attachment
         // Define that multisample depth attachment can be cleared and can store shader output

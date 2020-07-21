@@ -86,7 +86,7 @@ public:
         // Define that color attachment can be cleared, can store shader output and should be read-only image
         const magma::AttachmentDescription colorAttachment(fb.color->getFormat(), 1,
             magma::op::clearStore, // Color clear, store
-            magma::op::dontCare,
+            magma::op::dontCare, // Inapplicable
             initialLayout,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Should be read-only in the shader when a render pass instance ends
         // Define that depth attachment can be cleared and can store shader output
