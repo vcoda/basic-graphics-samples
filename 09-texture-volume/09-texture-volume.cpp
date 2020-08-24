@@ -74,7 +74,7 @@ public:
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix world = pitch * yaw;
 
-        magma::helpers::mapScoped<rapid::matrix>(uniformBuffer,
+        magma::helpers::mapScoped(uniformBuffer,
             [this, &world](auto *normal)
             {
                 *normal = rapid::transpose(rapid::inverse(world));
@@ -83,7 +83,7 @@ public:
 
     void updatePower()
     {
-        magma::helpers::mapScoped<IntegrationParameters>(uniformParameters,
+        magma::helpers::mapScoped(uniformParameters,
             [this](auto *block)
             {
                 block->power = power;

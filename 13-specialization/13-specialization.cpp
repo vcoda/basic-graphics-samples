@@ -127,7 +127,7 @@ public:
         const rapid::matrix pitch = rapid::rotationX(rapid::radians(spinY/2.f));
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix world = pitch * yaw;
-        magma::helpers::mapScoped<UniformBlock>(uniformBuffer,
+        magma::helpers::mapScoped(uniformBuffer,
             [this, &world](auto *block)
             {
                 block->worldView = world * view;

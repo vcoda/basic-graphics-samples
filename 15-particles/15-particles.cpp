@@ -90,7 +90,7 @@ public:
         static float angle = 0.f;
         angle += timer->millisecondsElapsed() * speed;
         const rapid::matrix world = rapid::rotationY(rapid::radians(spinX/2.f));
-        magma::helpers::mapScoped<rapid::matrix>(uniformBuffer,
+        magma::helpers::mapScoped(uniformBuffer,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;

@@ -79,16 +79,17 @@ public:
 
     void updateUniforms()
     {
-        magma::helpers::mapScoped<BuiltInUniforms>(builtinUniforms, true, [this](auto *builtin)
-        {
-            static float totalTime = 0.0f;
-            totalTime += timer->secondsElapsed();
-            builtin->iResolution.x = static_cast<float>(width);
-            builtin->iResolution.y = static_cast<float>(height);
-            builtin->iMouse.x = static_cast<float>(mouseX);
-            builtin->iMouse.y = static_cast<float>(mouseY);
-            builtin->iTime = totalTime;
-        });
+        magma::helpers::mapScoped(builtinUniforms,
+            [this](auto *builtin)
+            {
+                static float totalTime = 0.0f;
+                totalTime += timer->secondsElapsed();
+                builtin->iResolution.x = static_cast<float>(width);
+                builtin->iResolution.y = static_cast<float>(height);
+                builtin->iMouse.x = static_cast<float>(mouseX);
+                builtin->iMouse.y = static_cast<float>(mouseY);
+                builtin->iTime = totalTime;
+            });
     }
 
     std::shared_ptr<magma::ShaderModule> compileShader(const std::string& filename)

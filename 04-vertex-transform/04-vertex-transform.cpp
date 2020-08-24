@@ -67,7 +67,7 @@ public:
         static float angle = 0.f;
         angle += rhs ? step : -step; // Preserve direction
         const rapid::matrix world = rapid::rotationY(rapid::radians(angle));
-        magma::helpers::mapScoped<rapid::matrix>(uniformBuffer,
+        magma::helpers::mapScoped(uniformBuffer,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;

@@ -74,7 +74,7 @@ public:
 
     void updateUniforms()
     {
-        magma::helpers::mapScoped<UniformBlock>(uniformBuffer,
+        magma::helpers::mapScoped(uniformBuffer,
             [this](auto *block)
             {
                 block->lod = lod;

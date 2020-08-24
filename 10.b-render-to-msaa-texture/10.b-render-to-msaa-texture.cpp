@@ -68,7 +68,7 @@ public:
         const float step = timer->millisecondsElapsed() * speed;
         angle += step;
         const rapid::matrix roll = rapid::rotationZ(rapid::radians(angle));
-        magma::helpers::mapScoped<rapid::matrix>(uniformBuffer,
+        magma::helpers::mapScoped(uniformBuffer,
             [&roll](auto *world)
             {
                 *world = roll;

@@ -68,7 +68,7 @@ public:
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix trans = rapid::translation(0.f, -1.25f, 0.f);
         const rapid::matrix world = trans * pitch * yaw;
-        magma::helpers::mapScoped<TransformMatrices>(uniformTransforms,
+        magma::helpers::mapScoped(uniformTransforms,
             [this, &world](auto *block)
             {
                 block->worldView = world * view;
