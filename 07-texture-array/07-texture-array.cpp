@@ -260,5 +260,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<TextureArrayApp>(entry);
+    return std::unique_ptr<TextureArrayApp>(new TextureArrayApp(entry));
 }

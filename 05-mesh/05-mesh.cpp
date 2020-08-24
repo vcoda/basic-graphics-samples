@@ -127,5 +127,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<MeshApp>(entry);
+    return std::unique_ptr<MeshApp>(new MeshApp(entry));
 }

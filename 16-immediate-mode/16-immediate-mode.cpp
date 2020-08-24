@@ -275,5 +275,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<ImmediateModeApp>(entry);
+    return std::unique_ptr<ImmediateModeApp>(new ImmediateModeApp(entry));
 }

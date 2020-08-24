@@ -169,5 +169,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<ComputeApp>(entry);
+    return std::unique_ptr<ComputeApp>(new ComputeApp(entry));
 }

@@ -197,5 +197,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<ShaderToyApp>(entry);
+    return std::unique_ptr<ShaderToyApp>(new ShaderToyApp(entry));
 }

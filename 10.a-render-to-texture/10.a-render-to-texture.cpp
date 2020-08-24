@@ -235,5 +235,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<RenderToTextureApp>(entry);
+    return std::unique_ptr<RenderToTextureApp>(new RenderToTextureApp(entry));
 }

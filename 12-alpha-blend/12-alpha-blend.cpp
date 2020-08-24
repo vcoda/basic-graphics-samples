@@ -172,5 +172,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<AlphaBlendApp>(entry);
+    return std::unique_ptr<AlphaBlendApp>(new AlphaBlendApp(entry));
 }

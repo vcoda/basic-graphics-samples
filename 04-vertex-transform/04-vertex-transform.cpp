@@ -151,5 +151,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<VertexTransformApp>(entry);
+    return std::unique_ptr<VertexTransformApp>(new VertexTransformApp(entry));
 }

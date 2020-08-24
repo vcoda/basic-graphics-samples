@@ -99,5 +99,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<PushConstantsApp>(entry);
+    return std::unique_ptr<PushConstantsApp>(new PushConstantsApp(entry));
 }

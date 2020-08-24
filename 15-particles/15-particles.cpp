@@ -58,7 +58,7 @@ public:
 
     void initParticleSystem()
     {
-        particles = std::make_unique<ParticleSystem>();
+        particles = std::unique_ptr<ParticleSystem>(new ParticleSystem());
         particles->setMaxParticles(200);
         particles->setNumToRelease(10);
         particles->setReleaseInterval(0.05f);
@@ -165,5 +165,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<ParticlesApp>(entry);
+    return std::unique_ptr<ParticlesApp>(new ParticlesApp(entry));
 }

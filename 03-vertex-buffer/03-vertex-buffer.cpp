@@ -75,5 +75,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<VertexBufferApp>(entry);
+    return std::unique_ptr<VertexBufferApp>(new VertexBufferApp(entry));
 }

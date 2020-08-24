@@ -251,5 +251,5 @@ public:
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)
 {
-    return std::make_unique<RenderToMsaaTextureApp>(entry);
+    return std::unique_ptr<RenderToMsaaTextureApp>(new RenderToMsaaTextureApp(entry));
 }
