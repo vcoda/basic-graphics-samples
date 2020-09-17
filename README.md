@@ -130,12 +130,12 @@ Shows how to setup command buffer for simple framebuffer clear.
 
 ### [02 - Triangle](02-triangle/)
 <img src="./screenshots/02.jpg" height="128px" align="left">
-Draws triangle primitive from vertices generated in vertex shader.
+Draws triangle primitive from the vertices generated in the vertex shader.
 <br><br><br><br><br>
 
 ### [03 - Vertex buffer](03-vertex-buffer/)
 <img src="./screenshots/03.jpg" height="128px" align="left">
-Draws triangle primitive with per-vertex colors using vertex buffer.
+Draws triangle primitive with per-vertex color using vertex buffer.
 <br><br><br><br><br>
 
 ### [04 - Vertex transform](04-vertex-transform/)
@@ -147,11 +147,11 @@ Shows how to setup perspective transformation and apply it to the vertices in th
 <img src="./screenshots/05.jpg" height="128px" align="left">
 Generates famous Utah Teapot from the set of patches and draws wireframe mesh with perspective transformation.
 Smoothness of the surface could be controlled using subdivision degree.
-<br><br><br><br>
+<br><br><br>
 
 ### [06 - Texture](06-texture/)
 <img src="./screenshots/06.jpg" height="128px" align="left">
-Shows how to load DXT texture data (using Gliml library), create Vulkan images and combine them in the fragment shader using samplers.
+Shows how to load DXT texture data (using Gliml), create Vulkan images and combine them in the fragment shader using image samplers.
 <br><br><br><br>
 
 ### [07 - Texture array](07-texture-array/)
@@ -163,7 +163,7 @@ Different texture LODs could be viewed.
 ### [08 - Cubemap texture](08-texture-cube/)
 <img src="./screenshots/08.jpg" height="128px" align="left">
 Shows how to load cubemap .dds textures and perform environment mapping in the fragment shader.
-<br><br><br><br><br>
+<br><br><br><br>
 
 ### [09 - Volume texture](09-texture-volume/)
 <img src="./screenshots/09.jpg" height="128px" align="left">
@@ -212,8 +212,8 @@ Particle engine initially implemented by Kevin Harris and adopted by me for rend
 ### [16 - Immediate mode](16-immediate-mode/)
 <img src="./screenshots/16.jpg" height="128px" align="left">
 Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was useful to (quickly) draw something on the screen.
-This sample shows how to use Magma's immediate render to draw different primitives without VB mapping, data copy, state management etc.
-<br><br><br><br>
+This sample shows how to use Magma's ImmediateRender to draw different primitives without VB mapping, data copy, state management etc.
+<br><br><br>
 
 ### [17 - ShaderToy](17-shadertoy/)
 <img src="./screenshots/17.jpg" height="128px" align="left">
@@ -221,7 +221,7 @@ Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan 
 This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
 and apply changes immediately, which may be useful for shader development. Example fragment shader taken from 
 https://www.shadertoy.com/view/4tl3z4 (written by Reinder Nijhofftaken).
-<br><br>
+<br>
 
 ### [18 - Compute shader](18-compute/)
 <img src="./screenshots/18.jpg" width="256px" align="left">
