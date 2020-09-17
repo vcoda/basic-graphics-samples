@@ -147,7 +147,7 @@ Shows how to setup perspective transformation and apply it to the vertices in th
 <img src="./screenshots/05.jpg" height="128px" align="left">
 Generates famous Utah Teapot from the set of patches and draws wireframe mesh with perspective transformation.
 Smoothness of the surface could be controlled using subdivision degree.
-<br><br><br>
+<br><br><br><br>
 
 ### [06 - Texture](06-texture/)
 <img src="./screenshots/06.jpg" height="128px" align="left">
@@ -163,7 +163,7 @@ Different texture LODs could be viewed.
 ### [08 - Cubemap texture](08-texture-cube/)
 <img src="./screenshots/08.jpg" height="128px" align="left">
 Shows how to load cubemap .dds textures and perform environment mapping in the fragment shader.
-<br><br><br><br>
+<br><br><br><br><br>
 
 ### [09 - Volume texture](09-texture-volume/)
 <img src="./screenshots/09.jpg" height="128px" align="left">
@@ -221,7 +221,7 @@ Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan 
 This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
 and apply changes immediately, which may be useful for shader development. Example fragment shader taken from 
 https://www.shadertoy.com/view/4tl3z4 (written by Reinder Nijhofftaken).
-<br>
+<br><br>
 
 ### [18 - Compute shader](18-compute/)
 <img src="./screenshots/18.jpg" width="256px" align="left">
