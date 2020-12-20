@@ -231,8 +231,7 @@ Compute shaders are core part of Vulkan. This sample performs arithmetic computa
 
 ## Known issues
 
-* Negative viewport height may not work on Intel integrated GPU's despite support of VK_KHR_maintenance1 extension.
-* vkCreateSwapchainKHR() may fail on Linux due to unknown issues with alignment.
+* vkCreateSwapchainKHR() may fail on Linux due to unresolved issues with alignment.
 
 ## Credits
 This framework uses a few third-party libraries:
