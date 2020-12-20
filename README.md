@@ -26,6 +26,7 @@ Check that VK_SDK_PATH environment variable is present after SDK installation:
 echo %VK_SDK_PATH%
 ```
 Shaders are automatically compiled using glslangValidator as Custom Build Tool.
+If you use Visual Studio newer than 2017, change the SDK version in the project property pages or by right-clicking the solution and selecting "Retarget solution".
 
 ### Ubuntu Linux
 
