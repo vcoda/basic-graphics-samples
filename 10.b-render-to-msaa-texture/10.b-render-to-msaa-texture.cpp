@@ -1,4 +1,5 @@
 #include "../framework/vulkanApp.h"
+#include "../framework/bufferFromArray.h"
 #include "../framework/utilities.h"
 
 class RenderToMsaaTextureApp : public VulkanApp
@@ -148,7 +149,7 @@ public:
                 {1.f, 1.f},
             }
         };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
+        vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
 
     void createUniformBuffer()

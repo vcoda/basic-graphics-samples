@@ -1,4 +1,5 @@
 #include "../framework/vulkanApp.h"
+#include "../framework/bufferFromArray.h"
 
 class VertexTransformApp : public VulkanApp
 {
@@ -84,12 +85,12 @@ public:
 
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
         constexpr auto _1 = std::numeric_limits<unsigned char>::max();
-        const std::vector<Vertex> vertices = {
+        constexpr alignas(16) Vertex vertices[] = {
             {{ 0.0f,-1.0f}, {_1, 0, 0, _1}}, // top
             {{-1.0f, 1.0f}, {0, _1, 0, _1}}, // left
             {{ 1.0f, 1.0f}, {0, 0, _1, _1}}  // right
         };
-        vertexBuffer = std::make_shared<magma::VertexBuffer>(cmdBufferCopy, vertices);
+        vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
 
     void createUniformBuffer()
