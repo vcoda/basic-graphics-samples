@@ -100,7 +100,7 @@ public:
     void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
     {   // Record command buffer
         std::shared_ptr<magma::CommandBuffer> computeCmdBuffer = commandBuffers[0];
-        computeCmdBuffer->begin();
+        computeCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {   // Ensure that transfer write is finished before compute shader execution
             const std::vector<magma::BufferMemoryBarrier> bufferMemoryBarriers = {
                 {inputBuffers[0], magma::barriers::transferWriteShaderRead},
@@ -134,6 +134,7 @@ public:
         fence->reset();
         queue->submit(computeCmdBuffer, 0, nullptr, nullptr, fence);
         fence->wait();
+        computeCmdBuffer->reset(false); // Reset and record again between each submission
         // Output computed values
         printOutputValues(description);
     }
