@@ -156,8 +156,8 @@ public:
             }));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
         nearestSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinMipNearestClampToEdge);
-        descriptorSet->update(0, uniformBuffer);
-        descriptorSet->update(1, fb.colorView, nearestSampler);
+        descriptorSet->writeDescriptor(0, uniformBuffer);
+        descriptorSet->writeDescriptor(1, fb.colorView, nearestSampler);
     }
 
     void setupPipelines()

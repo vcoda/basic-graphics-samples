@@ -172,10 +172,10 @@ public:
             }));
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformBuffer);
-        descriptorSet->update(1, uniformParameters);
-        descriptorSet->update(2, volume, trilinearSampler);
-        descriptorSet->update(3, lookup, nearestSampler);
+        descriptorSet->writeDescriptor(0, uniformBuffer);
+        descriptorSet->writeDescriptor(1, uniformParameters);
+        descriptorSet->writeDescriptor(2, volume, trilinearSampler);
+        descriptorSet->writeDescriptor(3, lookup, nearestSampler);
     }
 
     void setupPipeline()

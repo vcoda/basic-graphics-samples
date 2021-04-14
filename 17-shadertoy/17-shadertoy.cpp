@@ -152,7 +152,7 @@ public:
         descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
             magma::bindings::FragmentStageBinding(0, oneUniformBuffer));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, builtinUniforms);
+        descriptorSet->writeDescriptor(0, builtinUniforms);
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
     }
 

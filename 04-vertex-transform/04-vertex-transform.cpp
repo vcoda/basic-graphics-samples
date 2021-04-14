@@ -110,7 +110,7 @@ public:
             magma::bindings::VertexStageBinding(0, oneUniformBuffer));
         // Connect our uniform buffer to binding slot 0
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformBuffer);
+        descriptorSet->writeDescriptor(0, uniformBuffer);
     }
 
     void setupPipeline()

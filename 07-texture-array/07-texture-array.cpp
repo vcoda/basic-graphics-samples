@@ -214,9 +214,9 @@ public:
             }));
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformWorldViewProj);
-        descriptorSet->update(1, uniformTexParameters);
-        descriptorSet->update(2, imageArrayView, anisotropicSampler);
+        descriptorSet->writeDescriptor(0, uniformWorldViewProj);
+        descriptorSet->writeDescriptor(1, uniformTexParameters);
+        descriptorSet->writeDescriptor(2, imageArrayView, anisotropicSampler);
     }
 
     void setupPipeline()

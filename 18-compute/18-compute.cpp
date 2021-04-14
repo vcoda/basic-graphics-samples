@@ -82,9 +82,9 @@ public:
                 magma::bindings::ComputeStageBinding(2, oneStorageBuffer),
             }));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, inputBuffers[0]);
-        descriptorSet->update(1, inputBuffers[1]);
-        descriptorSet->update(2, outputBuffer);
+        descriptorSet->writeDescriptor(0, inputBuffers[0]);
+        descriptorSet->writeDescriptor(1, inputBuffers[1]);
+        descriptorSet->writeDescriptor(2, outputBuffer);
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
     }
 

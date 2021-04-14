@@ -109,7 +109,7 @@ public:
         descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
             magma::bindings::VertexStageBinding(0, oneUniformBuffer));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformBuffer);
+        descriptorSet->writeDescriptor(0, uniformBuffer);
         constexpr magma::pushconstants::VertexFragmentConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout, pushConstantRange);
     }

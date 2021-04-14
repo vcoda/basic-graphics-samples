@@ -155,9 +155,9 @@ public:
             }));
         // Allocate and update descriptor set
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformTransforms);
-        descriptorSet->update(1, diffuse, anisotropicSampler);
-        descriptorSet->update(2, specular, anisotropicSampler);
+        descriptorSet->writeDescriptor(0, uniformTransforms);
+        descriptorSet->writeDescriptor(1, diffuse, anisotropicSampler);
+        descriptorSet->writeDescriptor(2, specular, anisotropicSampler);
     }
 
     void setupPipeline()

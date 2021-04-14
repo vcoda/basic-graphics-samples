@@ -127,8 +127,8 @@ public:
                 magma::bindings::FragmentStageBinding(1, oneImageSampler)
             }));
         descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->update(0, uniformWorldViewProj);
-        descriptorSet->update(1, imageView, anisotropicSampler);
+        descriptorSet->writeDescriptor(0, uniformWorldViewProj);
+        descriptorSet->writeDescriptor(1, imageView, anisotropicSampler);
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
     }
 
