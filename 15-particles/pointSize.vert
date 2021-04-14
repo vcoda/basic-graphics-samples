@@ -2,14 +2,14 @@
 
 layout(binding = 0) uniform Transforms
 {
-    mat4 viewproj;
+    mat4 viewProj;
 };
 
 layout(push_constant) uniform PushConstants
 {
     vec2 resolution;
     float h;
-    float pointsize;
+    float pointSize;
 };
 
 layout(location = 0) in vec4 position;
@@ -25,9 +25,9 @@ out gl_PerVertex {
 
 void main()
 {
-    gl_Position = viewproj * position;
+    gl_Position = viewProj * position;
     float wclipInv = 1./gl_Position.w;
-    gl_PointSize = h * pointsize * wclipInv; // scale with distance
+    gl_PointSize = h * pointSize * wclipInv; // scale with distance
     oPos = gl_Position.xy * wclipInv * 0.5 + 0.5; // screen space pos
     oPointSize = gl_PointSize;
     oColor = color;
