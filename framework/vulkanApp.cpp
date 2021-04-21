@@ -49,24 +49,28 @@ void VulkanApp::initialize()
 
 void VulkanApp::createInstance()
 {
-    const std::vector<const char *> layerNames = {
+    std::vector<const char*> layerNames;
 #ifdef _DEBUG
-        "VK_LAYER_LUNARG_standard_validation"
-#endif
-    };
-    const std::vector<const char *> extensionNames = {
+    std::unique_ptr<magma::InstanceLayers> instanceLayers = std::make_unique<magma::InstanceLayers>();
+    if (instanceLayers->KHRONOS_validation)
+        layerNames.push_back("VK_LAYER_KHRONOS_validation");
+    else if (instanceLayers->LUNARG_standard_validation)
+        layerNames.push_back("VK_LAYER_LUNARG_standard_validation");
+#endif // _DEBUG
+
+    std::vector<const char*> extensionNames = {
         VK_KHR_SURFACE_EXTENSION_NAME,
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-        VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+        VK_KHR_WIN32_SURFACE_EXTENSION_NAME
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
-        VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
+        VK_KHR_XLIB_SURFACE_EXTENSION_NAME
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-        VK_KHR_XCB_SURFACE_EXTENSION_NAME,
+        VK_KHR_XCB_SURFACE_EXTENSION_NAME
 #endif // VK_USE_PLATFORM_XCB_KHR
-#ifdef _DEBUG
-        VK_EXT_DEBUG_REPORT_EXTENSION_NAME
-#endif
     };
+    instanceExtensions = std::make_unique<magma::InstanceExtensions>();
+    if (instanceExtensions->EXT_debug_report)
+        extensionNames.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     MAGMA_STACK_ARRAY(char, appName, caption.length() + 1);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     size_t count = 0;
