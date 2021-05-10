@@ -1,9 +1,9 @@
 #pragma once
 
 #include <map>
-#include "magma/allocator/objectAllocator.h"
+#include "magma/allocator/cxxAllocator.h"
 
-class LinearAllocator : public magma::memory::IObjectAllocator
+class LinearAllocator : public magma::ICxxAllocator
 {
 public:
     LinearAllocator();

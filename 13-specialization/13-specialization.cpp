@@ -200,6 +200,7 @@ public:
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass, 0,
+            nullptr,
             pipelineCache));
     }
 

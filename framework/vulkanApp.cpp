@@ -9,7 +9,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     depthBuffer(depthBuffer),
     negateViewport(false)
 {
-    magma::memory::Allocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
+    magma::CxxAllocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
 }
 
 VulkanApp::~VulkanApp()
@@ -271,7 +271,7 @@ void VulkanApp::createSyncPrimitives()
     for (int i = 0; i < (int)commandBuffers.size(); ++i)
     {
         constexpr bool signaled = true; // Don't wait on first render of each command buffer
-        waitFences.push_back(std::make_shared<magma::Fence>(device, signaled));
+        waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, signaled));
     }
 }
 

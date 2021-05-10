@@ -59,7 +59,7 @@ public:
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
 
-        fence = std::make_shared<magma::Fence>(device, true);
+        fence = std::make_shared<magma::Fence>(device, nullptr, true);
     }
 
     void createInputOutputBuffers()
@@ -67,7 +67,7 @@ public:
         inputBuffers[0] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
         inputBuffers[1] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
         const VkDeviceSize outputSize = static_cast<VkDeviceSize>(sizeof(float) * numbers.size());
-        outputBuffer = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, nullptr, outputSize);
+        outputBuffer = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, outputSize, nullptr);
         readbackBuffer = std::make_shared<magma::DstTransferBuffer>(device, sizeof(float) * numbers.size());
     }
 
@@ -94,7 +94,7 @@ public:
         auto computeShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
         return std::make_shared<magma::ComputePipeline>(device,
             magma::ComputeShaderStage(computeShader, entrypoint),
-            pipelineLayout, pipelineCache);
+            pipelineLayout, nullptr, pipelineCache);
     }
 
     void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
