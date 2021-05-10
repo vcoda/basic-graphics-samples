@@ -139,9 +139,10 @@ public:
     void createMesh()
     {
         constexpr float radius = 0.25f;
-        constexpr uint32_t sides = 32;
-        constexpr uint32_t rings = 256;
-        mesh = std::make_unique<quadric::Knot>(radius, 3, sides, rings, false, cmdBufferCopy);
+        constexpr uint16_t turns = 3;
+        constexpr uint16_t sides = 32;
+        constexpr uint16_t rings = 256;
+        mesh = std::make_unique<quadric::Knot>(radius, turns, sides, rings, false, cmdBufferCopy);
     }
 
     void loadShaders()
