@@ -114,7 +114,7 @@ public:
         descriptorSets[0]->writeDescriptor(0, transformUniforms);
         // Setup second set layout
         descriptorSetLayouts[1] = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(1, oneDynamicUniformBuffer));
+            magma::bindings::VertexStageBinding(0, oneDynamicUniformBuffer));
         descriptorSets[1] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[1]);
         descriptorSets[1]->writeDescriptor(0, colorUniforms);
     }
