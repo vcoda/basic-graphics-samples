@@ -6,11 +6,17 @@ class ComputeApp : public VulkanApp
 {
     const std::vector<float> numbers = {0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f};
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::StorageBuffer inputBuffer0 = 0;
+        magma::binding::StorageBuffer inputBuffer1 = 1;
+        magma::binding::StorageBuffer outputBuffer = 2;
+        MAGMA_REFLECT(&inputBuffer0, &inputBuffer1, &outputBuffer)
+    } setLayout;
+
     std::shared_ptr<magma::StorageBuffer> inputBuffers[2];
     std::shared_ptr<magma::StorageBuffer> outputBuffer;
     std::shared_ptr<magma::DstTransferBuffer> readbackBuffer;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::ComputePipeline> computeSum;
@@ -73,19 +79,13 @@ public:
 
     void setupDescriptorSet()
     {
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, magma::descriptors::StorageBuffer(3));
-        constexpr magma::Descriptor oneStorageBuffer = magma::descriptors::StorageBuffer(1);
-        descriptorSetLayout = std::shared_ptr<magma::DescriptorSetLayout>(new magma::DescriptorSetLayout(device,
-            {
-                magma::bindings::ComputeStageBinding(0, oneStorageBuffer),
-                magma::bindings::ComputeStageBinding(1, oneStorageBuffer),
-                magma::bindings::ComputeStageBinding(2, oneStorageBuffer),
-            }));
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, inputBuffers[0]);
-        descriptorSet->writeDescriptor(1, inputBuffers[1]);
-        descriptorSet->writeDescriptor(2, outputBuffer);
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        setLayout.inputBuffer0 = inputBuffers[0];
+        setLayout.inputBuffer1 = inputBuffers[1];
+        setLayout.outputBuffer = outputBuffer;
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_COMPUTE_BIT,
+            nullptr, shaderReflectionFactory, "sum.o");
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
@@ -103,8 +103,8 @@ public:
         computeCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {   // Ensure that transfer write is finished before compute shader execution
             const std::vector<magma::BufferMemoryBarrier> bufferMemoryBarriers = {
-                {inputBuffers[0], magma::barriers::transferWriteShaderRead},
-                {inputBuffers[0], magma::barriers::transferWriteShaderRead},
+                {inputBuffers[0], magma::barrier::transferWriteShaderRead},
+                {inputBuffers[0], magma::barrier::transferWriteShaderRead},
             };
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 {}, bufferMemoryBarriers, {});
@@ -117,7 +117,7 @@ public:
             computeCmdBuffer->dispatch(workgroups, 1, 1);
             // Ensure that shader writes are finished before transfer readback
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                magma::BufferMemoryBarrier(outputBuffer, magma::barriers::shaderWriteTransferRead));
+                magma::BufferMemoryBarrier(outputBuffer, magma::barrier::shaderWriteTransferRead));
             // Copy output local buffer to readback buffer
             computeCmdBuffer->copyBuffer(outputBuffer, readbackBuffer);
             /* The memory dependency defined by signaling a fence and waiting on the host
@@ -127,7 +127,7 @@ public:
                and the end of the submission that will signal the fence,
                to guarantee completion of the writes. */
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT,
-                magma::BufferMemoryBarrier(readbackBuffer, magma::barriers::transferWriteHostRead));
+                magma::BufferMemoryBarrier(readbackBuffer, magma::barrier::transferWriteHostRead));
         }
         computeCmdBuffer->end();
         // Execute

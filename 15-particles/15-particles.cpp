@@ -12,10 +12,14 @@ class ParticlesApp : public VulkanApp
         float pointSize;
     };
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer viewProj = 0;
+        MAGMA_REFLECT(&viewProj)
+    } setLayout;
+
     std::unique_ptr<ParticleSystem> particles;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
@@ -104,14 +108,12 @@ public:
 
     void setupDescriptorSet()
     {
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, oneUniformBuffer);
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, uniformBuffer);
+        setLayout.viewProj = uniformBuffer;
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "pointSize.o");
         constexpr magma::pushconstants::VertexFragmentConstantRange<PushConstants> pushConstantRange;
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout, pushConstantRange);
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
     void setupPipeline()
@@ -123,11 +125,11 @@ public:
             "pointSize.o",
             negateViewport ? "particleNeg.o" : "particle.o",
             vertexInput,
-            magma::renderstates::pointList,
-            negateViewport ? magma::renderstates::lineCullBackCW : magma::renderstates::lineCullBackCCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::blendNormalRgb,
+            magma::renderstate::pointList,
+            negateViewport ? magma::renderstate::lineCullBackCW : magma::renderstate::lineCullBackCCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::blendNormalRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

@@ -30,6 +30,12 @@ class SpecializationApp : public VulkanApp
         rapid::matrix normalMatrix;
     };
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer transforms = 0;
+        MAGMA_REFLECT(&transforms)
+    } setLayout;
+
     const std::unordered_map<ShadingType, std::tstring> captions = {
         {ShadingType::Normal, CAPTION_STRING("Normals")},
         {ShadingType::Diffuse, CAPTION_STRING("Diffuse")},
@@ -42,8 +48,6 @@ class SpecializationApp : public VulkanApp
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
     std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::vector<std::shared_ptr<magma::GraphicsPipeline>> pipelines;
@@ -161,13 +165,11 @@ public:
 
     void setupDescriptorSet()
     {
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, oneUniformBuffer);
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, uniformBuffer);
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        setLayout.transforms = uniformBuffer;
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o");
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     magma::FragmentShaderStage specializeFragmentStage(ShadingType shadingType, const char *entrypoint) const
@@ -193,11 +195,11 @@ public:
             std::make_shared<magma::GraphicsPipeline>(device,
             shaderStages,
             mesh->getVertexInput(),
-            magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::triangleList,
+            negateViewport ? magma::renderstate::fillCullBackCCW : magma::renderstate::fillCullBackCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthLessOrEqual,
+            magma::renderstate::dontBlendRgb,
             std::initializer_list<VkDynamicState>{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR},
             pipelineLayout,
             renderPass, 0,

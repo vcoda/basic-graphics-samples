@@ -16,16 +16,20 @@ class RenderToTextureApp : public VulkanApp
         std::shared_ptr<magma::Framebuffer> framebuffer;
     } fb;
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer world = 0;
+        magma::binding::CombinedImageSampler diffuse = 1;
+        MAGMA_REFLECT(&world, &diffuse)
+    } setLayout;
+
     std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
     std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
-
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::Sampler> nearestSampler;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> texPipeline;
 
@@ -37,6 +41,7 @@ public:
         createFramebuffer({fbSize, fbSize});
         createVertexBuffer();
         createUniformBuffer();
+        createSampler();
         setupDescriptorSet();
         setupPipelines();
         recordOffscreenCommandBuffer(fb);
@@ -140,48 +145,42 @@ public:
         uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
+    void createSampler()
+    {
+        nearestSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinMipNearestClampToEdge);
+    }
+
     void setupDescriptorSet()
     {
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        constexpr magma::Descriptor oneImageSampler = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool = std::shared_ptr<magma::DescriptorPool>(new magma::DescriptorPool(device, 1,
-            {
-                oneUniformBuffer,
-                oneImageSampler
-            }));
-        descriptorSetLayout = std::shared_ptr<magma::DescriptorSetLayout>(new magma::DescriptorSetLayout(device,
-            {
-                magma::bindings::VertexStageBinding(0, oneUniformBuffer),
-                magma::bindings::FragmentStageBinding(1, oneImageSampler)
-            }));
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        nearestSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinMipNearestClampToEdge);
-        descriptorSet->writeDescriptor(0, uniformBuffer);
-        descriptorSet->writeDescriptor(1, fb.colorView, nearestSampler);
+        setLayout.world = uniformBuffer;
+        setLayout.diffuse = {fb.colorView, nearestSampler};
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            nullptr, shaderReflectionFactory, "tex.o");
     }
 
     void setupPipelines()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         rtPipeline = std::make_shared<GraphicsPipeline>(device,
             "triangle.o", "fill.o",
-            magma::renderstates::nullVertexInput,
-            magma::renderstates::triangleList,
-            magma::renderstates::fillCullBackCCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::nullVertexInput,
+            magma::renderstate::triangleList,
+            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             fb.renderPass, 0,
             pipelineCache);
         texPipeline = std::make_shared<GraphicsPipeline>(device,
             "passthrough.o", "tex.o",
-            magma::renderstates::pos2fTex2f,
-            magma::renderstates::triangleStrip,
-            magma::renderstates::fillCullBackCCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::pos2fTex2f,
+            magma::renderstate::triangleStrip,
+            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

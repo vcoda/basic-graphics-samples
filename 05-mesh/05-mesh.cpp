@@ -3,10 +3,14 @@
 
 class MeshApp : public VulkanApp
 {
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer worldViewProj = 0;
+        MAGMA_REFLECT(&worldViewProj)
+    } setLayout;
+
     std::unique_ptr<quadric::Teapot> mesh;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> wireframePipeline;
@@ -72,31 +76,24 @@ public:
     }
 
     void setupDescriptorSet()
-    {   // Specify that we will use single uniform buffer
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        // Create descriptor pool with single set
-        constexpr uint32_t maxDescriptorSets = 1;
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets, oneUniformBuffer);
-        // Setup layout of descriptor set: here we describe that slot 0 in the vertex shader
-        // will have uniform buffer binding.
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
-        // Connect our uniform buffer to binding slot 0
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, uniformBuffer);
+    {
+        setLayout.worldViewProj = uniformBuffer;
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o");
     }
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         wireframePipeline = std::make_shared<GraphicsPipeline>(device,
             "transform.o", "normal.o",
             mesh->getVertexInput(),
-            magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::lineCullBackCCW : magma::renderstates::lineCullBackCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::triangleList,
+            negateViewport ? magma::renderstate::lineCullBackCCW : magma::renderstate::lineCullBackCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthLessOrEqual,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

@@ -8,10 +8,14 @@ class VertexTransformApp : public VulkanApp
     // OpenGL uses right-handed coordinate system, whilst Direct3D and RenderMan use left-handed
     constexpr static bool rhs = true;
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer worldViewProj = 0;
+        MAGMA_REFLECT(&worldViewProj)
+    } setLayout;
+
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
@@ -99,32 +103,25 @@ public:
     }
 
     void setupDescriptorSet()
-    {   // Specify that we will use single uniform buffer
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        // Create descriptor pool with single set
-        constexpr uint32_t maxDescriptorSets = 1;
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets, oneUniformBuffer);
-        // Setup layout of descriptor set: here we describe that slot 0 in the vertex shader
-        // will have uniform buffer binding.
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
-        // Connect our uniform buffer to binding slot 0
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, uniformBuffer);
+    {
+        setLayout.worldViewProj = uniformBuffer;
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o");
     }
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform.o", "frontFace.o",
-            magma::renderstates::pos2fColor4b,
-            magma::renderstates::triangleList,
-            rhs ? magma::renderstates::fillCullNoneCCW
-                : magma::renderstates::fillCullNoneCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::pos2fColor4b,
+            magma::renderstate::triangleList,
+            rhs ? magma::renderstate::fillCullNoneCCW
+                : magma::renderstate::fillCullNoneCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

@@ -12,14 +12,18 @@ class ShaderToyApp : public VulkanApp
         float iTime;
     };
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer builtinUniforms = 0;
+        MAGMA_REFLECT(&builtinUniforms)
+    } setLayout;
+
     std::unique_ptr<FileWatchdog> watchdog;
     std::unique_ptr<magma::aux::ShaderCompiler> glslCompiler;
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
     std::shared_ptr<magma::UniformBuffer<BuiltInUniforms>> builtinUniforms;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
@@ -147,34 +151,32 @@ public:
 
     void setupDescriptorSet()
     {
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, oneUniformBuffer);
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::FragmentStageBinding(0, oneUniformBuffer));
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, builtinUniforms);
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        setLayout.builtinUniforms = builtinUniforms;
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
     void setupPipeline()
     {
-        std::vector<magma::PipelineShaderStage> pipelineShaders = {
+        std::vector<magma::PipelineShaderStage> shaderStages = {
             magma::VertexShaderStage(vertexShader, "main"),
             magma::FragmentShaderStage(fragmentShader, "main")
         };
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device,
-            pipelineShaders,
-            magma::renderstates::nullVertexInput,
-            magma::renderstates::triangleStrip,
+            shaderStages,
+            magma::renderstate::nullVertexInput,
+            magma::renderstate::triangleStrip,
             magma::TesselationState(),
             magma::ViewportState(0, 0, width, height),
-            magma::renderstates::fillCullBackCCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::dontBlendRgb,
             std::initializer_list<VkDynamicState>{},
             pipelineLayout,
             renderPass, 0,
+            nullptr,
             pipelineCache);
     }
 

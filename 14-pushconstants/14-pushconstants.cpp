@@ -8,9 +8,14 @@ class PushConstantsApp : public VulkanApp
         rapid::float4 vertexColors[3];
     } pushConstants;
 
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer pushConstants = 0;
+        MAGMA_REFLECT(&pushConstants)
+    } setLayout;
+
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
+    std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
@@ -30,7 +35,7 @@ public:
         updateVertexColors();
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[bufferIndex];
         // To show push constants in dynamic, we have to rebuild command buffer each frame
-        cmdBuffer->begin();//VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+        cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex], {magma::clears::grayColor});
             {
@@ -45,7 +50,6 @@ public:
         }
         cmdBuffer->end();
         submitCommandBuffer(bufferIndex);
-        //cmdBuffer->reset(false);
     }
 
     void updateVertexColors()
@@ -73,25 +77,23 @@ public:
 
     void setupDescriptorSet()
     {
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 1, oneUniformBuffer);
-        descriptorSetLayout = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneUniformBuffer));
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT);
         // Specify push constant range
         constexpr magma::pushconstants::VertexConstantRange<PushConstants> pushConstantRange;
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout, pushConstantRange);
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
     void setupPipeline()
     {
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "passthrough.o", "fill.o",
-            magma::renderstates::pos2f,
-            magma::renderstates::triangleList,
-            magma::renderstates::fillCullBackCCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::pos2f,
+            magma::renderstate::triangleList,
+            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

@@ -5,13 +5,23 @@
 // Use L button + mouse to rotate scene
 class OcclusionQueryApp : public VulkanApp
 {
+    struct TransformSetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::DynamicUniformBuffer worldViewProj = 0;
+        MAGMA_REFLECT(&worldViewProj)
+    } setLayout0;
+
+    struct ColorSetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::DynamicUniformBuffer color = 0;
+        MAGMA_REFLECT(&color)
+    } setLayout1;
+
     std::unique_ptr<quadric::Plane> plane;
     std::unique_ptr<quadric::Teapot> teapot;
     std::shared_ptr<magma::QueryPool> occlusionQuery;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::matrix>> transformUniforms;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::vector4>> colorUniforms;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayouts[2];
     std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> teapotPipeline;
@@ -105,42 +115,42 @@ public:
 
     void setupDescriptorSet()
     {
-        descriptorPool = std::make_shared<magma::DescriptorPool>(device, 2, magma::descriptors::DynamicUniformBuffer(2));
-        constexpr magma::Descriptor oneDynamicUniformBuffer = magma::descriptors::DynamicUniformBuffer(1);
-        // Setup first set layout
-        descriptorSetLayouts[0] = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneDynamicUniformBuffer));
-        descriptorSets[0] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[0]);
-        descriptorSets[0]->writeDescriptor(0, transformUniforms);
-        // Setup second set layout
-        descriptorSetLayouts[1] = std::make_shared<magma::DescriptorSetLayout>(device,
-            magma::bindings::VertexStageBinding(0, oneDynamicUniformBuffer));
-        descriptorSets[1] = descriptorPool->allocateDescriptorSet(descriptorSetLayouts[1]);
-        descriptorSets[1]->writeDescriptor(0, colorUniforms);
+        setLayout0.worldViewProj = transformUniforms;
+        descriptorSets[0] = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout0, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o");
+        setLayout1.color = colorUniforms;
+        descriptorSets[1] = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout1, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o");
     }
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayouts);
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(
+            std::vector<std::shared_ptr<magma::DescriptorSetLayout>>{
+                descriptorSets[0]->getLayout(),
+                descriptorSets[1]->getLayout()
+            });
         teapotPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform.o", "fill.o",
             teapot->getVertexInput(),
-            magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::triangleList,
+            negateViewport ? magma::renderstate::fillCullBackCCW : magma::renderstate::fillCullBackCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthLessOrEqual,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
         planePipeline = std::make_shared<GraphicsPipeline>(device,
             "transform.o", "fill.o",
             plane->getVertexInput(),
-            magma::renderstates::triangleList,
-            negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthLessOrEqual,
-            magma::renderstates::dontBlendRgb,
+            magma::renderstate::triangleList,
+            negateViewport ? magma::renderstate::fillCullBackCCW : magma::renderstate::fillCullBackCW,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthLessOrEqual,
+            magma::renderstate::dontBlendRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);
@@ -162,11 +172,11 @@ public:
                 cmdBuffer->setScissor(0, 0, width, height);
                 // Occluder
                 cmdBuffer->bindPipeline(planePipeline);
-                cmdBuffer->bindDescriptorSets(planePipeline, descriptorSets, {0, 0});
+                cmdBuffer->bindDescriptorSets(planePipeline, {descriptorSets[0], descriptorSets[1]}, {0, 0});
                 plane->draw(cmdBuffer);
                 // Occludee
                 cmdBuffer->bindPipeline(teapotPipeline);
-                cmdBuffer->bindDescriptorSets(teapotPipeline, descriptorSets,
+                cmdBuffer->bindDescriptorSets(teapotPipeline, {descriptorSets[0], descriptorSets[1]},
                     {
                         transformUniforms->getDynamicOffset(1),
                         colorUniforms->getDynamicOffset(1)

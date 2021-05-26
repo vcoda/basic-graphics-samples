@@ -44,7 +44,9 @@ void VulkanApp::initialize()
     createFramebuffer();
     createCommandBuffers();
     createSyncPrimitives();
+    createDescriptorPool();
     pipelineCache = std::make_shared<magma::PipelineCache>(device);
+    shaderReflectionFactory = std::make_shared<ShaderReflectionFactory>(device);
 }
 
 void VulkanApp::createInstance()
@@ -273,6 +275,19 @@ void VulkanApp::createSyncPrimitives()
         constexpr bool signaled = true; // Don't wait on first render of each command buffer
         waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, signaled));
     }
+}
+
+void VulkanApp::createDescriptorPool()
+{
+    constexpr uint32_t maxDescriptorSets = 2;
+    // Create descriptor pool enough for basic samples
+    descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
+        std::vector<magma::Descriptor>{
+            magma::descriptor::UniformBuffer(4),
+            magma::descriptor::DynamicUniformBuffer(4),
+            magma::descriptor::StorageBuffer(4),
+            magma::descriptor::CombinedImageSampler(4)
+        });
 }
 
 bool VulkanApp::submitCommandBuffer(uint32_t bufferIndex)

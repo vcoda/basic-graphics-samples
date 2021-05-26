@@ -4,14 +4,19 @@
 
 class AlphaBlendApp : public VulkanApp
 {
+    struct SetLayout : public magma::DescriptorSetDeclaration
+    {
+        magma::binding::UniformBuffer worldViewProj = 0;
+        magma::binding::CombinedImageSampler diffuse = 1;
+        MAGMA_REFLECT(&worldViewProj, &diffuse)
+    } setLayout;
+
     std::unique_ptr<quadric::Cube> mesh;
     std::shared_ptr<magma::Image2D> image;
     std::shared_ptr<magma::ImageView> imageView;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
-    std::shared_ptr<magma::DescriptorSetLayout> descriptorSetLayout;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> cullFrontPipeline;
     std::shared_ptr<magma::GraphicsPipeline> cullBackPipeline;
@@ -26,11 +31,11 @@ public:
         setupView();
         createMesh();
         loadTexture("logo.dds");
-        createSampler();
         createUniformBuffers();
+        createSampler();
         setupDescriptorSet();
-        cullFrontPipeline = setupPipeline(negateViewport ? magma::renderstates::fillCullFrontCCW : magma::renderstates::fillCullFrontCW);
-        cullBackPipeline = setupPipeline(negateViewport ? magma::renderstates::fillCullBackCCW : magma::renderstates::fillCullBackCW);
+        cullFrontPipeline = setupPipeline(negateViewport ? magma::renderstate::fillCullFrontCCW : magma::renderstate::fillCullFrontCW);
+        cullBackPipeline = setupPipeline(negateViewport ? magma::renderstate::fillCullBackCCW : magma::renderstate::fillCullBackCW);
         recordCommandBuffer(FrontBuffer);
         recordCommandBuffer(BackBuffer);
         timer->run();
@@ -102,34 +107,24 @@ public:
         imageView = std::make_shared<magma::ImageView>(image);
     }
 
-    void createSampler()
-    {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::samplers::magMinLinearMipAnisotropicClampToEdge);
-    }
-
     void createUniformBuffers()
     {
         uniformWorldViewProj = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
+    void createSampler()
+    {
+        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdge);
+    }
+
     void setupDescriptorSet()
     {
-        constexpr magma::Descriptor oneUniformBuffer = magma::descriptors::UniformBuffer(1);
-        constexpr magma::Descriptor oneImageSampler = magma::descriptors::CombinedImageSampler(1);
-        descriptorPool = std::shared_ptr<magma::DescriptorPool>(new magma::DescriptorPool(device, 1,
-            {
-                oneUniformBuffer,
-                oneImageSampler
-            }));
-        descriptorSetLayout = std::shared_ptr<magma::DescriptorSetLayout>(new magma::DescriptorSetLayout(device,
-            {
-                magma::bindings::VertexStageBinding(0, oneUniformBuffer),
-                magma::bindings::FragmentStageBinding(1, oneImageSampler)
-            }));
-        descriptorSet = descriptorPool->allocateDescriptorSet(descriptorSetLayout);
-        descriptorSet->writeDescriptor(0, uniformWorldViewProj);
-        descriptorSet->writeDescriptor(1, imageView, anisotropicSampler);
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSetLayout);
+        setLayout.worldViewProj = uniformWorldViewProj;
+        setLayout.diffuse = {imageView, anisotropicSampler};
+        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            nullptr, shaderReflectionFactory, "texture.o");
+        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
@@ -137,11 +132,11 @@ public:
         return std::make_shared<GraphicsPipeline>(device,
             "transform.o", "texture.o",
             mesh->getVertexInput(),
-            magma::renderstates::triangleList,
+            magma::renderstate::triangleList,
             rasterizationState,
-            magma::renderstates::dontMultisample,
-            magma::renderstates::depthAlwaysDontWrite,
-            magma::renderstates::blendNormalRgb,
+            magma::renderstate::dontMultisample,
+            magma::renderstate::depthAlwaysDontWrite,
+            magma::renderstate::blendNormalRgb,
             pipelineLayout,
             renderPass, 0,
             pipelineCache);

@@ -133,8 +133,8 @@ public:
 
     void drawPolygon()
     {   // Polygons are not present in Vulkan, have to be emulated by triangle fan
-        ir->setRasterizationState(negateViewport ? magma::renderstates::fillCullBackCW
-                                                 : magma::renderstates::fillCullBackCCW);
+        ir->setRasterizationState(negateViewport ? magma::renderstate::fillCullBackCW
+                                                 : magma::renderstate::fillCullBackCCW);
         ir->color(0.f, 0.5f, 0.5f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
         {
@@ -149,8 +149,8 @@ public:
 
     void drawQuads()
     {   // Quads are not present in Vulkan, have to be emulated by triangle strips
-        ir->setRasterizationState(negateViewport ? magma::renderstates::lineCullBackCCW
-                                                 : magma::renderstates::lineCullBackCW);
+        ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCCW
+                                                 : magma::renderstate::lineCullBackCW);
         ir->color(1.f, 0.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
         {
@@ -173,8 +173,8 @@ public:
 
     void drawQuadStrip()
     {   // Quad strip not present in Vulkan, have to be emulated by triangle strip
-        ir->setRasterizationState(negateViewport ? magma::renderstates::lineCullBackCW
-                                                 : magma::renderstates::lineCullBackCCW);
+        ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCW
+                                                 : magma::renderstate::lineCullBackCCW);
         ir->color(0.f, 0.f, 0.5f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
         {
@@ -192,8 +192,8 @@ public:
 
     void drawTriangles()
     {
-        ir->setRasterizationState(negateViewport ? magma::renderstates::fillCullBackCCW
-                                                 : magma::renderstates::fillCullBackCW);
+        ir->setRasterizationState(negateViewport ? magma::renderstate::fillCullBackCCW
+                                                 : magma::renderstate::fillCullBackCW);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
         {
             ir->color(1.f, 0.f, 0.f);
@@ -209,7 +209,7 @@ public:
             ir->vertex(0.586f, 0.004f);
         }
         ir->endPrimitive();
-        ir->setRasterizationState(magma::renderstates::lineCullBackCCW);
+        ir->setRasterizationState(magma::renderstate::lineCullBackCCW);
         ir->color(0.f, 0.f, 1.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
         {
@@ -222,8 +222,8 @@ public:
 
     void drawTriangleStrip()
     {
-        ir->setRasterizationState(negateViewport ? magma::renderstates::lineCullBackCW
-                                                 : magma::renderstates::lineCullBackCCW);
+        ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCW
+                                                 : magma::renderstate::lineCullBackCCW);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
         {
             ir->color(1.f, 0.f, 0.f);
@@ -241,8 +241,8 @@ public:
     void drawTriangleFan()
     {
         ir->setLineWidth(3.f);
-        ir->setRasterizationState(negateViewport ? magma::renderstates::lineCullBackCW
-                                                 : magma::renderstates::lineCullBackCCW);
+        ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCW
+                                                 : magma::renderstate::lineCullBackCCW);
         ir->color(0.f, 0.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
         {

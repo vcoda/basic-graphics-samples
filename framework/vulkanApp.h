@@ -9,6 +9,7 @@
 #include "magma/magma.h"
 #include "rapid/rapid.h"
 #include "graphicsPipeline.h"
+#include "shaderReflectionFactory.h"
 #include "timer.h"
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
@@ -44,6 +45,7 @@ protected:
     virtual void createFramebuffer();
     virtual void createCommandBuffers();
     virtual void createSyncPrimitives();
+    virtual void createDescriptorPool();
 
     bool submitCommandBuffer(uint32_t bufferIndex);
 
@@ -70,8 +72,10 @@ protected:
     std::shared_ptr<magma::Semaphore> renderFinished;
     std::vector<std::shared_ptr<magma::Fence>> waitFences;
 
+    std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::PipelineCache> pipelineCache;
 
+    std::shared_ptr<ShaderReflectionFactory> shaderReflectionFactory;
     std::unique_ptr<Timer> timer;
     bool depthBuffer;
     bool negateViewport;
