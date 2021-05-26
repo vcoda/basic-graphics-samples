@@ -164,7 +164,7 @@ Different texture LODs could be viewed.
 ### [08 - Cubemap texture](08-texture-cube/)
 <img src="./screenshots/08.jpg" height="128px" align="left">
 Shows how to load cubemap .dds textures and perform environment mapping in the fragment shader.
-<br><br><br><br><br>
+<br><br><br><br>
 
 ### [09 - Volume texture](09-texture-volume/)
 <img src="./screenshots/09.jpg" height="128px" align="left">
@@ -220,9 +220,9 @@ This sample shows how to use Magma's ImmediateRender to draw different primitive
 <img src="./screenshots/17.jpg" height="128px" align="left">
 Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan uses pre-compiled SPIR-V bytecode.
 This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
-and apply changes immediately, which may be useful for shader development. Example fragment shader taken from 
-https://www.shadertoy.com/view/4tl3z4 (written by Reinder Nijhofftaken).
-<br><br>
+and apply changes immediately, which may be useful for shader development. This sample only for Release x64 build configuration.
+Example fragment shader taken from https://www.shadertoy.com/view/4tl3z4 (written by Reinder Nijhofftaken).
+<br>
 
 ### [18 - Compute shader](18-compute/)
 <img src="./screenshots/18.jpg" width="256px" align="left">
