@@ -83,7 +83,7 @@ public:
         setLayout.inputBuffer1 = inputBuffers[1];
         setLayout.outputBuffer = outputBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_COMPUTE_BIT,
+            setLayout, VK_SHADER_STAGE_COMPUTE_BIT,
             nullptr, shaderReflectionFactory, "sum.o");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
@@ -109,7 +109,7 @@ public:
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 {}, bufferMemoryBarriers, {});
             // Bind input and output buffers
-            computeCmdBuffer->bindDescriptorSet(pipeline, descriptorSet);
+            computeCmdBuffer->bindDescriptorSet(pipeline, 0, descriptorSet);
             // Bind pipeline
             computeCmdBuffer->bindPipeline(pipeline);
             // Run compute shader

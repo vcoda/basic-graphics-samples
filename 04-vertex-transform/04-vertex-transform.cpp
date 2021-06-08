@@ -106,7 +106,7 @@ public:
     {
         setLayout.worldViewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            setLayout, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "transform.o");
     }
 
@@ -136,7 +136,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(3, 0);

@@ -147,7 +147,7 @@ public:
         setLayout.diffuse = {diffuse, anisotropicSampler};
         setLayout.specular = {specular, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "envmap.o");
     }
 
@@ -180,7 +180,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 mesh->draw(cmdBuffer);
             }

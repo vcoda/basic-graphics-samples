@@ -122,7 +122,7 @@ public:
         setLayout.worldViewProj = uniformWorldViewProj;
         setLayout.diffuse = {imageView, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "texture.o");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
@@ -151,7 +151,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(cullFrontPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(cullFrontPipeline, 0, descriptorSet);
                 // Draw back faced triangles
                 cmdBuffer->bindPipeline(cullFrontPipeline);
                 mesh->draw(cmdBuffer);

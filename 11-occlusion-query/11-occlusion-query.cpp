@@ -117,12 +117,12 @@ public:
     {
         setLayout0.worldViewProj = transformUniforms;
         descriptorSets[0] = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout0, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "transform.o");
+            setLayout0, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o", 0);
         setLayout1.color = colorUniforms;
         descriptorSets[1] = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout1, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "transform.o");
+            setLayout1, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "transform.o", 1);
     }
 
     void setupPipeline()
@@ -172,11 +172,11 @@ public:
                 cmdBuffer->setScissor(0, 0, width, height);
                 // Occluder
                 cmdBuffer->bindPipeline(planePipeline);
-                cmdBuffer->bindDescriptorSets(planePipeline, {descriptorSets[0], descriptorSets[1]}, {0, 0});
+                cmdBuffer->bindDescriptorSets(planePipeline, 0, {descriptorSets[0], descriptorSets[1]}, {0, 0});
                 plane->draw(cmdBuffer);
                 // Occludee
                 cmdBuffer->bindPipeline(teapotPipeline);
-                cmdBuffer->bindDescriptorSets(teapotPipeline, {descriptorSets[0], descriptorSets[1]},
+                cmdBuffer->bindDescriptorSets(teapotPipeline, 0, {descriptorSets[0], descriptorSets[1]},
                     {
                         transformUniforms->getDynamicOffset(1),
                         colorUniforms->getDynamicOffset(1)

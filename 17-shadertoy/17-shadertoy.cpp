@@ -153,7 +153,7 @@ public:
     {
         setLayout.builtinUniforms = builtinUniforms;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_FRAGMENT_BIT);
+            setLayout, VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
     void setupPipeline()
@@ -187,7 +187,7 @@ public:
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
             {
-                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->draw(4, 0);
             }

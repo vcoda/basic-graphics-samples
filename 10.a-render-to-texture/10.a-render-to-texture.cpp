@@ -155,7 +155,7 @@ public:
         setLayout.world = uniformBuffer;
         setLayout.diffuse = {fb.colorView, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "tex.o");
     }
 
@@ -200,7 +200,7 @@ public:
             {
                 rtCmdBuffer->setViewport(magma::Viewport(0, 0, fb.framebuffer->getExtent()));
                 rtCmdBuffer->setScissor(magma::Scissor(0, 0, fb.framebuffer->getExtent()));
-                rtCmdBuffer->bindDescriptorSet(rtPipeline, descriptorSet);
+                rtCmdBuffer->bindDescriptorSet(rtPipeline, 0, descriptorSet);
                 rtCmdBuffer->bindPipeline(rtPipeline);
                 rtCmdBuffer->draw(3, 0);
             }
@@ -222,7 +222,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(texPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(texPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(texPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(4, 0);

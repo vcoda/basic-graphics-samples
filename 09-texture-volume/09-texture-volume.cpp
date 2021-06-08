@@ -165,7 +165,7 @@ public:
         setLayout.volume = {volume, trilinearSampler};
         setLayout.lookup = {lookup, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_FRAGMENT_BIT,
+            setLayout, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "raycast.o");
     }
 
@@ -194,7 +194,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->draw(4, 0);
             }

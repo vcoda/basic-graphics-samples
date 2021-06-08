@@ -110,7 +110,7 @@ public:
     {
         setLayout.viewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            0, setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            setLayout, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "pointSize.o");
         constexpr magma::pushconstants::VertexFragmentConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
@@ -154,7 +154,7 @@ public:
 
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(graphicsPipeline, descriptorSet);
+                cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->pushConstantBlock(pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, pushConstants);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 particles->draw(cmdBuffer);
