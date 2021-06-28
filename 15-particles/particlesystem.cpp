@@ -34,7 +34,8 @@ void ParticleSystem::initialize(std::shared_ptr<magma::Device> device)
 {
     const bool pinnedMemory = device->getPhysicalDevice()->checkPinnedMemorySupport();
     vertexBuffer = std::make_shared<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), pinnedMemory);
-    drawParams = std::make_shared<magma::IndirectBuffer>(device);
+    drawParams = std::make_shared<magma::DrawIndirectBuffer>(device, 1);
+    drawParams->writeDrawCommand(0, 0); // Submit stub draw call to command buffer
 }
 
 void ParticleSystem::update(float dt)
@@ -134,6 +135,7 @@ void ParticleSystem::update(float dt)
                     ++pv;
                 }
             });
+        drawParams->reset();
         drawParams->writeDrawCommand(static_cast<uint32_t>(activeList.size()), 0);
     }
 }
@@ -146,7 +148,7 @@ void ParticleSystem::reset()
 void ParticleSystem::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer)
 {
     cmdBuffer->bindVertexBuffer(0, vertexBuffer);
-    cmdBuffer->drawIndirect(drawParams, 0, 1, 0);
+    cmdBuffer->drawIndirect(drawParams);
 }
 
 float ParticleSystem::randomScalar(float min, float max)

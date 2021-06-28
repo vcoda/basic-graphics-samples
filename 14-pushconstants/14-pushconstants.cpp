@@ -37,7 +37,7 @@ public:
         // To show push constants in dynamic, we have to rebuild command buffer each frame
         cmdBuffer->begin();
         {
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex], {magma::clears::grayColor});
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex], {magma::clear::gray});
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);

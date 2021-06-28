@@ -185,7 +185,7 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::grayColor});
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clear::gray});
             {
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);

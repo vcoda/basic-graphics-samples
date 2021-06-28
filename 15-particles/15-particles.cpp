@@ -142,8 +142,8 @@ public:
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
-                    magma::clears::blackColor,
-                    magma::clears::depthOne
+                    magma::clear::black,
+                    magma::clear::depthOne
                 });
             {
                 PushConstants pushConstants;

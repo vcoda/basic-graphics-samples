@@ -211,7 +211,7 @@ public:
             rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer,
                 {
                     magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f),
-                    magma::clears::depthOne
+                    magma::clear::depthOne
                 });
             {
                 rtCmdBuffer->setViewport(magma::Viewport(0, 0, fb.framebuffer->getExtent()));
@@ -233,7 +233,7 @@ public:
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
-                    magma::clears::grayColor
+                    magma::clear::gray
                 });
             {
                 cmdBuffer->setViewport(0, 0, width, height);

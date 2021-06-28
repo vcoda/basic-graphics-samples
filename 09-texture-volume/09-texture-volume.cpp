@@ -190,7 +190,7 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clears::whiteColor});
+            cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clear::white});
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);

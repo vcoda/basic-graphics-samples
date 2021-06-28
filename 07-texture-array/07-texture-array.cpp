@@ -233,8 +233,8 @@ public:
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
-                    magma::clears::grayColor,
-                    magma::clears::depthOne
+                    magma::clear::gray,
+                    magma::clear::depthOne
                 });
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);

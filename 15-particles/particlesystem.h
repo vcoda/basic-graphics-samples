@@ -101,7 +101,7 @@ private:
     float velocityScale = 1.f;
 
     std::shared_ptr<magma::DynamicVertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::IndirectBuffer> drawParams;
+    std::shared_ptr<magma::DrawIndirectBuffer> drawParams;
 };
 
 ClassifyPoint classifyPoint(const rapid::vector3& point, const ParticleSystem::Plane& plane);
