@@ -69,8 +69,6 @@ public:
         const rapid::matrix view = rapid::lookAtRH(eye, center, up);
         const rapid::matrix proj = rapid::perspectiveFovRH(fov, aspect, zn, zf);
         viewProj = view * proj;
-        float m[3][3];
-        viewProj.store3x3(m);
     }
 
     void updatePerspectiveTransform()
