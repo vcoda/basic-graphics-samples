@@ -25,9 +25,7 @@ Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t 
         NULL, NULL, wc.hInstance, NULL);
 
     // Adjust window size according to style
-    const HDC hDC = GetDC(hWnd);
     RECT rc = {0L, 0L, (LONG)width, (LONG)height};
-    ReleaseDC(hWnd, hDC);
     AdjustWindowRect(&rc, style, FALSE);
     SetWindowPos(hWnd, HWND_TOP, 0, 0, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
 
