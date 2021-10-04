@@ -14,7 +14,8 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
 
 VulkanApp::~VulkanApp()
 {
-    commandPools[0]->freeCommandBuffers(commandBuffers);
+    if (commandPools[0])
+        commandPools[0]->freeCommandBuffers(commandBuffers);
 }
 
 void VulkanApp::onIdle()
