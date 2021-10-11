@@ -105,7 +105,7 @@ void VulkanApp::createInstance()
 
 void VulkanApp::createLogicalDevice()
 {
-    const std::vector<float> defaultQueuePriorities = {1.0f};
+    const std::vector<float> defaultQueuePriorities = {1.f};
     const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, defaultQueuePriorities);
     const magma::DeviceQueueDescriptor transferQueue(physicalDevice, VK_QUEUE_TRANSFER_BIT, defaultQueuePriorities);
     std::vector<magma::DeviceQueueDescriptor> queueDescriptors;

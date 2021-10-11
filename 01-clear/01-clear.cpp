@@ -13,7 +13,7 @@ public:
         {
             cmdBuffer->begin();
             {
-                constexpr magma::ClearColor clearColor(0.35f, 0.53f, 0.7f, 1.0f);
+                constexpr magma::ClearColor clearColor(0.35f, 0.53f, 0.7f, 1.f);
                 cmdBuffer->beginRenderPass(renderPass, framebuffers[i],
                     {clearColor}); // Set our clear color
                 cmdBuffer->endRenderPass();

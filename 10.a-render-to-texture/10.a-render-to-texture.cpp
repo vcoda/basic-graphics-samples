@@ -191,10 +191,9 @@ public:
         rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
         rtCmdBuffer->begin();
         {
-            constexpr magma::ClearColor clearColor(0.35f, 0.53f, 0.7f, 1.0f);
             rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer,
                 {
-                    magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f),
+                    magma::ClearColor(0.35f, 0.53f, 0.7f, 1.f),
                     magma::clear::depthOne
                 });
             {

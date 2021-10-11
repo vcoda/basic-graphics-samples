@@ -44,7 +44,7 @@ public:
 
     virtual void createLogicalDevice() override
     {
-        const std::vector<float> priority = {1.0f};
+        const std::vector<float> priority = {1.f};
         const std::vector<magma::DeviceQueueDescriptor> queueDescriptors = {
             magma::DeviceQueueDescriptor(physicalDevice, VK_QUEUE_COMPUTE_BIT, priority),
             magma::DeviceQueueDescriptor(physicalDevice, VK_QUEUE_TRANSFER_BIT, priority),

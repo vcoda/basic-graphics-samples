@@ -90,9 +90,9 @@ public:
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
         constexpr auto _1 = std::numeric_limits<unsigned char>::max();
         constexpr alignas(16) Vertex vertices[] = {
-            {{ 0.0f,-1.0f}, {_1, 0, 0, _1}}, // top
-            {{-1.0f, 1.0f}, {0, _1, 0, _1}}, // left
-            {{ 1.0f, 1.0f}, {0, 0, _1, _1}}  // right
+            {{ 0.f,-1.f}, {_1, 0, 0, _1}}, // top
+            {{-1.f, 1.f}, {0, _1, 0, _1}}, // left
+            {{ 1.f, 1.f}, {0, 0, _1, _1}}  // right
         };
         vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }

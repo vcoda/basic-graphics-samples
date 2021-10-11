@@ -210,7 +210,7 @@ public:
         {
             rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer,
                 {
-                    magma::ClearColor(0.35f, 0.53f, 0.7f, 1.0f),
+                    magma::ClearColor(0.35f, 0.53f, 0.7f, 1.f),
                     magma::clear::depthOne
                 });
             {
