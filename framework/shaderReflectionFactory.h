@@ -8,7 +8,7 @@ public:
         device(std::move(device))
     {}
 
-    virtual std::shared_ptr<const magma::ShaderReflection> getReflection(const std::string& shaderFileName) override
+    std::shared_ptr<const magma::ShaderReflection> getReflection(const std::string& shaderFileName) override
     {
         std::ifstream file(shaderFileName, std::ios::in | std::ios::binary);
         if (!file.is_open())
