@@ -11,7 +11,7 @@ class TextureArrayApp : public VulkanApp
         float lod;
     };
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer worldViewProj = 0;
         magma::binding::UniformBuffer texParameters = 1;

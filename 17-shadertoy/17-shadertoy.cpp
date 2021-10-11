@@ -12,7 +12,7 @@ class ShaderToyApp : public VulkanApp
         float iTime;
     };
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer builtinUniforms = 0;
         MAGMA_REFLECT(&builtinUniforms)

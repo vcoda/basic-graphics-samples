@@ -4,7 +4,7 @@
 
 class AlphaBlendApp : public VulkanApp
 {
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer worldViewProj = 0;
         magma::binding::CombinedImageSampler diffuse = 1;

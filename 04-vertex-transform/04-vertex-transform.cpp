@@ -8,7 +8,7 @@ class VertexTransformApp : public VulkanApp
     // OpenGL uses right-handed coordinate system, whilst Direct3D and RenderMan use left-handed
     constexpr static bool rhs = true;
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer worldViewProj = 0;
         MAGMA_REFLECT(&worldViewProj)

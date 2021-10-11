@@ -3,7 +3,7 @@
 
 class MeshApp : public VulkanApp
 {
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer worldViewProj = 0;
         MAGMA_REFLECT(&worldViewProj)

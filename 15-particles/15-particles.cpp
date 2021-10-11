@@ -12,7 +12,7 @@ class ParticlesApp : public VulkanApp
         float pointSize;
     };
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer viewProj = 0;
         MAGMA_REFLECT(&viewProj)

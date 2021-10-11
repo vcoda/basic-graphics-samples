@@ -12,7 +12,7 @@ class TextureApp : public VulkanApp
         bool multitexture;
     };
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer texParameters = 0;
         magma::binding::CombinedImageSampler diffuseImage = 1;

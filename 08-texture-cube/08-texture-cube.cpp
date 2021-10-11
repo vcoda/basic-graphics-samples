@@ -13,7 +13,7 @@ class TextureCubeApp : public VulkanApp
         rapid::matrix normal;
     };
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer transforms = 0;
         magma::binding::CombinedImageSampler diffuse = 1;

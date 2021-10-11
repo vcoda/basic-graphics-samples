@@ -9,7 +9,7 @@ class TextureVolumeApp : public VulkanApp
         float power;
     };
 
-    struct SetLayout : public magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetDeclaration
     {
         magma::binding::UniformBuffer normalMatrix = 0;
         magma::binding::UniformBuffer integrationParameters = 1;
