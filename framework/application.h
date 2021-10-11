@@ -56,7 +56,7 @@ protected:
     BaseApp(const std::tstring& caption, uint32_t width, uint32_t height):
         caption(caption), width(width), height(height) {}
     virtual void close() override { quit = true; }
-    virtual void onKeyDown(char key, int repeat, uint32_t flags) override
+    virtual void onKeyDown(char key, int /* repeat */, uint32_t /* flags */) override
     {
         if (AppKey::Escape == key)
             close();

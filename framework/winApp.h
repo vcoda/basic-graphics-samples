@@ -10,12 +10,12 @@ public:
     virtual void setWindowCaption(const std::tstring& caption) override;
     virtual void show() const override;
     virtual void run() override;
-    virtual void onKeyUp(char key, int repeat, uint32_t flags) override {}
+    virtual void onKeyUp(char /* key */, int /* repeat */, uint32_t /* flags */) override {}
     virtual void onMouseMove(int x, int y) override;
     virtual void onMouseLButton(bool down, int x, int y) override;
-    virtual void onMouseRButton(bool down, int x, int y)  override {}
-    virtual void onMouseMButton(bool down, int x, int y)  override {}
-    virtual void onMouseWheel(float distance)  override {}
+    virtual void onMouseRButton(bool /* down */, int /* x */, int /* y */)  override {}
+    virtual void onMouseMButton(bool /* down */, int /* x */, int /* y */)  override {}
+    virtual void onMouseWheel(float /* distance */)  override {}
 
 protected:
     HINSTANCE hInstance;
