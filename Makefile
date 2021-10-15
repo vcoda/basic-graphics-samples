@@ -17,7 +17,8 @@ else
 	MAGMA_LIB=magma
 	QUADRIC_LIB=quadric
 endif
-LDFLAGS=$(LIBRARY_DIR) -lpthread -lxcb -lvulkan -l$(QUADRIC_LIB) -l$(MAGMA_LIB)
+LDFLAGS=$(LIBRARY_DIR) -lpthread -lxcb -lvulkan -l$(MAGMA_LIB)
+LDFLAGS_Q=$(LIBRARY_DIR) -lpthread -lxcb -lvulkan -l$(QUADRIC_LIB) -l$(MAGMA_LIB)
 
 BUILD=build
 MAGMA=third-party/magma
@@ -86,16 +87,16 @@ $(TARGET04)/$(TARGET04): $(BUILD)/$(TARGET04)/$(TARGET04).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(TARGET05)/$(TARGET05): $(BUILD)/$(TARGET05)/$(TARGET05).o $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_Q)
 
 $(TARGET06)/$(TARGET06): $(BUILD)/$(TARGET06)/$(TARGET06).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(TARGET07)/$(TARGET07): $(BUILD)/$(TARGET07)/$(TARGET07).o $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_Q)
 
 $(TARGET08)/$(TARGET08): $(BUILD)/$(TARGET08)/$(TARGET08).o $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_Q)
 
 $(TARGET09)/$(TARGET09): $(BUILD)/$(TARGET09)/$(TARGET09).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -107,13 +108,13 @@ $(TARGET10b)/$(TARGET10b): $(BUILD)/$(TARGET10b)/$(TARGET10b).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(TARGET11)/$(TARGET11): $(BUILD)/$(TARGET11)/$(TARGET11).o $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_Q)
 
 $(TARGET12)/$(TARGET12): $(BUILD)/$(TARGET12)/$(TARGET12).o $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_Q)
 
 $(TARGET13)/$(TARGET13): $(BUILD)/$(TARGET13)/$(TARGET13).o $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_Q)
 
 $(TARGET14)/$(TARGET14): $(BUILD)/$(TARGET14)/$(TARGET14).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -179,7 +180,7 @@ shaders-06: $(TARGET06)/passthrough.o	$(TARGET06)/multitexture.o
 shaders-07: $(TARGET07)/transform.o		$(TARGET07)/textureArray.o
 shaders-08: $(TARGET08)/transform.o		$(TARGET08)/envmap.o
 shaders-09: $(TARGET09)/quad.o			$(TARGET09)/raycast.o
-shaders-10a: $(TARGET10a)/pasthrough.o	$(TARGET10a)/triangle.o		$(TARGET10a)/fill.o $(TARGET10a)/tex.o
+shaders-10a: $(TARGET10a)/passthrough.o	$(TARGET10a)/triangle.o		$(TARGET10a)/fill.o $(TARGET10a)/tex.o
 shaders-10b: $(TARGET10b)/passthrough.o	$(TARGET10b)/triangle.o		$(TARGET10b)/fill.o $(TARGET10b)/tex.o
 shaders-11: $(TARGET11)/transform.o		$(TARGET11)/fill.o
 shaders-12: $(TARGET12)/transform.o		$(TARGET12)/texture.o

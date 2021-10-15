@@ -2,7 +2,7 @@
 #include "../framework/utilities.h"
 #include "quadric/include/knot.h"
 
-#define CAPTION_STRING(name) TEXT("13 - Specialization constants ("##name##")")
+#define CAPTION_STRING(name) TEXT("13 - Specialization constants (" name ")")
 
 // Use Space to toggle between albedo and shading.
 // Use 1, 2, 3 to change shading branch.
