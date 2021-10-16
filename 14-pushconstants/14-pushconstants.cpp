@@ -67,7 +67,7 @@ public:
 
     void createVertexBuffer()
     {
-        constexpr alignas(16) rapid::float2 vertices[] = {
+        constexpr rapid::float2 vertices[] = {
             { 0.0f,-0.5f},
             {-0.5f, 0.5f},
             { 0.5f, 0.5f}

@@ -155,7 +155,10 @@ public:
             }
         });
         const VkFormat format = utilities::getBlockCompressedFormat(ctxArray.front());
-        const VkExtent2D extent = {ctxArray.front().image_width(0, 0), ctxArray.front().image_height(0, 0)};
+        const VkExtent2D extent = {
+            (uint32_t)ctxArray.front().image_width(0, 0),
+            (uint32_t)ctxArray.front().image_height(0, 0)
+        };
         // Assert that all files have the same format and dimensions
         for (size_t i = 1; i < ctxArray.size(); ++i)
         {
