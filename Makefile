@@ -128,9 +128,9 @@ $(TARGET16)/$(TARGET16): $(BUILD)/$(TARGET16)/$(TARGET16).o $(OBJS)
 $(TARGET18)/$(TARGET18): $(BUILD)/$(TARGET18)/$(TARGET18).o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-# Create build directories
+# Make build directories
 
-builddir:
+mkdir-magma:
 	@mkdir -p $(BUILD)
 	@mkdir -p $(BUILD)/$(MAGMA)/allocator
 	@mkdir -p $(BUILD)/$(MAGMA)/auxiliary
@@ -143,82 +143,241 @@ builddir:
 	@mkdir -p $(BUILD)/$(MAGMA)/objects
 	@mkdir -p $(BUILD)/$(MAGMA)/shaders
 	@mkdir -p $(BUILD)/$(MAGMA)/states
+
+mkdir-quadric:
 	@mkdir -p $(BUILD)/$(QUADRIC)
+
+mkdir-framework:
 	@mkdir -p $(BUILD)/$(FRAMEWORK)
+
+mkdir-01:
 	@mkdir -p $(BUILD)/$(TARGET01)
+
+mkdir-02:
 	@mkdir -p $(BUILD)/$(TARGET02)
+
+mkdir-03:
 	@mkdir -p $(BUILD)/$(TARGET03)
+
+mkdir-04:
 	@mkdir -p $(BUILD)/$(TARGET04)
+
+mkdir-05:
 	@mkdir -p $(BUILD)/$(TARGET05)
+
+mkdir-06:
 	@mkdir -p $(BUILD)/$(TARGET06)
+
+mkdir-07:
 	@mkdir -p $(BUILD)/$(TARGET07)
+
+mkdir-08:
 	@mkdir -p $(BUILD)/$(TARGET08)
+
+mkdir-09:
 	@mkdir -p $(BUILD)/$(TARGET09)
+
+mkdir-10a:
 	@mkdir -p $(BUILD)/$(TARGET10a)
+
+mkdir-10b:
 	@mkdir -p $(BUILD)/$(TARGET10b)
+
+mkdir-11:
 	@mkdir -p $(BUILD)/$(TARGET11)
+
+mkdir-12:
 	@mkdir -p $(BUILD)/$(TARGET12)
+
+mkdir-13:
 	@mkdir -p $(BUILD)/$(TARGET13)
+
+mkdir-14:
 	@mkdir -p $(BUILD)/$(TARGET14)
+
+mkdir-15:
 	@mkdir -p $(BUILD)/$(TARGET15)
+
+mkdir-16:
 	@mkdir -p $(BUILD)/$(TARGET16)
+
+mkdir-18:
 	@mkdir -p $(BUILD)/$(TARGET18)
 
+# Build third-party libraries
+
 magma:
-	$(MAKE) -C $(MAGMA) magma
+	 $(MAKE) -C $(MAGMA) magma
 
 quadric:
-	$(MAKE) -C $(QUADRIC) quadric
+	 $(MAKE) -C $(QUADRIC) quadric
 
-# Sample app shaders
+# Build sample apps
+	
+01-clear: mkdir-magma \
+	mkdir-framework \
+	mkdir-01 \
+	magma \
+	$(TARGET01)/$(TARGET01)
 
-shaders-02: $(TARGET02)/position.o		$(TARGET02)/fill.o
-shaders-03: $(TARGET03)/passthrough.o	$(TARGET03)/fill.o
-shaders-04: $(TARGET04)/transform.o		$(TARGET04)/frontFace.o
-shaders-05: $(TARGET05)/transform.o		$(TARGET05)/normal.o
-shaders-06: $(TARGET06)/passthrough.o	$(TARGET06)/multitexture.o
-shaders-07: $(TARGET07)/transform.o		$(TARGET07)/textureArray.o
-shaders-08: $(TARGET08)/transform.o		$(TARGET08)/envmap.o
-shaders-09: $(TARGET09)/quad.o			$(TARGET09)/raycast.o
-shaders-10a: $(TARGET10a)/passthrough.o	$(TARGET10a)/triangle.o		$(TARGET10a)/fill.o $(TARGET10a)/tex.o
-shaders-10b: $(TARGET10b)/passthrough.o	$(TARGET10b)/triangle.o		$(TARGET10b)/fill.o $(TARGET10b)/tex.o
-shaders-11: $(TARGET11)/transform.o		$(TARGET11)/fill.o
-shaders-12: $(TARGET12)/transform.o		$(TARGET12)/texture.o
-shaders-13: $(TARGET13)/transform.o		$(TARGET13)/specialized.o
-shaders-14: $(TARGET14)/passthrough.o	$(TARGET14)/fill.o
-shaders-15: $(TARGET15)/pointSize.o		$(TARGET15)/particle.o		$(TARGET15)/particleNeg.o
+02-triangle: mkdir-magma \
+	mkdir-framework \
+	mkdir-02 \
+	magma \
+	$(TARGET02)/$(TARGET02) \
+	$(TARGET02)/position.o \
+	$(TARGET02)/fill.o
+
+03-vertex-buffer: mkdir-magma \
+	mkdir-framework \
+	mkdir-03 \
+	magma \
+	$(TARGET03)/$(TARGET03) \
+	$(TARGET03)/passthrough.o \
+	$(TARGET03)/fill.o
+
+04-vertex-transform: mkdir-magma \
+	mkdir-framework \
+	mkdir-04 \
+	magma \
+	$(TARGET04)/$(TARGET04) \
+	$(TARGET04)/transform.o \
+	$(TARGET04)/frontFace.o
+
+05-mesh: mkdir-magma \
+	mkdir-quadric \
+	mkdir-framework \
+	mkdir-05 \
+	magma \
+	quadric \
+	$(TARGET05)/$(TARGET05) \
+	$(TARGET05)/transform.o \
+	$(TARGET05)/normal.o
+
+06-texture: mkdir-magma \
+	mkdir-framework \
+	mkdir-06 \
+	magma \
+	$(TARGET06)/$(TARGET06) \
+	$(TARGET06)/passthrough.o \
+	$(TARGET06)/multitexture.o
+
+07-texture-array: mkdir-magma \
+	mkdir-quadric \
+	mkdir-framework \
+	mkdir-07 \
+	magma \
+	quadric \
+	$(TARGET07)/$(TARGET07) \
+	$(TARGET07)/transform.o \
+	$(TARGET07)/textureArray.o
+
+08-texture-cube: mkdir-magma \
+	mkdir-quadric \
+	mkdir-framework \
+	mkdir-08 \
+	magma \
+	quadric \
+	$(TARGET08)/$(TARGET08) \
+	$(TARGET08)/transform.o \
+	$(TARGET08)/envmap.o
+
+09-texture-volume: mkdir-magma \
+	mkdir-framework \
+	mkdir-09 \
+	magma \
+	$(TARGET09)/$(TARGET09) \
+	$(TARGET09)/quad.o \
+	$(TARGET09)/raycast.o
+
+10.a-render-to-texture: mkdir-magma \
+	mkdir-framework \
+	mkdir-10a \
+	magma \
+	$(TARGET10a)/$(TARGET10a) \
+	$(TARGET10a)/passthrough.o \
+	$(TARGET10a)/triangle.o \
+	$(TARGET10a)/fill.o \
+	$(TARGET10a)/tex.o
+
+10.b-render-to-msaa-texture: mkdir-magma \
+	mkdir-framework \
+	mkdir-10b \
+	magma \
+	$(TARGET10b)/$(TARGET10b) \
+	$(TARGET10b)/passthrough.o \
+	$(TARGET10b)/triangle.o \
+	$(TARGET10b)/fill.o \
+	$(TARGET10b)/tex.o
+
+11-occlusion-query:	mkdir-magma \
+	mkdir-quadric \
+	mkdir-framework \
+	mkdir-11 \
+	magma \
+	quadric \
+	$(TARGET11)/$(TARGET11) \
+	$(TARGET11)/transform.o \
+	$(TARGET11)/fill.o
+
+12-alpha-blend: mkdir-magma \
+	mkdir-quadric \
+	mkdir-framework \
+	mkdir-12 \
+	magma \
+	quadric \
+	$(TARGET12)/$(TARGET12) \
+	$(TARGET12)/transform.o \
+	$(TARGET12)/texture.o
+
+13-specialization: mkdir-magma \
+	mkdir-quadric \
+	mkdir-framework \
+	mkdir-13 \
+	magma \
+	quadric \
+	$(TARGET13)/$(TARGET13) \
+	$(TARGET13)/transform.o \
+	$(TARGET13)/specialized.o
+
+14-pushconstants: mkdir-magma \
+	mkdir-framework \
+	mkdir-14 \
+	magma \
+	$(TARGET14)/$(TARGET14) \
+	$(TARGET14)/passthrough.o \
+	$(TARGET14)/fill.o
+
+15-particles: mkdir-magma \
+	mkdir-framework \
+	mkdir-15 \
+	magma \
+	$(TARGET15)/$(TARGET15) \
+	$(TARGET15)/pointSize.o \
+	$(TARGET15)/particle.o \
+	$(TARGET15)/particleNeg.o
+
+16-immediate-mode: mkdir-magma \
+    mkdir-framework \
+	mkdir-16 \
+	magma \
+	$(TARGET16)/$(TARGET16)
 
 $(TARGET18)/sum.o: $(TARGET18)/arithmetic.comp
 	$(GLSLC) -V $(TARGET18)/arithmetic.comp -e sum --source-entrypoint main -o $(TARGET18)/sum.o
-
 $(TARGET18)/mul.o: $(TARGET18)/arithmetic.comp
 	$(GLSLC) -V $(TARGET18)/arithmetic.comp -e mul --source-entrypoint main -o $(TARGET18)/mul.o
-
 $(TARGET18)/power.o: $(TARGET18)/arithmetic.comp
 	$(GLSLC) -V $(TARGET18)/arithmetic.comp -e power --source-entrypoint main -o $(TARGET18)/power.o
 
-shaders-18: $(TARGET18)/sum.o $(TARGET18)/mul.o $(TARGET18)/power.o
-
-# Sample app builds: make output directory, build executable, compile shaders
-
-01-clear:					builddir magma $(TARGET01)/$(TARGET01)
-02-triangle:				builddir magma $(TARGET02)/$(TARGET02) shaders-02
-03-vertex-buffer:			builddir magma $(TARGET03)/$(TARGET03) shaders-03
-04-vertex-transform:		builddir magma $(TARGET04)/$(TARGET04) shaders-04
-05-mesh:					builddir magma quadric $(TARGET05)/$(TARGET05) shaders-05
-06-texture:					builddir magma $(TARGET06)/$(TARGET06) shaders-06
-07-texture-array:			builddir magma quadric $(TARGET07)/$(TARGET07) shaders-07
-08-texture-cube:			builddir magma quadric $(TARGET08)/$(TARGET08) shaders-08
-09-texture-volume:			builddir magma $(TARGET09)/$(TARGET09) shaders-09
-10a-render-to-texture:		builddir magma $(TARGET10a)/$(TARGET10a) shaders-10a
-10b-render-to-msaa-texture:	builddir magma $(TARGET10b)/$(TARGET10b) shaders-10b
-11-occlusion-query:			builddir magma quadric $(TARGET11)/$(TARGET11) shaders-11
-12-alpha-blend:				builddir magma quadric $(TARGET12)/$(TARGET12) shaders-12
-13-specialization:			builddir magma quadric $(TARGET13)/$(TARGET13) shaders-13
-14-pushconstants:			builddir magma $(TARGET14)/$(TARGET14) shaders-14
-15-particles:				builddir magma $(TARGET15)/$(TARGET15) shaders-15
-16-immediate-mode:			builddir magma $(TARGET16)/$(TARGET16)
-18-compute:					builddir magma $(TARGET18)/$(TARGET18) shaders-18
+18-compute: mkdir-magma \
+	mkdir-framework \
+	mkdir-18 \
+	magma \
+	$(TARGET18)/$(TARGET18) \
+	$(TARGET18)/sum.o \
+	$(TARGET18)/mul.o \
+	$(TARGET18)/power.o
 
 # Build all samples
 
