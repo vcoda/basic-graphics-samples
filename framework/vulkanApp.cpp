@@ -198,7 +198,7 @@ void VulkanApp::createSwapchain(bool vSync)
         surfaceFormats[0], surfaceCaps.currentExtent,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
         preTransform, compositeAlpha, presentMode, 0,
-        nullptr, debugReportCallback);
+        nullptr, nullptr, debugReportCallback);
 }
 
 void VulkanApp::createRenderPass()

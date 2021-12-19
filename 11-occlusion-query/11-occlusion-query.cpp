@@ -19,7 +19,7 @@ class OcclusionQueryApp : public VulkanApp
 
     std::unique_ptr<quadric::Plane> plane;
     std::unique_ptr<quadric::Teapot> teapot;
-    std::shared_ptr<magma::QueryPool> occlusionQuery;
+    std::shared_ptr<magma::OcclusionQuery> occlusionQuery;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::matrix>> transformUniforms;
     std::shared_ptr<magma::DynamicUniformBuffer<rapid::vector4>> colorUniforms;
     std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
@@ -48,14 +48,24 @@ public:
     {
         updatePerspectiveTransform();
         submitCommandBuffer(bufferIndex);
-
-        // Show occlusion query result
-        const std::vector<VkDeviceSize> results = occlusionQuery->getResults(0, 1, true);
-        if (!results.empty())
+        // Get result of occlusion query
+        uint64_t sampleCount = 0;
+        constexpr bool waitForResult = true;
+        if (waitForResult)
+            sampleCount = occlusionQuery->getResults(0, 1, true).front();
+        else
         {
-            const std::tstring caption = TEXT("11 - Occlusion query samples passed : ") + std::to_tstring(results[0]);
-            setWindowCaption(caption);
+            const magma::QueryResult<uint64_t> result = occlusionQuery->getResultsWithAvailability(0, 1).front();
+            if (result.availability > 0)
+                sampleCount = result.result;
+            std::cout << "Query result: ";
+            if (result.availability > 0)
+                std::cout << sampleCount << std::endl;
+            else // Not ready
+                std::cout << "---" << std::endl;
         }
+        const std::tstring caption = TEXT("11 - Occlusion query samples passed : ") + std::to_tstring(sampleCount);
+        setWindowCaption(caption);
     }
 
     void setupView()
@@ -89,7 +99,13 @@ public:
 
     void createOcclusionQuery()
     {
-        occlusionQuery = std::make_shared<magma::OcclusionQuery>(device, 1);
+       /* Not setting precise bit may be more efficient on some implementations,
+          and should be used where it is sufficient to know a boolean result
+          on whether any samples passed the per-fragment tests.
+          In this case, some implementations may only return zero or one,
+          indifferent to the actual number of samples passing the per-fragment tests. */
+        constexpr bool precise = false;
+        occlusionQuery = std::make_shared<magma::OcclusionQuery>(device, 1, precise);
     }
 
     void createMeshes()
@@ -181,13 +197,7 @@ public:
                         transformUniforms->getDynamicOffset(1),
                         colorUniforms->getDynamicOffset(1)
                     });
-                /* Not setting precise bit may be more efficient on some implementations,
-                   and should be used where it is sufficient to know a boolean result
-                   on whether any samples passed the per-fragment tests.
-                   In this case, some implementations may only return zero or one,
-                   indifferent to the actual number of samples passing the per-fragment tests. */
-                constexpr bool precise = false;
-                cmdBuffer->beginQuery(occlusionQuery, 0, precise);
+                cmdBuffer->beginQuery(occlusionQuery, 0);
                 {
                     teapot->draw(cmdBuffer);
                 }

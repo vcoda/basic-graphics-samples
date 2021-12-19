@@ -28,7 +28,7 @@ public:
     void createImmediateRender()
     {
         constexpr uint32_t maxVertexCount = 1024;
-        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, device, pipelineCache, nullptr, renderPass);
+        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, renderPass, nullptr, pipelineCache);
         ir->setLineWidth(2.f);
     }
 
