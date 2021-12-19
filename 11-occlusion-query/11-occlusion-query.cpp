@@ -48,9 +48,13 @@ public:
     {
         updatePerspectiveTransform();
         submitCommandBuffer(bufferIndex);
-        // Get result of occlusion query
-        uint64_t sampleCount = 0;
         constexpr bool waitForResult = true;
+        showOcclusionResult(waitForResult);
+    }
+
+    void showOcclusionResult(bool waitForResult)
+    {
+        uint64_t sampleCount = 0;
         if (waitForResult)
             sampleCount = occlusionQuery->getResults(0, 1, true).front();
         else
