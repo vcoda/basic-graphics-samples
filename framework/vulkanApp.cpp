@@ -31,7 +31,7 @@ void VulkanApp::onPaint()
     {
         render(bufferIndex);
     }
-    queue->present(swapchain, bufferIndex, renderFinished);
+    graphicsQueue->present(swapchain, bufferIndex, renderFinished);
     device->waitIdle(); // Flush
     std::this_thread::sleep_for(std::chrono::milliseconds(5)); // Cap fps
 }
@@ -249,15 +249,15 @@ void VulkanApp::createFramebuffer()
 
 void VulkanApp::createCommandBuffers()
 {
-    queue = device->getQueue(VK_QUEUE_GRAPHICS_BIT, 0);
-    commandPools[0] = std::make_shared<magma::CommandPool>(device, queue->getFamilyIndex());
+    graphicsQueue = device->getQueue(VK_QUEUE_GRAPHICS_BIT, 0);
+    commandPools[0] = std::make_shared<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
     // Create draw command buffers
     commandBuffers = commandPools[0]->allocateCommandBuffers(static_cast<uint32_t>(framebuffers.size()), true);
     // Create image copy command buffer
     cmdImageCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
     try
     {
-        std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
+        transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         // Create buffer copy command buffer
         cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
@@ -291,9 +291,9 @@ void VulkanApp::createDescriptorPool()
         });
 }
 
-bool VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
+void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
 {
-    return queue->submit(commandBuffers[bufferIndex],
+    graphicsQueue->submit(commandBuffers[bufferIndex],
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
         presentFinished,
         renderFinished,

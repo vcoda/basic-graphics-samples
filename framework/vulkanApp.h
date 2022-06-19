@@ -47,7 +47,7 @@ protected:
     virtual void createSyncPrimitives();
     virtual void createDescriptorPool();
 
-    bool submitCommandBuffer(uint32_t bufferIndex);
+    void submitCommandBuffer(uint32_t bufferIndex);
 
     std::shared_ptr<magma::Instance> instance;
     std::shared_ptr<magma::DebugReportCallback> debugReportCallback;
@@ -67,7 +67,8 @@ protected:
     std::shared_ptr<magma::ImageView> depthStencilView;
     std::shared_ptr<magma::RenderPass> renderPass;
     std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;
-    std::shared_ptr<magma::Queue> queue;
+    std::shared_ptr<magma::Queue> graphicsQueue;
+    std::shared_ptr<magma::Queue> transferQueue;
     std::shared_ptr<magma::Semaphore> presentFinished;
     std::shared_ptr<magma::Semaphore> renderFinished;
     std::vector<std::shared_ptr<magma::Fence>> waitFences;
