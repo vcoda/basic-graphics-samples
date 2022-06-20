@@ -57,11 +57,11 @@ public:
     {
         updateWorldTransform();
         constexpr VkPipelineStageFlags stageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        queue->submit(rtCmdBuffer, stageMask,
+        graphicsQueue->submit(rtCmdBuffer, stageMask,
             presentFinished, // Wait for swapchain
             rtSemaphore,
             nullptr);
-        queue->submit(commandBuffers[bufferIndex], stageMask,
+        graphicsQueue->submit(commandBuffers[bufferIndex], stageMask,
             rtSemaphore, // Wait for render-to-texture
             renderFinished,
             waitFences[bufferIndex]);

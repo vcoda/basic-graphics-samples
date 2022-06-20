@@ -30,7 +30,7 @@ public:
 
     virtual void render(uint32_t bufferIndex) override
     {   // Submit commant buffer for execution
-        queue->submit(
+        graphicsQueue->submit(
             commandBuffers[bufferIndex],
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             presentFinished,

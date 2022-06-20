@@ -57,14 +57,12 @@ public:
 
     virtual void createCommandBuffers() override
     {
-        queue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
-        commandPools[0] = std::make_shared<magma::CommandPool>(device, queue->getFamilyIndex());
+        graphicsQueue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
+        commandPools[0] = std::make_shared<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
         commandBuffers = commandPools[0]->allocateCommandBuffers(1, true);
-
-        std::shared_ptr<magma::Queue> transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
+        transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
         cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
-
         fence = std::make_shared<magma::Fence>(device, nullptr, true);
     }
 
@@ -132,7 +130,7 @@ public:
         computeCmdBuffer->end();
         // Execute
         fence->reset();
-        queue->submit(computeCmdBuffer, 0, nullptr, nullptr, fence);
+        graphicsQueue->submit(computeCmdBuffer, 0, nullptr, nullptr, fence);
         fence->wait();
         computeCmdBuffer->reset(false); // Reset and record again between each submission
         // Output computed values
