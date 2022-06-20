@@ -145,6 +145,7 @@ public:
                 file.read(reinterpret_cast<char *>(data), size);
                 file.close();
             });
+        buffer->getPayload().setData(bufferOffset + size);
         // Upload texture data from buffer
         const magma::Image::MipmapLayout mipOffsets{0};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
