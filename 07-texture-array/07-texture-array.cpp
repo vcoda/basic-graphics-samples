@@ -11,7 +11,7 @@ class TextureArrayApp : public VulkanApp
         float lod;
     };
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer worldViewProj = 0;
         magma::binding::UniformBuffer texParameters = 1;
@@ -185,8 +185,11 @@ public:
         }
         // Upload texture array data from buffer
         const uint32_t arrayLayers = MAGMA_COUNT(ctxArray);
+        cmdImageCopy->begin();
         std::shared_ptr<magma::Image2DArray> imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy,
             format, extent, arrayLayers, buffer, mipOffsets);
+        cmdImageCopy->end();
+        submitCopyImageCommands();
         // Create image view for fragment shader
         imageArrayView = std::make_shared<magma::ImageView>(std::move(imageArray));
     }

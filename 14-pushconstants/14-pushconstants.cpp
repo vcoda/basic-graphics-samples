@@ -8,7 +8,7 @@ class PushConstantsApp : public VulkanApp
         rapid::float4 vertexColors[3];
     } pushConstants;
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer pushConstants = 0;
         MAGMA_REFLECT(&pushConstants)
@@ -67,7 +67,7 @@ public:
 
     void createVertexBuffer()
     {
-        constexpr rapid::float2 vertices[] = {
+        constexpr alignas(MAGMA_ALIGNMENT) rapid::float2 vertices[] = {
             { 0.0f,-0.5f},
             {-0.5f, 0.5f},
             { 0.5f, 0.5f}

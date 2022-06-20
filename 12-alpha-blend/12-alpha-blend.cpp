@@ -4,7 +4,7 @@
 
 class AlphaBlendApp : public VulkanApp
 {
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer worldViewProj = 0;
         magma::binding::CombinedImageSampler diffuse = 1;
@@ -12,8 +12,7 @@ class AlphaBlendApp : public VulkanApp
     } setLayout;
 
     std::unique_ptr<quadric::Cube> mesh;
-    std::shared_ptr<magma::Image2D> image;
-    std::shared_ptr<magma::ImageView> imageView;
+    std::shared_ptr<magma::ImageView> logo;
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
@@ -30,7 +29,7 @@ public:
         initialize();
         setupView();
         createMesh();
-        loadTexture("logo.dds");
+        loadTextures();
         createUniformBuffers();
         createSampler();
         setupDescriptorSet();
@@ -82,29 +81,57 @@ public:
         mesh = std::make_unique<quadric::Cube>(cmdBufferCopy);
     }
 
-    void loadTexture(const std::string& filename)
+    std::shared_ptr<magma::ImageView> loadTexture(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
     {
-        aligned_vector<char> buffer = utilities::loadBinaryFile(filename);
+        std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
+        if (!file.is_open())
+            throw std::runtime_error("failed to open file \"" + filename + "\"");
+        const std::streamoff size = file.tellg();
+        file.seekg(0, std::ios::beg);
         gliml::context ctx;
         ctx.enable_dxt(true);
-        if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
-            throw std::runtime_error("failed to open file \"" + filename + "\"");
+        VkDeviceSize bufferOffset = 0, baseMipOffset = 0;
+        if (buffer->getPayload().hasData())
+            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+            [&](uint8_t *data)
+            {   // Read data to buffer
+                file.read(reinterpret_cast<char *>(data), size);
+                file.close();
+                if (!ctx.load(data, static_cast<unsigned>(size)))
+                    throw std::runtime_error("failed to load DDS texture");
+                // Skip DDS header
+                baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
+            });
+        buffer->getPayload().setData(bufferOffset + size);
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        magma::Image::MipmapData mipData;
-        magma::Image::MipmapLayout mipSizes;
-        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
-        {
-            const void *imageData = ctx.image_data(0, level);
-            MAGMA_ASSERT(MAGMA_ALIGNED(imageData));
-            mipData.push_back(imageData);
-            mipSizes.push_back(ctx.image_size(0, level));
+        const VkExtent2D extent = {
+            (uint32_t)ctx.image_width(0, 0),
+            (uint32_t)ctx.image_height(0, 0)
+        };
+        magma::Image::MipmapLayout mipOffsets(1, 0);
+        for (int level = 1; level < ctx.num_mipmaps(0); ++level)
+        {   // Compute relative offset
+            const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
+            mipOffsets.push_back(mipOffset);
         }
-        // Upload texture data
-        const VkExtent2D extent = {ctx.image_width(0, 0), ctx.image_height(0, 0)};
-        image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, mipData, mipSizes);
+        // Upload texture data from buffer
+        const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
+        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, std::move(buffer), mipOffsets, bufferLayout);
         // Create image view for shader
-        imageView = std::make_shared<magma::ImageView>(image);
+        return std::make_shared<magma::ImageView>(std::move(image));
+    }
+
+    void loadTextures()
+    {
+        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, 1024 * 1024);
+        cmdImageCopy->begin();
+        {
+            logo = loadTexture("logo.dds", buffer);
+        }
+        cmdImageCopy->end();
+        submitCopyImageCommands();
     }
 
     void createUniformBuffers()
@@ -120,7 +147,7 @@ public:
     void setupDescriptorSet()
     {
         setLayout.worldViewProj = uniformWorldViewProj;
-        setLayout.diffuse = {imageView, anisotropicSampler};
+        setLayout.diffuse = {logo, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "texture.o");

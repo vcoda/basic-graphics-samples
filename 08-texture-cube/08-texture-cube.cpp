@@ -13,7 +13,7 @@ class TextureCubeApp : public VulkanApp
         rapid::matrix normal;
     };
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer transforms = 0;
         magma::binding::CombinedImageSampler diffuse = 1;
@@ -40,8 +40,7 @@ public:
         initialize();
         setupView();
         createMesh();
-        diffuse = loadCubeMap("diff.dds");
-        specular = loadCubeMap("spec.dds");
+        loadCubeMaps();
         createSampler();
         createUniformBuffer();
         setupDescriptorSet();
@@ -89,7 +88,7 @@ public:
         mesh = std::make_unique<quadric::Teapot>(subdivisionDegree, cmdBufferCopy);
     }
 
-    std::shared_ptr<magma::ImageView> loadCubeMap(const std::string& filename)
+    std::shared_ptr<magma::ImageView> loadCubeMap(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -97,17 +96,20 @@ public:
         const std::streamoff size = file.tellg();
         file.seekg(0, std::ios::beg);
         gliml::context ctx;
-        VkDeviceSize baseMipOffset = 0;
-        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
-        magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
-        {   // Read data from file
-            file.read(reinterpret_cast<char *>(data), size);
-            ctx.enable_dxt(true);
-            if (!ctx.load(data, static_cast<unsigned>(size)))
-                throw std::runtime_error("failed to load DDS texture");
-            // Skip DDS header
-            baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
-        });
+        ctx.enable_dxt(true);
+        VkDeviceSize bufferOffset = 0, baseMipOffset = 0;
+        if (buffer->getPayload().hasData())
+            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+            [&](uint8_t *data)
+            {   // Read data from file
+                file.read(reinterpret_cast<char *>(data), size);
+                if (!ctx.load(data, static_cast<unsigned>(size)))
+                    throw std::runtime_error("failed to load DDS texture");
+                // Skip DDS header
+                baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
+            });
+        buffer->getPayload().setData(bufferOffset + size);
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         const uint32_t dimension = ctx.image_width(0, 0);
@@ -125,10 +127,22 @@ public:
             lastMipSize = ctx.image_size(face, mipLevels - 1);
         }
         // Upload texture data from buffer
-        magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
-        std::shared_ptr<magma::ImageCube> image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, dimension, ctx.num_mipmaps(0), buffer, mipOffsets, bufferLayout);
+        const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
+        std::shared_ptr<magma::ImageCube> image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, dimension, ctx.num_mipmaps(0), std::move(buffer), mipOffsets, bufferLayout);
         // Create image view for fragment shader
         return std::make_shared<magma::ImageView>(std::move(image));
+    }
+
+    void loadCubeMaps()
+    {
+        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, 1024 * 1024);
+        cmdImageCopy->begin();
+        {
+            diffuse = loadCubeMap("diff.dds", buffer);
+            specular = loadCubeMap("spec.dds", buffer);
+        }
+        cmdImageCopy->end();
+        submitCopyImageCommands();
     }
 
     void createSampler()

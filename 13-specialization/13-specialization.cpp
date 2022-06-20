@@ -30,7 +30,7 @@ class SpecializationApp : public VulkanApp
         rapid::matrix normalMatrix;
     };
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer transforms = 0;
         MAGMA_REFLECT(&transforms)
@@ -80,7 +80,7 @@ public:
     virtual void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
-        queue->submit(
+        graphicsQueue->submit(
             commandBuffers[bufferIndex][pipelineIndex],
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             presentFinished,

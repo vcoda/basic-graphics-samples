@@ -48,6 +48,8 @@ protected:
     virtual void createDescriptorPool();
 
     void submitCommandBuffer(uint32_t bufferIndex);
+    void submitCopyImageCommands();
+    void submitCopyBufferCommands();
 
     std::shared_ptr<magma::Instance> instance;
     std::shared_ptr<magma::DebugReportCallback> debugReportCallback;
