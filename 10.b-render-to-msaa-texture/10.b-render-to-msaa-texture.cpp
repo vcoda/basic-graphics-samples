@@ -19,7 +19,7 @@ class RenderToMsaaTextureApp : public VulkanApp
         uint32_t sampleCount = 0;
     } fb;
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer world = 0;
         magma::binding::CombinedImageSampler diffuse = 1;

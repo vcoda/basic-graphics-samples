@@ -5,13 +5,13 @@
 // Use L button + mouse to rotate scene
 class OcclusionQueryApp : public VulkanApp
 {
-    struct TransformSetLayout : public magma::DescriptorSetDeclaration
+    struct TransformSetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::DynamicUniformBuffer worldViewProj = 0;
         MAGMA_REFLECT(&worldViewProj)
     } setLayout0;
 
-    struct ColorSetLayout : public magma::DescriptorSetDeclaration
+    struct ColorSetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::DynamicUniformBuffer color = 0;
         MAGMA_REFLECT(&color)

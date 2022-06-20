@@ -30,7 +30,7 @@ class SpecializationApp : public VulkanApp
         rapid::matrix normalMatrix;
     };
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer transforms = 0;
         MAGMA_REFLECT(&transforms)

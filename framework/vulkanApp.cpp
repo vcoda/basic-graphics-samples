@@ -299,3 +299,17 @@ void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
         renderFinished,
         waitFences[bufferIndex]);
 }
+
+void VulkanApp::submitCopyImageCommands()
+{
+    waitFences[0]->reset();
+    graphicsQueue->submit(cmdImageCopy, 0, nullptr, nullptr, waitFences[0]);
+    waitFences[0]->wait();
+}
+
+void VulkanApp::submitCopyBufferCommands()
+{
+    waitFences[1]->reset();
+    transferQueue->submit(cmdBufferCopy, 0, nullptr, nullptr, waitFences[1]);
+    waitFences[1]->wait();
+}

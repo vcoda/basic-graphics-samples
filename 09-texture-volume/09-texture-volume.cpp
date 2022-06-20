@@ -9,7 +9,7 @@ class TextureVolumeApp : public VulkanApp
         float power;
     };
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer normalMatrix = 0;
         magma::binding::UniformBuffer integrationParameters = 1;
@@ -35,8 +35,7 @@ public:
         VulkanApp(entry, TEXT("09 - Volume texture"), 512, 512)
     {
         initialize();
-        volume = loadVolumeTexture("head256.raw", 256, 256, 225);
-        lookup = loadTransferFunctionTexture("tff.dat", 256);
+        loadTextures();
         createSampler();
         createUniformBuffers();
         setupDescriptorSet();
@@ -98,7 +97,7 @@ public:
         std::cout << "Power: " << power << "\n";
     }
 
-    std::shared_ptr<magma::ImageView> loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth)
+    std::shared_ptr<magma::ImageView> loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth, std::shared_ptr<magma::SrcTransferBuffer> buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -112,37 +111,58 @@ public:
         const std::streamoff size = file.tellg();
         MAGMA_ASSERT(size == width * height * depth);
         file.seekg(0, std::ios::beg);
-        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, size);
-        magma::helpers::mapScoped<uint8_t>(buffer,
-            [&file, &size](uint8_t *data)
+        VkDeviceSize bufferOffset = 0;
+        if (buffer->getPayload().hasData())
+            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+            [&file, size](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);
+                file.close();
             });
+        buffer->getPayload().setData(bufferOffset + size);
         // Upload volume data from buffer
         const VkExtent3D extent{width, height, depth};
-        std::shared_ptr<magma::Image3D> image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, extent, std::move(buffer));
+        const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
+        std::shared_ptr<magma::Image3D> image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, extent, std::move(buffer), bufferLayout);
         // Create image view for shader
         return std::make_shared<magma::ImageView>(std::move(image));
     }
 
-    std::shared_ptr<magma::ImageView> loadTransferFunctionTexture(const std::string& filename, uint32_t width)
+    std::shared_ptr<magma::ImageView> loadTransferFunctionTexture(const std::string& filename, uint32_t width, std::shared_ptr<magma::SrcTransferBuffer> buffer)
     {
         std::ifstream file(filename, std::ifstream::in);
         if (!file.is_open())
             throw std::runtime_error("failed to open file \"" + filename + "\"");
-        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, width * sizeof(uint32_t));
-        magma::helpers::mapScoped<uint8_t>(buffer,
-            [&file, width](uint8_t *data)
+        const VkDeviceSize size = width * sizeof(uint32_t);
+        VkDeviceSize bufferOffset = 0;
+        if (buffer->getPayload().hasData())
+            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, size,
+            [&file, size](uint8_t *data)
             {
-                const std::size_t size = width * sizeof(uint32_t);
                 memset(data, 0, size); // Clear first as not an entire buffer may be filled
                 file.read(reinterpret_cast<char *>(data), size);
+                file.close();
             });
         // Upload texture data from buffer
-        magma::Image::MipmapLayout mipSizes{0};
-        std::shared_ptr<magma::Image1D> image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, width, std::move(buffer), mipSizes);
+        const magma::Image::MipmapLayout mipOffsets{0};
+        const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
+        std::shared_ptr<magma::Image1D> image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, width, std::move(buffer), mipOffsets, bufferLayout);
         // Create image view for shader
         return std::make_shared<magma::ImageView>(std::move(image));
+    }
+
+    void loadTextures()
+    {
+        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, 16 * 1024 * 1024);
+        cmdImageCopy->begin();
+        {
+            volume = loadVolumeTexture("head256.raw", 256, 256, 225, buffer);
+            lookup = loadTransferFunctionTexture("tff.dat", 256, buffer);
+        }
+        cmdImageCopy->end();
+        submitCopyImageCommands();
     }
 
     void createSampler()

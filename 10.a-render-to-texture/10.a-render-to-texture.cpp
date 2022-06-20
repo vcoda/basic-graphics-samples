@@ -16,7 +16,7 @@ class RenderToTextureApp : public VulkanApp
         std::shared_ptr<magma::Framebuffer> framebuffer;
     } fb;
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::UniformBuffer world = 0;
         magma::binding::CombinedImageSampler diffuse = 1;

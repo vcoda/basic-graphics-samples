@@ -6,7 +6,7 @@ class ComputeApp : public VulkanApp
 {
     const std::vector<float> numbers = {0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f};
 
-    struct SetLayout : magma::DescriptorSetDeclaration
+    struct SetLayout : magma::DescriptorSetLayoutReflection
     {
         magma::binding::StorageBuffer inputBuffer0 = 0;
         magma::binding::StorageBuffer inputBuffer1 = 1;
