@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform WorldTransform
-{
+layout(binding = 0) uniform WorldTransform {
     mat4 world;
 };
 

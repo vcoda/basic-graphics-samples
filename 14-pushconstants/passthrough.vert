@@ -1,7 +1,6 @@
 #version 450
 
-layout(push_constant) uniform PushConstants
-{
+layout(push_constant) uniform PushConstants {
     vec4 vertexColors[3];
 };
 

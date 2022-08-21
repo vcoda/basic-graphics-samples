@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform BuiltInUniforms
-{
+layout(binding = 0) uniform BuiltInUniforms {
     vec2 iResolution;
     vec2 iMouse;
     float iTime;

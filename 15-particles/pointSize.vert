@@ -1,12 +1,10 @@
 #version 450
 
-layout(binding = 0) uniform Transforms
-{
+layout(binding = 0) uniform Transforms {
     mat4 viewProj;
 };
 
-layout(push_constant) uniform PushConstants
-{
+layout(push_constant) uniform PushConstants {
     vec2 resolution;
     float h;
     float pointSize;
@@ -28,7 +26,7 @@ void main()
     gl_Position = viewProj * position;
     float wclipInv = 1./gl_Position.w;
     gl_PointSize = h * pointSize * wclipInv; // scale with distance
-    oPos = gl_Position.xy * wclipInv * 0.5 + 0.5; // screen space pos
+    oPos = gl_Position.xy * wclipInv * .5 + .5; // screen space pos
     oPointSize = gl_PointSize;
     oColor = color;
 }

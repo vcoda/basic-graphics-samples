@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 1) uniform TexParameters
-{
+layout(binding = 1) uniform TexParameters {
     float lod;
 };
 

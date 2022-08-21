@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform WorldViewProj
-{
+layout(binding = 0) uniform WorldViewProj {
     mat4 worldViewProj;
 };
 

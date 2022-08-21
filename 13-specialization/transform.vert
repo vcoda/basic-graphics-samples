@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform Transforms
-{
+layout(binding = 0) uniform Transforms {
     mat4 worldView;
     mat4 worldViewProj;
     mat4 normalMatrix;

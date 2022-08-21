@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform Transforms
-{
+layout(binding = 0) uniform Transforms {
     mat4 worldViewProj;
 };
 
@@ -15,14 +14,13 @@ out gl_PerVertex {
     vec4 gl_Position;
 };
 
-vec3 faceColors[6] =
-{
-    vec3(1., 0., 0.),
-    vec3(0., 1., 0.),
-    vec3(0., 0., 1.),
-    vec3(1., 0., 1.),
-    vec3(0., 1., 1.),
-    vec3(1., 1., 1.),
+vec3 faceColors[6] = {
+    vec3(1, 0, 0),
+    vec3(0, 1, 0),
+    vec3(0, 0, 1),
+    vec3(1, 0, 1),
+    vec3(0, 1, 1),
+    vec3(1, 1, 1)
 };
 
 void main()

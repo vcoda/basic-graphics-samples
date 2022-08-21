@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform TexParameters
-{
+layout(binding = 0) uniform TexParameters {
     float lod;
     bool multitexture;
 } texParameters;

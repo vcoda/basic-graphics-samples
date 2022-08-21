@@ -1,12 +1,10 @@
 #version 450
 
-layout(set = 0, binding = 0) uniform Transform
-{
+layout(set = 0, binding = 0) uniform Transform {
     mat4 worldViewProj;
 };
 
-layout(set = 1, binding = 0) uniform Color
-{
+layout(set = 1, binding = 0) uniform Color {
     vec4 color;
 };
 

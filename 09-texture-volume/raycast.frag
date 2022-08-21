@@ -14,7 +14,7 @@ layout(binding = 1) uniform IntegrationParameters {
 layout(binding = 2) uniform sampler3D volume;
 layout(binding = 3) uniform sampler1D lookup;
 
-layout(location = 0) in vec2 texCoord;
+layout(location = 0) in vec2 position;
 layout(location = 0) out vec4 oColor;
 
 struct Ray
@@ -42,12 +42,31 @@ vec2 rayBoxIntersection(Ray r)
 vec3 rayPoint(Ray r, float t)
 {
     vec3 p = r.o + r.dir * t;
-    return p * 0.5 + 0.5; // [-1,1] -> [0,1]
+    return p * .5 + .5; // [-1,1] -> [0,1]
+}
+
+vec4 accumVolume(vec3 pos, vec3 step, int steps)
+{
+    vec4 accum = vec4(0.);
+    // front-to-back integration
+    for (int i = 0; i < steps; ++i, pos += step)
+    {
+        float intensity = texture(volume, pos.xzy).r; // swap Y/Z axes
+        vec4 color = texture(lookup, intensity);
+        if (color.a > 0.)
+        {   // accomodate for variable sampling rates
+            color.a = 1. - pow(1. - color.a, power);
+            float alpha = (1. - accum.a) * color.a;
+            accum.rgb += color.rgb * alpha;
+            accum.a += alpha;
+        }
+    }
+    return accum;
 }
 
 void main()
 {
-    vec2 p = texCoord * 2. - 1.;
+    vec2 p = position;//texCoord * 2. - 1.;
     Ray r;
     r.o = vec3(0., 0., -5.);
     r.dir = normalize(vec3(p.x * ASPECT_RATIO, p.y, 3.));
@@ -62,29 +81,15 @@ void main()
     // calculate intersection points
     vec3 near = rayPoint(r, t.x);
     vec3 far = rayPoint(r, t.y);
-    vec3 rayVec = far - near;
+    vec3 volumeRay = far - near;
 
-    float len = length(rayVec);
+    // accumulate volume samples over number of steps
+    float len = length(volumeRay);
     float steps = ceil(len * MAX_SAMPLES);
-    vec3 stepVec = rayVec/steps;
-    vec3 pos = near;
-    vec4 accum = vec4(0.);
+    vec3 step = volumeRay/steps;
+    vec4 accum = accumVolume(near, step, int(steps));
 
-    // front-to-back integration
-    for (int i = 0, n = int(steps); i < n; ++i, pos += stepVec)
-    {
-        float intensity = texture(volume, pos.xzy).r; // swap Y/Z axes
-        vec4 color = texture(lookup, intensity);
-        if (color.a > 0.)
-        {   // accomodate for variable sampling rates
-            color.a = 1. - pow(1. - color.a, power);
-            float alpha = (1. - accum.a) * color.a;
-            accum.rgb += color.rgb * alpha;
-            accum.a += alpha;
-        }
-    }
-
-    vec3 bgColor = vec3(1., 1., 1.);
+    vec3 bgColor = vec3(1.);
     oColor.rgb = mix(bgColor, accum.rgb, accum.a);
     oColor.a = 1.;
 }

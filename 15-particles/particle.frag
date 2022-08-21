@@ -1,7 +1,6 @@
 #version 450
 
-layout(push_constant) uniform PushConstants
-{
+layout(push_constant) uniform PushConstants {
     vec2 resolution;
 };
 
