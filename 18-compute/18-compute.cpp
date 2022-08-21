@@ -68,11 +68,11 @@ public:
 
     void createInputOutputBuffers()
     {
-        inputBuffers[0] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
-        inputBuffers[1] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, numbers);
-        const VkDeviceSize outputSize = static_cast<VkDeviceSize>(sizeof(float) * numbers.size());
-        outputBuffer = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, outputSize, nullptr);
-        readbackBuffer = std::make_shared<magma::DstTransferBuffer>(device, sizeof(float) * numbers.size());
+        const VkDeviceSize bufferSize = static_cast<VkDeviceSize>(numbers.size() * sizeof(float));
+        inputBuffers[0] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, bufferSize, numbers.data());
+        inputBuffers[1] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, bufferSize, numbers.data());
+        outputBuffer = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, bufferSize, nullptr);
+        readbackBuffer = std::make_shared<magma::DstTransferBuffer>(device, bufferSize);
     }
 
     void setupDescriptorSet()

@@ -90,7 +90,8 @@ public:
             "transform.o", "normal.o",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,
-            negateViewport ? magma::renderstate::lineCullBackCCW : magma::renderstate::lineCullBackCW,
+            negateViewport ? magma::renderstate::lineCullBackCCw
+                           : magma::renderstate::lineCullBackCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,
             magma::renderstate::dontBlendRgb,

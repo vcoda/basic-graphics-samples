@@ -117,8 +117,8 @@ public:
             "transform.o", "frontFace.o",
             magma::renderstate::pos2fColor4b,
             magma::renderstate::triangleList,
-            rhs ? magma::renderstate::fillCullNoneCCW
-                : magma::renderstate::fillCullNoneCW,
+            rhs ? magma::renderstate::fillCullNoneCCw
+                : magma::renderstate::fillCullNoneCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

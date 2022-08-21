@@ -80,7 +80,7 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setLayout, VK_SHADER_STAGE_VERTEX_BIT);
         // Specify push constant range
-        constexpr magma::pushconstants::VertexConstantRange<PushConstants> pushConstantRange;
+        constexpr magma::pushconstant::VertexConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
@@ -90,7 +90,7 @@ public:
             "passthrough.o", "fill.o",
             magma::renderstate::pos2f,
             magma::renderstate::triangleList,
-            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::fillCullBackCCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

@@ -112,7 +112,7 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setLayout, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "pointSize.o");
-        constexpr magma::pushconstants::VertexFragmentConstantRange<PushConstants> pushConstantRange;
+        constexpr magma::pushconstant::VertexFragmentConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
@@ -126,7 +126,8 @@ public:
             negateViewport ? "particleNeg.o" : "particle.o",
             vertexInput,
             magma::renderstate::pointList,
-            negateViewport ? magma::renderstate::lineCullBackCW : magma::renderstate::lineCullBackCCW,
+            negateViewport ? magma::renderstate::lineCullBackCw
+                           : magma::renderstate::lineCullBackCCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::blendNormalRgb,

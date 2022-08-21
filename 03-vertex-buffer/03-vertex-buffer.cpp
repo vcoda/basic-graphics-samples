@@ -46,7 +46,7 @@ public:
             "passthrough.o", "fill.o",
             magma::renderstate::pos2fColor4b,
             magma::renderstate::triangleList,
-            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::fillCullBackCCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

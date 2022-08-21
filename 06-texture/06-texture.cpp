@@ -204,7 +204,7 @@ public:
             "passthrough.o", "multitexture.o",
             magma::renderstate::pos2fTex2f,
             magma::renderstate::triangleStrip,
-            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::fillCullBackCCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

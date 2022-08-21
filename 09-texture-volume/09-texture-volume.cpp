@@ -197,7 +197,7 @@ public:
             "quad.o", "raycast.o",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleStrip,
-            magma::renderstate::fillCullBackCW,
+            magma::renderstate::fillCullBackCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

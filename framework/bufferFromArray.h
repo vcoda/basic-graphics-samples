@@ -9,9 +9,10 @@ inline std::shared_ptr<BufferType> vertexBufferFromArray(std::shared_ptr<magma::
     magma::CopyMemoryFunction copyFn = nullptr)
 {
     static_assert(vertexCount > 0, "number of vertices should be greater than 0");
+    constexpr float memoryPriority = 0.f;
     auto vertexBuffer = std::make_shared<BufferType>(std::move(cmdBuffer),
         static_cast<VkDeviceSize>(sizeof(VertexType) * vertexCount), vertices,
-        std::move(allocator), flags, sharing, std::move(copyFn));
+        std::move(allocator), flags, memoryPriority, sharing, std::move(copyFn));
     vertexBuffer->setVertexCount(vertexCount);
     return vertexBuffer;
 }
@@ -24,9 +25,10 @@ inline std::shared_ptr<BufferType> vertexBufferFromArray(std::shared_ptr<magma::
     const magma::Resource::Sharing& sharing = magma::Resource::Sharing(),
     magma::CopyMemoryFunction copyFn = nullptr)
 {
+    constexpr float memoryPriority = 0.f;
     auto vertexBuffer = std::make_shared<BufferType>(std::move(cmdBuffer),
         static_cast<VkDeviceSize>(sizeof(VertexType) * vertices.size()), vertices.data(),
-        std::move(allocator), flags, sharing, std::move(copyFn));
+        std::move(allocator), flags, memoryPriority, sharing, std::move(copyFn));
     vertexBuffer->setVertexCount(MAGMA_COUNT(vertices));
     return vertexBuffer;
 }
@@ -42,10 +44,11 @@ inline std::shared_ptr<magma::IndexBuffer> indexBufferFromArray(std::shared_ptr<
     static_assert(std::is_same<IndexType, uint16_t>::value ||
         std::is_same<IndexType, uint32_t>::value,
         "element type of index buffer should be unsigned short or unsigned int");
+    constexpr float memoryPriority = 0.f;
     return std::make_shared<magma::IndexBuffer>(std::move(cmdBuffer),
         static_cast<VkDeviceSize>(sizeof(IndexType) * indexCount), indices,
         std::is_same<IndexType, uint16_t>::value ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32,
-        std::move(allocator), flags, sharing, std::move(copyFn));
+        std::move(allocator), flags, memoryPriority, sharing, std::move(copyFn));
 }
 
 template<typename IndexType>
@@ -59,8 +62,9 @@ inline std::shared_ptr<magma::IndexBuffer> indexBufferFromArray(std::shared_ptr<
     static_assert(std::is_same<IndexType, uint16_t>::value ||
         std::is_same<IndexType, uint32_t>::value,
         "element type of index buffer should be unsigned short or unsigned int");
+    constexpr float memoryPriority = 0.f;
     return std::make_shared<magma::IndexBuffer>(std::move(cmdBuffer),
         static_cast<VkDeviceSize>(sizeof(IndexType) * indices.size()), indices.data(),
         std::is_same<IndexType, uint16_t>::value ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32,
-        std::move(allocator), flags, sharing, std::move(copyFn));
+        std::move(allocator), flags, memoryPriority, sharing, std::move(copyFn));
 }

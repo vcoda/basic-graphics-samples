@@ -33,8 +33,8 @@ public:
         createUniformBuffers();
         createSampler();
         setupDescriptorSet();
-        cullFrontPipeline = setupPipeline(negateViewport ? magma::renderstate::fillCullFrontCCW : magma::renderstate::fillCullFrontCW);
-        cullBackPipeline = setupPipeline(negateViewport ? magma::renderstate::fillCullBackCCW : magma::renderstate::fillCullBackCW);
+        cullFrontPipeline = setupPipeline(negateViewport ? magma::renderstate::fillCullFrontCCw : magma::renderstate::fillCullFrontCw);
+        cullBackPipeline = setupPipeline(negateViewport ? magma::renderstate::fillCullBackCCw : magma::renderstate::fillCullBackCw);
         recordCommandBuffer(FrontBuffer);
         recordCommandBuffer(BackBuffer);
         timer->run();
