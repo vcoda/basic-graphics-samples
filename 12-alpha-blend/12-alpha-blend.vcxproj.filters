@@ -25,7 +25,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="vulkan.dds">
+    <Image Include="logo.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -51,10 +51,10 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="vulkan.dds" />
+    <ClCompile Include="12-alpha-blend.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="12-alpha-blend.cpp" />
+    <Image Include="logo.dds" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
