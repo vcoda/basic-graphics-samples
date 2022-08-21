@@ -21,10 +21,10 @@
   <ItemGroup>
     <CustomBuild Include="specialized.frag">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling fragment shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling fragment shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling fragment shader</Message>
@@ -36,10 +36,10 @@
     </CustomBuild>
     <CustomBuild Include="transform.vert">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling vertex shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling vertex shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling vertex shader</Message>

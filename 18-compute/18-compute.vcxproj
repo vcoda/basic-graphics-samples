@@ -111,9 +111,9 @@
       <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V compute.comp -e pow --source-entrypoint main -o pow.o </Command>
     </CustomBuild>
     <PreBuildEvent>
-      <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
+      <Command>$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
 
 </Command>
       <Message>Compile compute shaders</Message>
@@ -140,9 +140,9 @@ $(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-e
       </Command>
     </CustomBuild>
     <PreBuildEvent>
-      <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
+      <Command>$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
 
 </Command>
       <Message>Compile compute shaders</Message>
@@ -173,9 +173,9 @@ $(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-e
       <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V compute.comp -e pow --source-entrypoint main -o pow.o </Command>
     </CustomBuild>
     <PreBuildEvent>
-      <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
+      <Command>$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
 
 </Command>
       <Message>Compile compute shaders</Message>
@@ -206,9 +206,9 @@ $(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-e
       <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V compute.comp -e pow --source-entrypoint main -o pow.o </Command>
     </CustomBuild>
     <PreBuildEvent>
-      <Command>$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
-$(VK_SDK_PATH)\Bin32\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
+      <Command>$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e sum --source-entrypoint main -o sum.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e mul --source-entrypoint main -o mul.o
+$(VK_SDK_PATH)\Bin\glslangValidator.exe -V arithmetic.comp -e power --source-entrypoint main -o power.o
 
 </Command>
       <Message>Compile compute shaders</Message>
