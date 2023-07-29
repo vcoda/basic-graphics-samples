@@ -10,7 +10,7 @@ layout(location = 0) out vec4 oColor;
 void main()
 {
     vec4 color = texture(diffuse, texCoord);
-    float alpha = clamp(color.a + 0.1, 0., 1.); // make geometry visible
+    float alpha = min(color.a + 0.1, 1.); // make geometry visible
     if (gl_FrontFacing)
         oColor = vec4(color.rgb + texCoord.sts, alpha);
     else

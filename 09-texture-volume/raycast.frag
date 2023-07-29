@@ -14,7 +14,7 @@ layout(binding = 1) uniform IntegrationParameters {
 layout(binding = 2) uniform sampler3D volume;
 layout(binding = 3) uniform sampler1D lookup;
 
-layout(location = 0) in vec2 position;
+layout(location = 0) in vec2 pos;
 layout(location = 0) out vec4 oColor;
 
 struct Ray
@@ -66,10 +66,9 @@ vec4 accumVolume(vec3 pos, vec3 step, int steps)
 
 void main()
 {
-    vec2 p = position;//texCoord * 2. - 1.;
     Ray r;
     r.o = vec3(0., 0., -5.);
-    r.dir = normalize(vec3(p.x * ASPECT_RATIO, p.y, 3.));
+    r.dir = normalize(vec3(pos.x * ASPECT_RATIO, pos.y, 3.));
 
     // transform ray to local space
     r.o = mat3(normal) * r.o;
