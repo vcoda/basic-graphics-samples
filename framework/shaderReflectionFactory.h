@@ -17,9 +17,10 @@ public:
         if (bytecode.size() % sizeof(magma::SpirvWord))
             throw std::runtime_error("size of \"" + std::string(shaderFileName) + "\" bytecode must be a multiple of SPIR-V word");
         auto allocator = device->getHostAllocator();
+        constexpr bool reflect = true;
         std::shared_ptr<magma::ShaderModule> shaderModule = std::make_shared<magma::ShaderModule>(device,
             reinterpret_cast<const magma::SpirvWord *>(bytecode.data()), bytecode.size(), 0,
-            std::move(allocator), 0, true);
+            nullptr, reflect, 0, nullptr);
         return shaderModule->getReflection();
     }
 

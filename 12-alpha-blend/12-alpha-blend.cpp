@@ -4,12 +4,12 @@
 
 class AlphaBlendApp : public VulkanApp
 {
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer worldViewProj = 0;
-        magma::binding::CombinedImageSampler diffuse = 1;
-        MAGMA_REFLECT(&worldViewProj, &diffuse)
-    } setLayout;
+        magma::descriptor::UniformBuffer worldViewProj = 0;
+        magma::descriptor::CombinedImageSampler diffuse = 1;
+        MAGMA_REFLECT(worldViewProj, diffuse)
+    } setTable;
 
     std::unique_ptr<quadric::Cube> mesh;
     std::shared_ptr<magma::ImageView> logo;
@@ -90,9 +90,8 @@ public:
         file.seekg(0, std::ios::beg);
         gliml::context ctx;
         ctx.enable_dxt(true);
-        VkDeviceSize bufferOffset = 0, baseMipOffset = 0;
-        if (buffer->getPayload().hasData())
-            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        VkDeviceSize bufferOffset = buffer->getPrivateData();
+        VkDeviceSize baseMipOffset = 0;
         magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data to buffer
@@ -103,22 +102,24 @@ public:
                 // Skip DDS header
                 baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
             });
-        buffer->getPayload().setData(bufferOffset + size);
+        buffer->setPrivateData(bufferOffset + size);
         // Setup texture data description
-        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        const VkExtent2D extent = {
-            (uint32_t)ctx.image_width(0, 0),
-            (uint32_t)ctx.image_height(0, 0)
-        };
-        magma::Image::MipmapLayout mipOffsets(1, 0);
-        for (int level = 1; level < ctx.num_mipmaps(0); ++level)
-        {   // Compute relative offset
-            const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
-            mipOffsets.push_back(mipOffset);
+        const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
+        std::vector<magma::Image::Mip> mipMaps;
+        mipMaps.reserve(ctx.num_mipmaps(0));
+        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
+        {
+            magma::Image::Mip mip;
+            mip.extent.width = ctx.image_width(0, level);
+            mip.extent.height = ctx.image_height(0, level);
+            mip.extent.depth = 1;
+            mip.bufferOffset = (const uint8_t *)ctx.image_data(0, level) - firstMipData;
+            mipMaps.push_back(mip);
         }
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
-        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, std::move(buffer), mipOffsets, bufferLayout);
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
+        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
         return std::make_shared<magma::ImageView>(std::move(image));
     }
@@ -146,10 +147,10 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.worldViewProj = uniformWorldViewProj;
-        setLayout.diffuse = {logo, anisotropicSampler};
+        setTable.worldViewProj = uniformWorldViewProj;
+        setTable.diffuse = {logo, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "texture.o");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }

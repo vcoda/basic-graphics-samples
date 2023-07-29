@@ -8,11 +8,11 @@ class VertexTransformApp : public VulkanApp
     // OpenGL uses right-handed coordinate system, whilst Direct3D and RenderMan use left-handed
     constexpr static bool rhs = true;
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer worldViewProj = 0;
-        MAGMA_REFLECT(&worldViewProj)
-    } setLayout;
+        magma::descriptor::UniformBuffer worldViewProj = 0;
+        MAGMA_REFLECT(worldViewProj)
+    } setTable;
 
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
@@ -104,9 +104,9 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.worldViewProj = uniformBuffer;
+        setTable.worldViewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "transform.o");
     }
 

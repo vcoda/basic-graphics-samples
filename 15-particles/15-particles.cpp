@@ -12,11 +12,11 @@ class ParticlesApp : public VulkanApp
         float pointSize;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer viewProj = 0;
-        MAGMA_REFLECT(&viewProj)
-    } setLayout;
+        magma::descriptor::UniformBuffer viewProj = 0;
+        MAGMA_REFLECT(viewProj)
+    } setTable;
 
     std::unique_ptr<ParticleSystem> particles;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
@@ -103,14 +103,14 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device, false);
     }
 
     void setupDescriptorSet()
     {
-        setLayout.viewProj = uniformBuffer;
+        setTable.viewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "pointSize.o");
         constexpr magma::pushconstant::VertexFragmentConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);

@@ -9,14 +9,14 @@ class TextureVolumeApp : public VulkanApp
         float power;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer normalMatrix = 0;
-        magma::binding::UniformBuffer integrationParameters = 1;
-        magma::binding::CombinedImageSampler volume = 2;
-        magma::binding::CombinedImageSampler lookup = 3;
-        MAGMA_REFLECT(&normalMatrix, &integrationParameters, &volume, &lookup)
-    } setLayout;
+        magma::descriptor::UniformBuffer normalMatrix = 0;
+        magma::descriptor::UniformBuffer integrationParameters = 1;
+        magma::descriptor::CombinedImageSampler volume = 2;
+        magma::descriptor::CombinedImageSampler lookup = 3;
+        MAGMA_REFLECT(normalMatrix, integrationParameters, volume, lookup)
+    } setTable;
 
     std::shared_ptr<magma::ImageView> volume;
     std::shared_ptr<magma::ImageView> lookup;
@@ -111,20 +111,22 @@ public:
         const std::streamoff size = file.tellg();
         MAGMA_ASSERT(size == width * height * depth);
         file.seekg(0, std::ios::beg);
-        VkDeviceSize bufferOffset = 0;
-        if (buffer->getPayload().hasData())
-            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        VkDeviceSize bufferOffset = buffer->getPrivateData();
         magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&file, size](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);
                 file.close();
             });
-        buffer->getPayload().setData(bufferOffset + size);
-        // Upload volume data from buffer
-        const VkExtent3D extent{width, height, depth};
+        buffer->setPrivateData(bufferOffset + size);
+        // Setup texture data description
+        magma::Image::Mip volumeMip;
+        volumeMip.extent = VkExtent3D{width, height, depth};
+        volumeMip.bufferOffset = 0;
+        const std::vector<magma::Image::Mip> mipMaps = {volumeMip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
-        std::shared_ptr<magma::Image3D> image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, extent, std::move(buffer), bufferLayout);
+        // Upload volume data from buffer
+        std::shared_ptr<magma::Image3D> image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
         return std::make_shared<magma::ImageView>(std::move(image));
     }
@@ -135,9 +137,7 @@ public:
         if (!file.is_open())
             throw std::runtime_error("failed to open file \"" + filename + "\"");
         const VkDeviceSize size = width * sizeof(uint32_t);
-        VkDeviceSize bufferOffset = 0;
-        if (buffer->getPayload().hasData())
-            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        VkDeviceSize bufferOffset = buffer->getPrivateData();
         magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, size,
             [&file, size](uint8_t *data)
             {
@@ -145,11 +145,14 @@ public:
                 file.read(reinterpret_cast<char *>(data), size);
                 file.close();
             });
-        buffer->getPayload().setData(bufferOffset + size);
+        buffer->setPrivateData(bufferOffset + size);
         // Upload texture data from buffer
-        const magma::Image::MipmapLayout mipOffsets{0};
+        magma::Image::Mip mip;
+        mip.extent = {width, 1, 1};
+        mip.bufferOffset = 0;
+        const std::vector<magma::Image::Mip> mipMaps = {mip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
-        std::shared_ptr<magma::Image1D> image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, width, std::move(buffer), mipOffsets, bufferLayout);
+        std::shared_ptr<magma::Image1D> image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
         return std::make_shared<magma::ImageView>(std::move(image));
     }
@@ -181,12 +184,12 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.normalMatrix = uniformBuffer;
-        setLayout.integrationParameters = uniformParameters;
-        setLayout.volume = {volume, trilinearSampler};
-        setLayout.lookup = {lookup, nearestSampler};
+        setTable.normalMatrix = uniformBuffer;
+        setTable.integrationParameters = uniformParameters;
+        setTable.volume = {volume, trilinearSampler};
+        setTable.lookup = {lookup, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "raycast.o");
     }
 

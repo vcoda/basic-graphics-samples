@@ -81,12 +81,17 @@ void VulkanApp::createInstance()
 #else
     strcpy(appName, caption.c_str());
 #endif
+    const magma::Application appInfo(
+        appName, 1,
+        "Magma", 1,
+        VK_API_VERSION_1_0);
 
-    instance = std::make_shared<magma::Instance>(
-        appName,
-        "Magma",
-        VK_API_VERSION_1_0,
-        layerNames, extensionNames);
+    instance = std::make_shared<magma::Instance>(layerNames, extensionNames, nullptr, &appInfo, nullptr,
+    #if defined(_DEBUG) && defined(VK_EXT_debug_utils)
+        utilities::reportCallback);
+    #else
+        nullptr);
+    #endif // _DEBUG
 
     debugReportCallback = std::make_shared<magma::DebugReportCallback>(
         instance,
@@ -140,7 +145,8 @@ void VulkanApp::createSwapchain(bool vSync)
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
     surface = std::make_shared<magma::XcbSurface>(instance, connection, window);
 #endif // VK_USE_PLATFORM_XCB_KHR
-    if (!physicalDevice->getSurfaceSupport(surface))
+    const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
+    if (!physicalDevice->getSurfaceSupport(surface, graphicsQueue.queueFamilyIndex))
         throw std::runtime_error("surface not supported");
     // Get surface caps
     VkSurfaceCapabilitiesKHR surfaceCaps;
@@ -195,7 +201,7 @@ void VulkanApp::createSwapchain(bool vSync)
     }
     swapchain = std::make_shared<magma::Swapchain>(device, surface,
         std::min(2U, surfaceCaps.maxImageCount),
-        surfaceFormats[0], surfaceCaps.currentExtent,
+        surfaceFormats[0], surfaceCaps.currentExtent, 1,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
         preTransform, compositeAlpha, presentMode, 0,
         nullptr, nullptr, debugReportCallback);
@@ -232,7 +238,8 @@ void VulkanApp::createFramebuffer()
     if (depthBuffer)
     {
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        depthStencil = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, surfaceCaps.currentExtent, 1, 1);
+        constexpr bool dontSampled = false;
+        depthStencil = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, surfaceCaps.currentExtent, 1, 1, dontSampled);
         depthStencilView = std::make_shared<magma::ImageView>(depthStencil);
     }
     for (const auto& image : swapchain->getImages())
@@ -283,11 +290,11 @@ void VulkanApp::createDescriptorPool()
     constexpr uint32_t maxDescriptorSets = 2;
     // Create descriptor pool enough for basic samples
     descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
-        std::vector<magma::Descriptor>{
-            magma::descriptor::UniformBuffer(4),
-            magma::descriptor::DynamicUniformBuffer(4),
-            magma::descriptor::StorageBuffer(4),
-            magma::descriptor::CombinedImageSampler(4)
+        std::vector<magma::descriptor::DescriptorPool>{
+            magma::descriptor::UniformBufferPool(4),
+            magma::descriptor::DynamicUniformBufferPool(4),
+            magma::descriptor::StorageBufferPool(4),
+            magma::descriptor::CombinedImageSamplerPool(4)
         });
 }
 

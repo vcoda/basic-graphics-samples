@@ -13,13 +13,13 @@ class TextureCubeApp : public VulkanApp
         rapid::matrix normal;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer transforms = 0;
-        magma::binding::CombinedImageSampler diffuse = 1;
-        magma::binding::CombinedImageSampler specular = 2;
-        MAGMA_REFLECT(&transforms, &diffuse, &specular)
-    } setLayout;
+        magma::descriptor::UniformBuffer transforms = 0;
+        magma::descriptor::CombinedImageSampler diffuse = 1;
+        magma::descriptor::CombinedImageSampler specular = 2;
+        MAGMA_REFLECT(transforms, diffuse, specular)
+    } setTable;
 
     std::unique_ptr<quadric::Teapot> mesh;
     std::shared_ptr<magma::ImageView> diffuse;
@@ -97,9 +97,8 @@ public:
         file.seekg(0, std::ios::beg);
         gliml::context ctx;
         ctx.enable_dxt(true);
-        VkDeviceSize bufferOffset = 0, baseMipOffset = 0;
-        if (buffer->getPayload().hasData())
-            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        VkDeviceSize bufferOffset = buffer->getPrivateData();
+        VkDeviceSize baseMipOffset = 0;
         magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data from file
@@ -109,26 +108,26 @@ public:
                 // Skip DDS header
                 baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
             });
-        buffer->getPayload().setData(bufferOffset + size);
+        buffer->setPrivateData(bufferOffset + size);
         // Setup texture data description
-        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         const uint32_t dimension = ctx.image_width(0, 0);
-        magma::Image::MipmapLayout mipOffsets;
-        VkDeviceSize lastMipSize = 0;
+        const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
+        std::vector<magma::Image::Mip> mipMaps;
+        mipMaps.reserve(ctx.num_faces() * ctx.num_mipmaps(0));
         for (int face = 0; face < ctx.num_faces(); ++face)
         {
-            mipOffsets.push_back(lastMipSize);
-            const int mipLevels = ctx.num_mipmaps(face);
-            for (int level = 1; level < mipLevels; ++level)
-            {   // Compute relative offset
-                const intptr_t mipOffset = (const uint8_t *)ctx.image_data(face, level) - (const uint8_t *)ctx.image_data(face, level - 1);
-                mipOffsets.push_back(mipOffset);
+            for (int level = 0; level < ctx.num_mipmaps(face); ++level)
+            {
+                magma::Image::Mip mip;
+                mip.extent = VkExtent3D{dimension, dimension, 1};
+                mip.bufferOffset = (const uint8_t *)ctx.image_data(face, level) - firstMipData;
+                mipMaps.push_back(mip);
             }
-            lastMipSize = ctx.image_size(face, mipLevels - 1);
         }
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
-        std::shared_ptr<magma::ImageCube> image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, dimension, ctx.num_mipmaps(0), std::move(buffer), mipOffsets, bufferLayout);
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
+        std::shared_ptr<magma::ImageCube> image = std::make_shared<magma::ImageCube>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for fragment shader
         return std::make_shared<magma::ImageView>(std::move(image));
     }
@@ -157,11 +156,11 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.transforms = uniformTransforms;
-        setLayout.diffuse = {diffuse, anisotropicSampler};
-        setLayout.specular = {specular, anisotropicSampler};
+        setTable.transforms = uniformTransforms;
+        setTable.diffuse = {diffuse, anisotropicSampler};
+        setTable.specular = {specular, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "envmap.o");
     }
 

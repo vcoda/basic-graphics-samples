@@ -3,6 +3,8 @@
 #include "../framework/utilities.h"
 #include "watchdog.h"
 
+// Build this application with Release configuration as shaderc_combined.lib was built in release mode.
+
 class ShaderToyApp : public VulkanApp
 {
     struct alignas(16) BuiltInUniforms
@@ -12,11 +14,11 @@ class ShaderToyApp : public VulkanApp
         float iTime;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer builtinUniforms = 0;
-        MAGMA_REFLECT(&builtinUniforms)
-    } setLayout;
+        magma::descriptor::UniformBuffer builtinUniforms = 0;
+        MAGMA_REFLECT(builtinUniforms)
+    } setTable;
 
     std::unique_ptr<FileWatchdog> watchdog;
     std::unique_ptr<magma::aux::ShaderCompiler> glslCompiler;
@@ -151,9 +153,9 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.builtinUniforms = builtinUniforms;
+        setTable.builtinUniforms = builtinUniforms;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_FRAGMENT_BIT);
+            setTable, VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
     void setupPipeline()
@@ -169,7 +171,7 @@ public:
             magma::renderstate::triangleStrip,
             magma::TesselationState(),
             magma::ViewportState(0, 0, width, height),
-            magma::renderstate::fillCullBackCCW,
+            magma::renderstate::fillCullBackCCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

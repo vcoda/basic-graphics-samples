@@ -19,12 +19,12 @@ class RenderToMsaaTextureApp : public VulkanApp
         uint32_t sampleCount = 0;
     } fb;
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer world = 0;
-        magma::binding::CombinedImageSampler diffuse = 1;
-        MAGMA_REFLECT(&world, &diffuse)
-    } setLayout;
+        magma::descriptor::UniformBuffer world = 0;
+        magma::descriptor::CombinedImageSampler diffuse = 1;
+        MAGMA_REFLECT(world, diffuse)
+    } setTable;
 
     std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
@@ -83,17 +83,19 @@ public:
 
     void createMultisampleFramebuffer(const VkExtent2D& extent)
     {
+        constexpr bool sampled = true;
+        constexpr bool dontSampled = false;
         // Choose supported multisample level
         fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, VK_FORMAT_R8G8B8A8_UNORM);
         // Create multisample color attachment
-        fb.colorMsaa = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount);
+        fb.colorMsaa = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount, dontSampled);
         fb.colorMsaaView = std::make_shared<magma::ImageView>(fb.colorMsaa);
         // Create multisample depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        fb.depthMsaa = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount);
+        fb.depthMsaa = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount, dontSampled);
         fb.depthMsaaView = std::make_shared<magma::ImageView>(fb.depthMsaa);
         // Create color resolve attachment
-        fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1);
+        fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1, sampled);
         fb.colorResolveView = std::make_shared<magma::ImageView>(fb.colorResolve);
         // Don't care about initial layout
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -159,7 +161,7 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device, false);
     }
 
     void createSampler()
@@ -169,10 +171,10 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.world = uniformBuffer;
-        setLayout.diffuse = {fb.colorResolveView, nearestSampler};
+        setTable.world = uniformBuffer;
+        setTable.diffuse = {fb.colorResolveView, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "tex.o");
     }
 

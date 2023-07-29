@@ -12,7 +12,7 @@ class SpecializationApp : public VulkanApp
     enum ShadingType : uint32_t
     {
         Normal = 0, Diffuse, Specular, CellShade, Albedo,
-        MaxShaderVariants
+        MaxPermutations
     };
 
     struct Constants
@@ -30,11 +30,11 @@ class SpecializationApp : public VulkanApp
         rapid::matrix normalMatrix;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer transforms = 0;
-        MAGMA_REFLECT(&transforms)
-    } setLayout;
+        magma::descriptor::UniformBuffer transforms = 0;
+        MAGMA_REFLECT(transforms)
+    } setTable;
 
     const std::unordered_map<ShadingType, std::tstring> captions = {
         {ShadingType::Normal, CAPTION_STRING("Normals")},
@@ -70,7 +70,7 @@ public:
         createUniformBuffer();
         setupDescriptorSet();
         buildPipelines();
-        for (uint32_t i = 0; i < ShadingType::MaxShaderVariants; ++i)
+        for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
             recordCommandBuffer(FrontBuffer, i);
             recordCommandBuffer(BackBuffer, i);
@@ -110,8 +110,8 @@ public:
     virtual void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
-        commandBuffers[FrontBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxShaderVariants, true);
-        commandBuffers[BackBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxShaderVariants, true);
+        commandBuffers[FrontBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
+        commandBuffers[BackBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
     }
 
     void setupView()
@@ -159,14 +159,14 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<UniformBlock>>(device);
+        uniformBuffer = std::make_shared<magma::UniformBuffer<UniformBlock>>(device, false);
     }
 
     void setupDescriptorSet()
     {
-        setLayout.transforms = uniformBuffer;
+        setTable.transforms = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "transform.o");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
@@ -191,8 +191,8 @@ public:
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
         };
-        pipelines = std::make_unique<magma::GraphicsPipelines>(MaxShaderVariants);
-        for (uint32_t i = 0; i < ShadingType::MaxShaderVariants; ++i)
+        pipelines = std::make_unique<magma::GraphicsPipelines>(ShadingType::MaxPermutations);
+        for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
             const magma::FragmentShaderStage fragmentStage = specializeFragmentStage((ShadingType)i, "main");
             pipelines->newPipeline(

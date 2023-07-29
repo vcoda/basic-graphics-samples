@@ -11,13 +11,13 @@ class TextureArrayApp : public VulkanApp
         float lod;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer worldViewProj = 0;
-        magma::binding::UniformBuffer texParameters = 1;
-        magma::binding::CombinedImageSampler imageArray = 2;
-        MAGMA_REFLECT(&worldViewProj, &texParameters, &imageArray)
-    } setLayout;
+        magma::descriptor::UniformBuffer worldViewProj = 0;
+        magma::descriptor::UniformBuffer texParameters = 1;
+        magma::descriptor::CombinedImageSampler imageArray = 2;
+        MAGMA_REFLECT(worldViewProj, texParameters, imageArray)
+    } setTable;
 
     std::unique_ptr<quadric::Cube> mesh;
     std::shared_ptr<magma::ImageView> imageArrayView;
@@ -121,36 +121,36 @@ public:
         mesh = std::make_unique<quadric::Cube>(cmdBufferCopy);
     }
 
-    void loadTextureArray(const std::vector<std::string>& filenames)
+    void loadTextureArray(const std::initializer_list<std::string>& filenames)
     {
-        std::vector<std::shared_ptr<std::ifstream>> files;
+        std::list<std::ifstream> files;
         std::streamoff totalSize = 0;
-        for (const std::string& filename : filenames)
+        for (const std::string& filename: filenames)
         {   // Open binary stream
-            auto file = std::make_shared<std::ifstream>("textures/" + filename, std::ios::in | std::ios::binary | std::ios::ate);
-            if (!file->is_open())
+            files.emplace_back("textures/" + filename, std::ios::in | std::ios::binary | std::ios::ate);
+            if (!files.back().is_open())
                 throw std::runtime_error("failed to open file \"" + filename + "\"");
-            totalSize += file->tellg();
-            files.push_back(file);
+            totalSize += files.back().tellg();
         }
-        std::vector<gliml::context> ctxArray;
-        std::vector<VkDeviceSize> baseMipOffsets;
+        std::list<gliml::context> ctxArray;
         std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, totalSize);
+        VkDeviceSize baseMipOffset = 0ull;
         magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
         {   // Read all data to single buffer
-            for (auto& file : files)
+            for (auto& file: files)
             {
-                const std::streamoff size = file->tellg();
-                file->seekg(0, std::ios::beg);
-                file->read(reinterpret_cast<char *>(data), size);
-                file->close();
-                gliml::context ctx;
+                const std::streamoff size = file.tellg();
+                file.seekg(0, std::ios::beg);
+                file.read(reinterpret_cast<char *>(data), size);
+                file.close();
+                ctxArray.emplace_back();
+                gliml::context& ctx = ctxArray.back();
                 ctx.enable_dxt(true);
                 if (!ctx.load(data, static_cast<unsigned>(size)))
                     throw std::runtime_error("failed to load DDS texture");
-                ctxArray.push_back(ctx);
-                // Skip DDS header
-                baseMipOffsets.push_back(reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data);
+                // Skip DDS header of the first file
+                if (0ull == baseMipOffset)
+                    baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
                 data += size;
             }
         });
@@ -160,34 +160,33 @@ public:
             (uint32_t)ctxArray.front().image_height(0, 0)
         };
         // Assert that all files have the same format and dimensions
-        for (size_t i = 1; i < ctxArray.size(); ++i)
+        for (const auto& ctx: ctxArray)
         {
-            const gliml::context& ctx = ctxArray[i];
             MAGMA_ASSERT(utilities::getBlockCompressedFormat(ctx) == format);
             MAGMA_ASSERT(static_cast<uint32_t>(ctx.image_width(0, 0)) == extent.width);
             MAGMA_ASSERT(static_cast<uint32_t>(ctx.image_height(0, 0)) == extent.height);
         }
-        // Setup memory layout in transfer buffer
-        std::vector<VkDeviceSize> mipOffsets;
-        VkDeviceSize lastMipSize = 0;
-        uint32_t arrayIndex = 0;
-        for (const auto& ctx : ctxArray)
-        {   // Take into account DDS header and last mip level of previous mipmap chain
-            mipOffsets.push_back(baseMipOffsets[arrayIndex] + lastMipSize);
-            const int mipLevels = ctx.num_mipmaps(0);
-            for (int level = 1; level < mipLevels; ++level)
-            {   // Compute relative offset
-                const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
-                mipOffsets.push_back(mipOffset);
+        // Setup texture array data description
+        const uint8_t *frontImageFirstMipData = (const uint8_t *)ctxArray.front().image_data(0, 0);
+        std::vector<magma::Image::Mip> mipMaps;
+        for (const auto& ctx: ctxArray)
+        {
+            for (int level = 0; level < ctx.num_mipmaps(0); ++level)
+            {
+                magma::Image::Mip mip;
+                mip.extent.width = ctx.image_width(0, level);
+                mip.extent.height = ctx.image_height(0, level);
+                mip.extent.depth = 1;
+                mip.bufferOffset = (const uint8_t *)ctx.image_data(0, level) - frontImageFirstMipData;
+                MAGMA_ASSERT(mip.bufferOffset < totalSize);
+                mipMaps.push_back(mip);
             }
-            lastMipSize = ctx.image_size(0, mipLevels - 1);
-            ++arrayIndex;
         }
         // Upload texture array data from buffer
-        const uint32_t arrayLayers = MAGMA_COUNT(ctxArray);
         cmdImageCopy->begin();
+        const magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
         std::shared_ptr<magma::Image2DArray> imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy,
-            format, extent, arrayLayers, buffer, mipOffsets);
+            format, MAGMA_COUNT(ctxArray), buffer, mipMaps, bufferLayout);
         cmdImageCopy->end();
         submitCopyImageCommands();
         // Create image view for fragment shader
@@ -208,11 +207,11 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.worldViewProj = uniformWorldViewProj;
-        setLayout.texParameters = uniformTexParameters;
-        setLayout.imageArray = {imageArrayView, anisotropicSampler};
+        setTable.worldViewProj = uniformWorldViewProj;
+        setTable.texParameters = uniformTexParameters;
+        setTable.imageArray = {imageArrayView, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "textureArray.o");
     }
 

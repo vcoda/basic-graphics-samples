@@ -12,13 +12,13 @@ class TextureApp : public VulkanApp
         bool multitexture;
     };
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer texParameters = 0;
-        magma::binding::CombinedImageSampler diffuseImage = 1;
-        magma::binding::CombinedImageSampler lightmapImage = 2;
-        MAGMA_REFLECT(&texParameters, &diffuseImage, &lightmapImage)
-    } setLayout;
+        magma::descriptor::UniformBuffer texParameters = 0;
+        magma::descriptor::CombinedImageSampler diffuseImage = 1;
+        magma::descriptor::CombinedImageSampler lightmapImage = 2;
+        MAGMA_REFLECT(texParameters, diffuseImage, lightmapImage)
+    } setTable;
 
     std::shared_ptr<magma::ImageView> diffuse;
     std::shared_ptr<magma::ImageView> lightmap;
@@ -97,9 +97,8 @@ public:
         file.seekg(0, std::ios::beg);
         gliml::context ctx;
         ctx.enable_dxt(true);
-        VkDeviceSize bufferOffset = 0, baseMipOffset = 0;
-        if (buffer->getPayload().hasData())
-            bufferOffset = buffer->getPayload().getData<VkDeviceSize>();
+        VkDeviceSize bufferOffset = buffer->getPrivateData();
+        VkDeviceSize baseMipOffset = 0;
         magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data to buffer
@@ -110,22 +109,24 @@ public:
                 // Skip DDS header
                 baseMipOffset = reinterpret_cast<const uint8_t *>(ctx.image_data(0, 0)) - data;
             });
-        buffer->getPayload().setData(bufferOffset + size);
+        buffer->setPrivateData(bufferOffset + size);
         // Setup texture data description
-        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        const VkExtent2D extent = {
-            (uint32_t)ctx.image_width(0, 0),
-            (uint32_t)ctx.image_height(0, 0)
-        };
-        magma::Image::MipmapLayout mipOffsets(1, 0);
-        for (int level = 1; level < ctx.num_mipmaps(0); ++level)
-        {   // Compute relative offset
-            const intptr_t mipOffset = (const uint8_t *)ctx.image_data(0, level) - (const uint8_t *)ctx.image_data(0, level - 1);
-            mipOffsets.push_back(mipOffset);
+        const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
+        std::vector<magma::Image::Mip> mipMaps;
+        mipMaps.reserve(ctx.num_mipmaps(0));
+        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
+        {
+            magma::Image::Mip mip;
+            mip.extent.width = ctx.image_width(0, level);
+            mip.extent.height = ctx.image_height(0, level);
+            mip.extent.depth = 1;
+            mip.bufferOffset = (const uint8_t *)ctx.image_data(0, level) - firstMipData;
+            mipMaps.push_back(mip);
         }
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
-        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, extent, std::move(buffer), mipOffsets, bufferLayout);
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
+        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
         return std::make_shared<magma::ImageView>(std::move(image));
     }
@@ -155,7 +156,7 @@ public:
             rapid::float2 uv;
         };
 
-        const auto extent = diffuse->getImage()->getMipExtent(0);
+        const auto extent = diffuse->getImage()->calculateMipExtent(0);
         const float width = static_cast<float>(extent.width);
         const float height = static_cast<float>(extent.height);
         constexpr float hw = 0.5f;
@@ -189,11 +190,11 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.texParameters = uniformBuffer;
-        setLayout.diffuseImage = {diffuse, bilinearSampler};
-        setLayout.lightmapImage = {lightmap, bilinearSampler};
+        setTable.texParameters = uniformBuffer;
+        setTable.diffuseImage = {diffuse, bilinearSampler};
+        setTable.lightmapImage = {lightmap, bilinearSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "multitexture.o");
     }
 

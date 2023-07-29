@@ -5,17 +5,17 @@
 // Use L button + mouse to rotate scene
 class OcclusionQueryApp : public VulkanApp
 {
-    struct TransformSetLayout : magma::DescriptorSetLayoutReflection
+    struct TransformSetTable : magma::DescriptorSetTable
     {
-        magma::binding::DynamicUniformBuffer worldViewProj = 0;
-        MAGMA_REFLECT(&worldViewProj)
-    } setLayout0;
+        magma::descriptor::DynamicUniformBuffer worldViewProj = 0;
+        MAGMA_REFLECT(worldViewProj)
+    } setTable0;
 
-    struct ColorSetLayout : magma::DescriptorSetLayoutReflection
+    struct ColorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::DynamicUniformBuffer color = 0;
-        MAGMA_REFLECT(&color)
-    } setLayout1;
+        magma::descriptor::DynamicUniformBuffer color = 0;
+        MAGMA_REFLECT(color)
+    } setTable1;
 
     std::unique_ptr<quadric::Plane> plane;
     std::unique_ptr<quadric::Teapot> teapot;
@@ -56,10 +56,10 @@ public:
     {
         uint64_t sampleCount = 0;
         if (waitForResult)
-            sampleCount = occlusionQuery->getResults(0, 1, true).front();
+            sampleCount = occlusionQuery->getResults<uint64_t>(0, 1, true).front();
         else
         {
-            const magma::QueryResult<uint64_t> result = occlusionQuery->getResultsWithAvailability(0, 1).front();
+            const magma::QueryPool::Result<uint64_t, uint64_t> result = occlusionQuery->getResultsWithAvailability<uint64_t>(0, 1).front();
             if (result.availability > 0)
                 sampleCount = result.result;
             std::cout << "Query result: ";
@@ -122,9 +122,9 @@ public:
 
     void createUniformBuffer()
     {
-        transformUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::matrix>>(device, 2);
+        transformUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::matrix>>(device, 2, false);
         updatePerspectiveTransform();
-        colorUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::vector4>>(device, 2);
+        colorUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::vector4>>(device, 2, false);
         magma::helpers::mapScoped<rapid::vector4>(colorUniforms,
             [](magma::helpers::AlignedUniformArray<rapid::vector4>& colors)
         {   // Update only once
@@ -135,20 +135,20 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout0.worldViewProj = transformUniforms;
+        setTable0.worldViewProj = transformUniforms;
         descriptorSets[0] = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout0, VK_SHADER_STAGE_VERTEX_BIT,
+            setTable0, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "transform.o", 0);
-        setLayout1.color = colorUniforms;
+        setTable1.color = colorUniforms;
         descriptorSets[1] = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout1, VK_SHADER_STAGE_VERTEX_BIT,
+            setTable1, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "transform.o", 1);
     }
 
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(
-            std::vector<std::shared_ptr<magma::DescriptorSetLayout>>{
+            std::initializer_list<std::shared_ptr<const magma::DescriptorSetLayout>>{
                 descriptorSets[0]->getLayout(),
                 descriptorSets[1]->getLayout()
             });
@@ -183,7 +183,7 @@ public:
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
-            cmdBuffer->resetQueryPool(occlusionQuery);
+            cmdBuffer->resetQueryPool(occlusionQuery, 0, occlusionQuery->getQueryCount());
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
                 {
                     magma::clear::gray,

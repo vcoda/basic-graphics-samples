@@ -8,11 +8,11 @@ class PushConstantsApp : public VulkanApp
         rapid::float4 vertexColors[3];
     } pushConstants;
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer pushConstants = 0;
-        MAGMA_REFLECT(&pushConstants)
-    } setLayout;
+        magma::descriptor::UniformBuffer pushConstants = 0;
+        MAGMA_REFLECT(pushConstants)
+    } setTable;
 
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
@@ -78,7 +78,7 @@ public:
     void setupDescriptorSet()
     {
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT);
+            setTable, VK_SHADER_STAGE_VERTEX_BIT);
         // Specify push constant range
         constexpr magma::pushconstant::VertexConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);

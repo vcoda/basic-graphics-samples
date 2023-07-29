@@ -16,12 +16,12 @@ class RenderToTextureApp : public VulkanApp
         std::shared_ptr<magma::Framebuffer> framebuffer;
     } fb;
 
-    struct SetLayout : magma::DescriptorSetLayoutReflection
+    struct DescriptorSetTable : magma::DescriptorSetTable
     {
-        magma::binding::UniformBuffer world = 0;
-        magma::binding::CombinedImageSampler diffuse = 1;
-        MAGMA_REFLECT(&world, &diffuse)
-    } setLayout;
+        magma::descriptor::UniformBuffer world = 0;
+        magma::descriptor::CombinedImageSampler diffuse = 1;
+        MAGMA_REFLECT(world, diffuse)
+    } setTable;
 
     std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
@@ -80,12 +80,14 @@ public:
 
     void createFramebuffer(const VkExtent2D& extent)
     {
+        constexpr bool sampled = true;
+        constexpr bool dontSampled = false;
         // Create color attachment
-        fb.color = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1);
+        fb.color = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1, sampled);
         fb.colorView = std::make_shared<magma::ImageView>(fb.color);
         // Create depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        fb.depth = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, 1);
+        fb.depth = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, 1, dontSampled);
         fb.depthView = std::make_shared<magma::ImageView>(fb.depth);
         // Don't care about initial layout
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -142,7 +144,7 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device, false);
     }
 
     void createSampler()
@@ -152,10 +154,10 @@ public:
 
     void setupDescriptorSet()
     {
-        setLayout.world = uniformBuffer;
-        setLayout.diffuse = {fb.colorView, nearestSampler};
+        setTable.world = uniformBuffer;
+        setTable.diffuse = {fb.colorView, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "tex.o");
     }
 
