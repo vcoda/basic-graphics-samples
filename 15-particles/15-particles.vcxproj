@@ -79,7 +79,7 @@
     <ProjectGuid>{2d2b4093-eadb-4558-8f06-c99d6fc8ab84}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_15_particles</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>15-particles</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

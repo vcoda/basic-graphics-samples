@@ -62,7 +62,7 @@
     <ProjectGuid>{15AA74BA-F077-44F8-BDA0-EF582FC5A883}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_06_texture</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>06-texture</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

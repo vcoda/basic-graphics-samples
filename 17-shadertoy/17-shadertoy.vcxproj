@@ -33,7 +33,7 @@
     <ProjectGuid>{2ea54c12-10c7-48be-8f7a-fd9e9e99f0a5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_17_shadertoy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>17-shadertoy</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

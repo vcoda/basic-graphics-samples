@@ -58,7 +58,7 @@
     <ProjectGuid>{76E25272-FA95-4C29-9AD5-B54003015870}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_09_texture_volume</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>09-texture-volume</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

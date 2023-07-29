@@ -57,8 +57,8 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{36DFE4C0-669E-4148-8AAC-F245DFC38E50}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>_05_mesh</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <RootNamespace>_13-specialization</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>13-specialization</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

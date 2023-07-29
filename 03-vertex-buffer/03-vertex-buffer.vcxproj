@@ -58,7 +58,7 @@
     <ProjectGuid>{5b7f2e97-7a0a-4b05-af97-cb74ec31c0d2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_03_vertex_buffer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>03-vertex-buffer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

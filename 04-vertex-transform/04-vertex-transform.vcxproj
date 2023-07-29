@@ -58,7 +58,7 @@
     <ProjectGuid>{fe4f7013-f4ca-4d63-9e0b-3e511c6dc815}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_04_vertex_transform</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>04-vertex-transform</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

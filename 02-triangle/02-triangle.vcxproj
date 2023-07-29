@@ -58,7 +58,7 @@
     <ProjectGuid>{27a8fc58-1bb6-4e50-8c68-4c20736f1af5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_02_triangle</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>02-triangle</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

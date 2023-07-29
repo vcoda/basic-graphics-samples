@@ -58,7 +58,7 @@
     <ProjectGuid>{c5113eca-618b-4838-a125-be0b0948aa7e}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_05_mesh</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>05-mesh</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

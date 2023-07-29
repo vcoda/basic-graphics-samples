@@ -90,7 +90,7 @@
     <ProjectGuid>{2DF25ACC-07D2-4E01-8007-B6D26F99F60A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_10b_render_to_msaa_texture</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>10.b-render-to-msaa-texture</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

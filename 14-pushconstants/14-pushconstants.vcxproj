@@ -58,7 +58,7 @@
     <ProjectGuid>{35bd8b5c-cb25-4bff-a00d-9a85009b19dd}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_14_pushconstants</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>14-pushconstants</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

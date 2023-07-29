@@ -58,7 +58,7 @@
     <ProjectGuid>{da85c030-1cf6-4121-88c4-ca056668acff}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_11_occlusion_query</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>11-occlusion-query</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

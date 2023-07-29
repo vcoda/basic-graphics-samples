@@ -64,7 +64,7 @@
     <ProjectGuid>{86d618c4-abfa-4ef6-ac27-9f46b3fc0434}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_08_texture_cube</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>08-texture-cube</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
