@@ -50,7 +50,7 @@ class SpecializationApp : public VulkanApp
     std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
-    std::unique_ptr<magma::GraphicsPipelines> pipelines;
+    std::unique_ptr<magma::GraphicsPipelineBatch> pipelineBatch;
     std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers[2];
 
     rapid::matrix view;
@@ -191,11 +191,11 @@ public:
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
         };
-        pipelines = std::make_unique<magma::GraphicsPipelines>(ShadingType::MaxPermutations);
+        pipelineBatch = std::make_unique<magma::GraphicsPipelineBatch>(ShadingType::MaxPermutations);
         for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
             const magma::FragmentShaderStage fragmentStage = specializeFragmentStage((ShadingType)i, "main");
-            pipelines->newPipeline(
+            pipelineBatch->batchPipeline(
                 {vertexStage, fragmentStage},
                 mesh->getVertexInput(),
                 magma::renderstate::triangleList,
@@ -210,7 +210,13 @@ public:
                 pipelineLayout,
                 renderPass, 0);
         }
-        pipelines->buildPipelines(device, pipelineCache);
+        std::future<void> buildResult = pipelineBatch->buildPipelinesAsync(device, pipelineCache);
+        std::future_status status;
+        do
+        {
+            status = buildResult.wait_for(std::chrono::microseconds(5));
+            std::cout << "You can do something useful here while waiting for completion of graphics pipeline building" << std::endl;
+        } while (status != std::future_status::ready);
     }
 
     void recordCommandBuffer(uint32_t bufferIndex, uint32_t pipelineIndex)
@@ -226,8 +232,8 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(pipelines->getPipeline(pipelineIndex), 0, descriptorSet);
-                cmdBuffer->bindPipeline(pipelines->getPipeline(pipelineIndex));
+                cmdBuffer->bindDescriptorSet(pipelineBatch->getPipeline(pipelineIndex), 0, descriptorSet);
+                cmdBuffer->bindPipeline(pipelineBatch->getPipeline(pipelineIndex));
                 mesh->draw(cmdBuffer);
             }
             cmdBuffer->endRenderPass();
