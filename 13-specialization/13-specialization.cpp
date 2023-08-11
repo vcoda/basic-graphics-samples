@@ -5,13 +5,13 @@
 #define CAPTION_STRING(name) TEXT("13 - Specialization constants (" name ")")
 
 // Use Space to toggle between albedo and shading.
-// Use 1, 2, 3 to change shading branch.
+// Use 1, 2, 3, 4, 5 to change shading branch.
 // Use L button + mouse to rotate knot.
 class SpecializationApp : public VulkanApp
 {
     enum ShadingType : uint32_t
     {
-        Normal = 0, Diffuse, Specular, CellShade, Albedo,
+        Normal = 0, FaceNormal, Diffuse, Specular, CellShade, Albedo,
         MaxPermutations
     };
 
@@ -38,6 +38,7 @@ class SpecializationApp : public VulkanApp
 
     const std::unordered_map<ShadingType, std::tstring> captions = {
         {ShadingType::Normal, CAPTION_STRING("Normals")},
+        {ShadingType::FaceNormal, CAPTION_STRING("Face normals")},
         {ShadingType::Diffuse, CAPTION_STRING("Diffuse")},
         {ShadingType::Specular, CAPTION_STRING("Specular")},
         {ShadingType::CellShade, CAPTION_STRING("Cell-shading")},
@@ -93,9 +94,10 @@ public:
         switch (key)
         {
         case '1': shadingType = ShadingType::Normal; break;
-        case '2': shadingType = ShadingType::Diffuse; break;
-        case '3': shadingType = ShadingType::Specular; break;
-        case '4': shadingType = ShadingType::CellShade; break;
+        case '2': shadingType = ShadingType::FaceNormal; break;
+        case '3': shadingType = ShadingType::Diffuse; break;
+        case '4': shadingType = ShadingType::Specular; break;
+        case '5': shadingType = ShadingType::CellShade; break;
         case AppKey::Space: colorFill = !colorFill;
             break;
         }
@@ -144,7 +146,7 @@ public:
     {
         constexpr float radius = 0.25f;
         constexpr uint16_t turns = 3;
-        constexpr uint16_t sides = 32;
+        constexpr uint16_t sides = 16;
         constexpr uint16_t rings = 256;
         mesh = std::make_unique<quadric::Knot>(radius, turns, sides, rings, false, cmdBufferCopy);
     }

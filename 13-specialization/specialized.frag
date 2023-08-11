@@ -1,9 +1,10 @@
 #version 450
 
 #define NORMAL      0
-#define DIFFUSE     1
-#define SPECULAR    2
-#define CELL        3
+#define FACE_NORMAL 1
+#define DIFFUSE     2
+#define SPECULAR    3
+#define CELL_SHADE  4
 
 layout(location = 0) in vec3 viewPos;
 layout(location = 1) in vec3 viewNormal;
@@ -29,19 +30,27 @@ void main()
     else
     {
         vec3 lightPos = vec3(0.);
-        vec3 N = normalize(viewNormal);
         if (NORMAL == shadingType)
         {
-            oColor.rgb = N;
+            oColor.rgb = normalize(viewNormal);
+        }
+        else if (FACE_NORMAL == shadingType)
+        {
+            vec3 ddx = dFdx(viewPos);
+            vec3 ddy = dFdy(viewPos);
+            vec3 normal = cross(ddy, ddx);
+            oColor.rgb = normalize(normal);
         }
         else if (DIFFUSE == shadingType)
         {
+            vec3 N = normalize(viewNormal);
             vec3 L = normalize(lightPos - viewPos);
             float NdL = max(0., dot(N, L));
             oColor.rgb = albedo * NdL;
         }
         else
         {
+            vec3 N = normalize(viewNormal);
             vec3 L = normalize(lightPos - viewPos);
             vec3 V = normalize(-viewPos);
             vec3 R = reflect(-L, N);
@@ -52,7 +61,7 @@ void main()
             {
                 oColor.rgb = albedo * NdL + spec;
             }
-            else if (CELL == shadingType)
+            else if (CELL_SHADE == shadingType)
             {
                 // cell-shading code taken from http://prideout.net/blog/?p=22
                 float a = 0.4, b = 0.6, c = 0.9, d = 1.;
