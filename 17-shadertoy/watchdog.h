@@ -8,13 +8,20 @@
 #include <functional>
 #include <chrono>
 
+#ifdef _MSC_VER
+#define stat _stat
+typedef struct _stat sys_stat;
+#else
+typedef struct stat sys_stat;
+#endif // _MSC_VER
+
 class FileWatchdog
 {
     struct Item
     {
         std::string name;
         std::function<void(const std::string&)> onModified;
-        __time64_t lastModifiedTime;
+        time_t lastModifiedTime;
     };
 
     std::thread watchThread;
@@ -32,14 +39,14 @@ public:
                 std::lock_guard<std::mutex> guard(itemListAccess);
                 for (Item& item : itemList)
                 {
-                    struct _stat stat;
-                    const int result = _stat(item.name.c_str(), &stat);
+                    sys_stat st;
+                    const int result = stat(item.name.c_str(), &st);
                     if (0 == result)
                     {
-                        if (item.lastModifiedTime != stat.st_mtime)
+                        if (item.lastModifiedTime != st.st_mtime)
                         {
                             item.onModified(item.name);
-                            item.lastModifiedTime = stat.st_mtime;
+                            item.lastModifiedTime = st.st_mtime;
                         }
                     }
                 }
@@ -49,14 +56,14 @@ public:
 
     void watchFor(const std::string& filename, std::function<void(const std::string&)> callback)
     {
-        struct _stat stat;
-        const int result = _stat(filename.c_str(), &stat);
+        sys_stat st;
+        const int result = stat(filename.c_str(), &st);
         if (0 == result)
         {
             Item item;
             item.name = filename;
             item.onModified = callback;
-            item.lastModifiedTime = stat.st_mtime;
+            item.lastModifiedTime = st.st_mtime;
             std::lock_guard<std::mutex> guard(itemListAccess);
             itemList.push_back(item);
         }

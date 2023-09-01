@@ -29,14 +29,15 @@ class ShaderToyApp : public VulkanApp
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
-    std::atomic<bool> rebuildCommandBuffers = false;
+    std::atomic<bool> rebuildCommandBuffers;
     int mouseX = 0;
     int mouseY = 0;
     bool dragging = false;
 
 public:
     ShaderToyApp(const AppEntry& entry):
-        VulkanApp(entry, TEXT("17 - ShaderToy"), 512, 512)
+        VulkanApp(entry, TEXT("17 - ShaderToy"), 512, 512),
+        rebuildCommandBuffers(false)
     {
         initialize();
         vertexShader = compileShader("quad.vert");
