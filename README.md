@@ -94,20 +94,22 @@ Desired=Unknown/Install/Remove/Purge/Hold
 ii  amdgpu-pro                      17.10-446706         amd64                Meta package to install amdgpu Pro components.
 ```
 
-To build all samples, go to the repo root directory and run Make script:
+To build all samples, go to the repo root directory and run make script for dependency libs, then for sample apps:
 ```
 make magma
 make quadric
-make all
+make samples
 ```
-or to build particular sample, type
+To build a particular sample, go to the sample's directory and run make script:
 ```
-make <NN-sample-name>
+cd 01-clear
+make
+./01-clear
 ```
 Optionally use can use -jN flag (where N is the number of threads) to run multi-threaded compilation.
 There is debug build by default. For release build, set DEBUG variable to 0, e. g.:
 ```
-make all DEBUG=0
+make magma DEBUG=0 -j8
 ```
 
 ### Android
