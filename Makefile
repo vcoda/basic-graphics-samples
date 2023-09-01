@@ -51,4 +51,4 @@ clean:
 	$(MAKE) -C 16-immediate-mode clean
 	$(MAKE) -C 17-shadertoy clean
 	$(MAKE) -C 18-compute clean
-	@find . -name '*.o' -delete
+
