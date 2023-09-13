@@ -1,7 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform WorldTransform
-{
+layout(binding = 0) uniform WorldTransform {
     mat4 world;
 };
 
@@ -17,7 +16,7 @@ void main()
         vec3(0., 0., 1.),
         vec3(0., 1., 0.)
     );
-
+    // equilateral triangle
     float L = 1.;
     float y = sqrt(3. * L)/4.;
     vec2 v[3] = vec2[](
