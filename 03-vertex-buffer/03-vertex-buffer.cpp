@@ -27,15 +27,14 @@ public:
         struct Vertex
         {
             rapid::float2 pos;
-            unsigned char color[4];
+            uint8_t color[4];
         };
 
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        constexpr auto _1 = std::numeric_limits<unsigned char>::max();
         alignas(MAGMA_ALIGNMENT) Vertex vertices[] = {
-            {{ 0.0f,-0.5f}, {_1, 0, 0, _1}}, // top
-            {{-0.5f, 0.5f}, {0, _1, 0, _1}}, // left
-            {{ 0.5f, 0.5f}, {0, 0, _1, _1}}  // right
+            {{ 0.0f,-0.3f}, {255, 0, 0, 255}}, // top
+            {{-0.6f, 0.3f}, {0, 255, 0, 255}}, // left
+            {{ 0.6f, 0.3f}, {0, 0, 255, 255}}  // right
         };
         vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
