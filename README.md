@@ -127,99 +127,99 @@ TODO
 ## Examples
 
 ### [01 - Clear framebuffer](01-clear/)
-<img src="./screenshots/01.jpg" height="128px" align="left">
+<img src="./screenshots/01.png" height="128px" align="left">
 Shows how to setup command buffer for simple framebuffer clear.
 <br><br><br><br><br>
 
 ### [02 - Triangle](02-triangle/)
-<img src="./screenshots/02.jpg" height="128px" align="left">
+<img src="./screenshots/02.png" height="128px" align="left">
 Draws triangle primitive from the vertices generated in the vertex shader.
 <br><br><br><br><br>
 
 ### [03 - Vertex buffer](03-vertex-buffer/)
-<img src="./screenshots/03.jpg" height="128px" align="left">
+<img src="./screenshots/03.png" height="128px" align="left">
 Draws triangle primitive with per-vertex color using vertex buffer.
 <br><br><br><br><br>
 
 ### [04 - Vertex transform](04-vertex-transform/)
-<img src="./screenshots/04.jpg" height="128px" align="left">
+<img src="./screenshots/04.png" height="128px" align="left">
 Shows how to setup perspective transformation and apply it to the vertices in the vertex shader.
 <br><br><br><br><br>
 
 ### [05 - Mesh](05-mesh/)
-<img src="./screenshots/05.jpg" height="128px" align="left">
+<img src="./screenshots/05.png" height="128px" align="left">
 Generates famous Utah Teapot from the set of patches and draws wireframe mesh with perspective transformation.
 Smoothness of the surface could be controlled using subdivision degree.
 <br><br><br><br>
 
 ### [06 - Texture](06-texture/)
-<img src="./screenshots/06.jpg" height="128px" align="left">
+<img src="./screenshots/06.png" height="128px" align="left">
 Shows how to load DXT texture data (using Gliml), create Vulkan images and combine them in the fragment shader using image samplers.
 <br><br><br><br>
 
 ### [07 - Texture array](07-texture-array/)
-<img src="./screenshots/07.jpg" height="128px" align="left">
+<img src="./screenshots/07.png" height="128px" align="left">
 Utilizes "texture array" hardware feature to apply multiple textures inside single draw call.
 Different texture LODs could be viewed.
 <br><br><br><br>
 
 ### [08 - Cubemap texture](08-texture-cube/)
-<img src="./screenshots/08.jpg" height="128px" align="left">
+<img src="./screenshots/08.png" height="128px" align="left">
 Shows how to load cubemap .dds textures and perform environment mapping in the fragment shader.
 <br><br><br><br>
 
 ### [09 - Volume texture](09-texture-volume/)
-<img src="./screenshots/09.jpg" height="128px" align="left">
+<img src="./screenshots/09.png" height="128px" align="left">
 Loads volumetric data into 3D texture and performs ray casting with large number of samples to accomodate resulting color.
 <br><br><br><br>
 
 ### [10.a - Render to texture](10.a-render-to-texture/)
-<img src="./screenshots/10a.jpg" height="128px" align="left">
+<img src="./screenshots/10a.png" height="128px" align="left">
 Performs render to texture using color and depth attachments. Framebuffer defines render pass, color/depth image views and dimensions.
 Looks like AMD hardware uses compute queue for resolving, because it slows down my machine when ethereum miner is running.
 <br><br><br>
 
 ### [10.b - Render to multisample texture](10.b-render-to-msaa-texture/)
-<img src="./screenshots/10b.jpg" height="128px" align="left">
+<img src="./screenshots/10b.png" height="128px" align="left">
 Performs render to multisample texture with resolve operation using RenderPass.
 <br><br><br><br><br>
 
 ### [11 - Occlusion query](11-occlusion-query/)
-<img src="./screenshots/11.jpg" height="128px" align="left">
+<img src="./screenshots/11.png" height="128px" align="left">
 Simple usage of hardware occlusion queries.
 <br><br><br><br><br>
 
 ### [12 - Alpha blending](12-alpha-blend/)
-<img src="./screenshots/12.jpg" height="128px" align="left">
+<img src="./screenshots/12.png" height="128px" align="left">
 Good old alpha blending.
 <br><br><br><br><br>
 
 ### [13 - Specialization constants](13-specialization/)
-<img src="./screenshots/13.jpg" height="128px" align="left">
+<img src="./screenshots/13.png" height="128px" align="left">
 Shows how to force shader compiler to perform static branching using specialization constants.
 For each fragment shader branch, there is a separate pipeline instance.
 <br><br><br><br>
 
 ### [14 - Push constants](14-pushconstants/)
-<img src="./screenshots/14.jpg" height="128px" align="left">
+<img src="./screenshots/14.png" height="128px" align="left">
 Uses push constants - a limited storage inside command buffer. Push constants are updated when command buffer is recorded.
 <br><br><br><br>
 
 ### [15 - Particles](15-particles/)
-<img src="./screenshots/15.jpg" height="128px" align="left">
+<img src="./screenshots/15.png" height="128px" align="left">
 This sample shows how to use gl_PointSize built-in variable to draw particles that are properly scaled with distance.
 As number of particles varies, vertex count put to indirect buffer to fetch from instead of specify it in vkCmdDraw() function with command buffer rebuild.
 Particle engine initially implemented by Kevin Harris and adopted by me for rendering with Vulkan.
 <br><br>
 
 ### [16 - Immediate mode](16-immediate-mode/)
-<img src="./screenshots/16.jpg" height="128px" align="left">
+<img src="./screenshots/16.png" height="128px" align="left">
 Sometimes I miss immediate render mode from OpenGL 1.x era, apparently it was useful to (quickly) draw something on the screen.
 This sample shows how to use Magma's ImmediateRender to draw different primitives without VB mapping, data copy, state management etc.
 <br><br><br>
 
 ### [17 - ShaderToy](17-shadertoy/)
-<img src="./screenshots/17.jpg" height="128px" align="left">
+<img src="./screenshots/17.png" height="128px" align="left">
 Unlike OpenGL, where shader compiler is provided by the graphics driver, Vulkan uses pre-compiled SPIR-V bytecode.
 This sample shows how to use https://github.com/google/shaderc compiler from Google to compile GLSL shaders on fly 
 and apply changes immediately, which may be useful for shader development. This sample only for Release x64 build configuration.
