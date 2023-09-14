@@ -9,12 +9,20 @@ Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t 
     hWnd(NULL)
 {
     Win32App::self = this;
+    HICON icon = (HICON)LoadImage(NULL, TEXT("..\\framework\\resources\\vulkan.ico"),
+        IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
 
     // Register window class
     const WNDCLASSEX wc = {
-        sizeof(WNDCLASSEX), CS_CLASSDC, Win32App::wndProc, 0, 0, entry.hInstance,
-        NULL, LoadCursor(NULL, IDC_ARROW),
-        NULL, NULL, TEXT("demo"), NULL
+        sizeof(WNDCLASSEX),
+        CS_CLASSDC,
+        Win32App::wndProc,
+        0, 0,
+        entry.hInstance,
+        icon,
+        LoadCursor(NULL, IDC_ARROW),
+        NULL, NULL, TEXT("demo"),
+        icon
     };
     RegisterClassEx(&wc);
 
