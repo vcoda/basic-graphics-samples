@@ -28,6 +28,11 @@ protected:
         BackBuffer
     };
 
+    enum class WaitMethod
+    {
+        Fence, Queue, Device
+    };
+
 public:
     VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
         bool depthBuffer = false);
@@ -82,4 +87,5 @@ protected:
     std::unique_ptr<Timer> timer;
     bool depthBuffer;
     bool negateViewport;
+    WaitMethod waitMethod;
 };

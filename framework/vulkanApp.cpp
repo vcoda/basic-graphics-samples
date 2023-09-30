@@ -7,7 +7,8 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     NativeApp(entry, caption, width, height),
     timer(std::make_unique<Timer>()),
     depthBuffer(depthBuffer),
-    negateViewport(false)
+    negateViewport(false),
+    waitMethod(WaitMethod::Fence)
 {
     magma::CxxAllocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
 }
@@ -26,14 +27,20 @@ void VulkanApp::onIdle()
 void VulkanApp::onPaint()
 {
     const uint32_t bufferIndex = swapchain->acquireNextImage(presentFinished, nullptr);
-    waitFences[bufferIndex]->wait();
-    waitFences[bufferIndex]->reset();
+    if (WaitMethod::Fence == waitMethod)
     {
-        render(bufferIndex);
+        waitFences[bufferIndex]->wait();
+        waitFences[bufferIndex]->reset();
     }
+    render(bufferIndex);
     graphicsQueue->present(swapchain, bufferIndex, renderFinished);
-    device->waitIdle(); // Flush
-    std::this_thread::sleep_for(std::chrono::milliseconds(5)); // Cap fps
+    if (WaitMethod::Queue == waitMethod)
+        graphicsQueue->waitIdle();
+    else if (WaitMethod::Device == waitMethod)
+    {   // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
+        // for all queues owned by device.
+        device->waitIdle();
+    }
 }
 
 void VulkanApp::initialize()
@@ -306,9 +313,9 @@ void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
 {
     graphicsQueue->submit(commandBuffers[bufferIndex],
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        presentFinished,
-        renderFinished,
-        waitFences[bufferIndex]);
+        presentFinished, // Wait for swapchain
+        renderFinished, // Signal when command buffer execution finished
+        (WaitMethod::Fence == waitMethod) ? waitFences[bufferIndex] : nullptr);
 }
 
 void VulkanApp::submitCopyImageCommands()
