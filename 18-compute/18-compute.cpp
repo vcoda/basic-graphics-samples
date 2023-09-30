@@ -158,7 +158,7 @@ public:
     }
 
     // This stuff not used in compute application
-    virtual void createSwapchain(bool vSync) override {}
+    virtual void createSwapchain() override {}
     virtual void createRenderPass() override {}
     virtual void createFramebuffer() override {}
     virtual void createSyncPrimitives() override {}
