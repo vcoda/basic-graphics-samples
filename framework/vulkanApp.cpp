@@ -6,6 +6,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     bool depthBuffer /* false */):
     NativeApp(entry, caption, width, height),
     timer(std::make_unique<Timer>()),
+    vSync(false),
     depthBuffer(depthBuffer),
     negateViewport(false),
     waitMethod(WaitMethod::Fence)
@@ -41,13 +42,17 @@ void VulkanApp::onPaint()
         // for all queues owned by device.
         device->waitIdle();
     }
+    if (!vSync)
+    {   // Cap fps
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
 }
 
 void VulkanApp::initialize()
 {
     createInstance();
     createLogicalDevice();
-    createSwapchain(false);
+    createSwapchain();
     createRenderPass();
     createFramebuffer();
     createCommandBuffers();
@@ -143,7 +148,7 @@ void VulkanApp::createLogicalDevice()
     device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features);
 }
 
-void VulkanApp::createSwapchain(bool vSync)
+void VulkanApp::createSwapchain()
 {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     surface = std::make_shared<magma::Win32Surface>(instance, hInstance, hWnd);

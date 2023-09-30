@@ -45,7 +45,7 @@ protected:
     virtual void initialize();
     virtual void createInstance();
     virtual void createLogicalDevice();
-    virtual void createSwapchain(bool vSync);
+    virtual void createSwapchain();
     virtual void createRenderPass();
     virtual void createFramebuffer();
     virtual void createCommandBuffers();
@@ -85,6 +85,7 @@ protected:
 
     std::shared_ptr<ShaderReflectionFactory> shaderReflectionFactory;
     std::unique_ptr<Timer> timer;
+    bool vSync;
     bool depthBuffer;
     bool negateViewport;
     WaitMethod waitMethod;
