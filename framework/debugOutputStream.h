@@ -29,6 +29,7 @@ public:
 
     void flush()
     {
+        std::lock_guard<std::mutex> lock(mtx);
         buf[pos] = '\0';
         OutputDebugStringA(buf);
         pos = 0;
@@ -37,4 +38,5 @@ public:
 private:
     char buf[4096 + 1];
     size_t pos = 0;
+    std::mutex mtx;
 };
