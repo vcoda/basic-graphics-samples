@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 03-vertex-buffer passthrough.o fill.o
+default:
+	03-vertex-buffer passthrough.o fill.o
 
-03-vertex-buffer: 03-vertex-buffer.o $(FRAMEWORK_OBJS)
+03-vertex-buffer:
+	03-vertex-buffer.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 09-texture-volume quad.o raycast.o
+default:
+	09-texture-volume quad.o raycast.o
 
-09-texture-volume: 09-texture-volume.o $(FRAMEWORK_OBJS)
+09-texture-volume:
+	09-texture-volume.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 18-compute sum.o mul.o power.o
+default:
+	18-compute sum.o mul.o power.o
 
-18-compute: 18-compute.o $(FRAMEWORK_OBJS)
+18-compute:
+	18-compute.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 sum.o: arithmetic.comp

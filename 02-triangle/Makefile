@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 02-triangle position.o fill.o
+default:
+	02-triangle position.o fill.o
 
-02-triangle: 02-triangle.o $(FRAMEWORK_OBJS)
+02-triangle:
+	02-triangle.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

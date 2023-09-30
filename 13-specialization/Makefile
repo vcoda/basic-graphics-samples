@@ -1,4 +1,4 @@
-include ../makeconf
+include ../Makeshared.mk
 
 ifeq ($(DEBUG), 1)
 	QUADRIC=quadricd
@@ -8,9 +8,11 @@ endif
 
 LDFLAGS2=$(LIB_DIR) -lpthread -lxcb -lvulkan -l$(QUADRIC) -l$(MAGMA)
 
-default: 13-specialization transform.o specialized.o
+default:
+	13-specialization transform.o specialized.o
 
-13-specialization: 13-specialization.o $(FRAMEWORK_OBJS)
+13-specialization:
+	13-specialization.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS2)
 
 clean:

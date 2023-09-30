@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 04-vertex-transform transform.o frontFace.o
+default:
+	04-vertex-transform transform.o frontFace.o
 
-04-vertex-transform: 04-vertex-transform.o $(FRAMEWORK_OBJS)
+04-vertex-transform:
+	04-vertex-transform.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

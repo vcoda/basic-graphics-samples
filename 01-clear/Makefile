@@ -1,6 +1,7 @@
-include ../makeconf
+include ../Makeshared.mk
 
-01-clear: 01-clear.o $(FRAMEWORK_OBJS)
+01-clear:
+	01-clear.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

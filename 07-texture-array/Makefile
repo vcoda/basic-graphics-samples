@@ -1,4 +1,4 @@
-include ../makeconf
+include ../Makeshared.mk
 
 ifeq ($(DEBUG), 1)
 	QUADRIC=quadricd
@@ -8,9 +8,11 @@ endif
 
 LDFLAGS2=$(LIB_DIR) -lpthread -lxcb -lvulkan -l$(QUADRIC) -l$(MAGMA)
 
-default: 07-texture-array transform.o textureArray.o
+default:
+	07-texture-array transform.o textureArray.o
 
-07-texture-array: 07-texture-array.o $(FRAMEWORK_OBJS)
+07-texture-array:
+	07-texture-array.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS2)
 
 clean:

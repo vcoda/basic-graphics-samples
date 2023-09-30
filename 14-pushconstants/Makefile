@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 14-pushconstants passthrough.o fill.o 
+default:
+	14-pushconstants passthrough.o fill.o
 
-14-pushconstants: 14-pushconstants.o $(FRAMEWORK_OBJS)
+14-pushconstants:
+	14-pushconstants.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

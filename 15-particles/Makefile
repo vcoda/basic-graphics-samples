@@ -1,8 +1,10 @@
-include ../makeconf
+include ../Makeshared.mk
 
-default: 15-particles pointSize.o particle.o particleNeg.o
+default:
+	15-particles pointSize.o particle.o particleNeg.o
 
-15-particles: 15-particles.o particlesystem.o $(FRAMEWORK_OBJS)
+15-particles:
+	15-particles.o particlesystem.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:

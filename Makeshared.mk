@@ -26,7 +26,7 @@ FRAMEWORK_OBJS= \
 	$(FRAMEWORK)/vulkanApp.o \
 	$(FRAMEWORK)/xcbApp.o
 
-%.o: %.cpp 
+%.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.vert
