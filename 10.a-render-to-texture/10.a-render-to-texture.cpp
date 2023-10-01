@@ -154,6 +154,8 @@ public:
 
     void setupDescriptorSet()
     {
+        // Change attachment layout before vkUpdateDescriptorSets
+        imageLayoutTransition(fb.color, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         setTable.world = uniformBuffer;
         setTable.diffuse = {fb.colorView, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
