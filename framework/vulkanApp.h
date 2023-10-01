@@ -52,6 +52,7 @@ protected:
     virtual void createSyncPrimitives();
     virtual void createDescriptorPool();
 
+    void imageLayoutTransition(std::shared_ptr<magma::Image> image, VkImageLayout newLayout);
     void submitCommandBuffer(uint32_t bufferIndex);
     void submitCopyImageCommands();
     void submitCopyBufferCommands();

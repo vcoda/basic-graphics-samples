@@ -314,6 +314,14 @@ void VulkanApp::createDescriptorPool()
         });
 }
 
+void VulkanApp::imageLayoutTransition(std::shared_ptr<magma::Image> image, VkImageLayout newLayout)
+{
+    cmdImageCopy->begin();
+    image->layoutTransition(newLayout, cmdImageCopy);
+    cmdImageCopy->end();
+    submitCopyImageCommands();
+}
+
 void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
 {
     graphicsQueue->submit(commandBuffers[bufferIndex],
