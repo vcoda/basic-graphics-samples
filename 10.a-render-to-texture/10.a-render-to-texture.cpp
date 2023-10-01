@@ -62,8 +62,6 @@ public:
             rtSemaphore, // Wait for render-to-texture
             renderFinished, // Signal when command buffer execution finished
             (WaitMethod::Fence == waitMethod) ? waitFences[bufferIndex] : nullptr);
-        if (WaitMethod::Queue != waitMethod)
-            graphicsQueue->waitIdle();
     }
 
     void updateWorldTransform()
@@ -192,8 +190,11 @@ public:
 
     void recordOffscreenCommandBuffer(const Framebuffer& fb)
     {
+        // VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT specifies that
+        // a command buffer can be resubmitted to a queue while it is in
+        // the pending state, and recorded into multiple primary command buffers.
         rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
-        rtCmdBuffer->begin();
+        rtCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
         {
             rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer,
                 {
