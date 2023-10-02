@@ -35,7 +35,8 @@ public:
         updateVertexColors();
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[bufferIndex];
         // To show push constants in dynamic, we have to rebuild command buffer each frame
-        cmdBuffer->begin();
+        cmdBuffer->reset(false);
+        cmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex], {magma::clear::gray});
             {
