@@ -20,6 +20,13 @@ VulkanApp::~VulkanApp()
         commandPools[0]->freeCommandBuffers(commandBuffers);
 }
 
+void VulkanApp::close()
+{
+    if (WaitMethod::Device != waitMethod)
+        device->waitIdle();
+    quit = true;
+}
+
 void VulkanApp::onIdle()
 {
     onPaint();

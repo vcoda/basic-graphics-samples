@@ -37,6 +37,7 @@ public:
     VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
         bool depthBuffer = false);
     ~VulkanApp();
+    void close() override;
     virtual void render(uint32_t bufferIndex) = 0;
     virtual void onIdle() override;
     virtual void onPaint() override;
