@@ -19,22 +19,29 @@ class RenderToMsaaTextureApp : public VulkanApp
         uint32_t sampleCount = 0;
     } fb;
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct RtDescriptorSetTable : magma::DescriptorSetTable
     {
         magma::descriptor::UniformBuffer world = 0;
-        magma::descriptor::CombinedImageSampler diffuse = 1;
-        MAGMA_REFLECT(world, diffuse)
-    } setTable;
+        MAGMA_REFLECT(world)
+    } setTableRt;
 
-    std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
-    std::shared_ptr<magma::Semaphore> rtSemaphore;
-    std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
+    struct TxDescriptorSetTable : magma::DescriptorSetTable
+    {
+        magma::descriptor::CombinedImageSampler texture = 0;
+        MAGMA_REFLECT(texture)
+    } setTableTx;
+
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::Sampler> nearestSampler;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
-    std::shared_ptr<magma::GraphicsPipeline> texPipeline;
+    std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
+    std::shared_ptr<magma::Semaphore> rtSemaphore;
+    std::shared_ptr<magma::DescriptorSet> rtDescriptorSet;
+    std::shared_ptr<magma::PipelineLayout> rtPipelineLayout;
+    std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
+    std::shared_ptr<magma::DescriptorSet> txDescriptorSet;
+    std::shared_ptr<magma::PipelineLayout> txPipelineLayout;
+    std::shared_ptr<magma::GraphicsPipeline> txPipeline;
 
 public:
     RenderToMsaaTextureApp(const AppEntry& entry):
@@ -53,7 +60,7 @@ public:
         timer->run();
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         updateWorldTransform();
         constexpr VkPipelineStageFlags stageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -171,18 +178,19 @@ public:
 
     void setupDescriptorSet()
     {
-        // Change attachment layout before vkUpdateDescriptorSets
-        imageLayoutTransition(fb.colorResolve, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        setTable.world = uniformBuffer;
-        setTable.diffuse = {fb.colorResolveView, nearestSampler};
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
-            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+        setTableRt.world = uniformBuffer;
+        rtDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            setTableRt, VK_SHADER_STAGE_VERTEX_BIT,
+            nullptr, shaderReflectionFactory, "triangle.o");
+        setTableTx.texture = {fb.colorResolveView, nearestSampler};
+        txDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+            setTableTx, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, shaderReflectionFactory, "tex.o");
     }
 
     void setupPipelines()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+        rtPipelineLayout = std::make_shared<magma::PipelineLayout>(rtDescriptorSet->getLayout());
         rtPipeline = std::make_shared<GraphicsPipeline>(device,
             "triangle.o", "fill.o",
             magma::renderstate::nullVertexInput,
@@ -191,10 +199,11 @@ public:
             magma::MultisampleState(static_cast<VkSampleCountFlagBits>(fb.sampleCount)),
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            rtPipelineLayout,
             fb.renderPass, 0,
             pipelineCache);
-        texPipeline = std::make_shared<GraphicsPipeline>(device,
+        txPipelineLayout = std::make_shared<magma::PipelineLayout>(txDescriptorSet->getLayout());
+        txPipeline = std::make_shared<GraphicsPipeline>(device,
             "passthrough.o", "tex.o",
             magma::renderstate::pos2fTex2f,
             magma::renderstate::triangleStrip,
@@ -202,16 +211,16 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            txPipelineLayout,
             renderPass, 0,
             pipelineCache);
     }
 
     void recordOffscreenCommandBuffer(const Framebuffer& fb)
     {
-        // VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT specifies that
-        // a command buffer can be resubmitted to a queue while it is in
-        // the pending state, and recorded into multiple primary command buffers.
+        /* VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT specifies that
+           a command buffer can be resubmitted to a queue while it is in
+           the pending state, and recorded into multiple primary command buffers. */
         rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
         rtCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
         {
@@ -223,7 +232,7 @@ public:
             {
                 rtCmdBuffer->setViewport(magma::Viewport(0, 0, fb.framebuffer->getExtent()));
                 rtCmdBuffer->setScissor(magma::Scissor(0, 0, fb.framebuffer->getExtent()));
-                rtCmdBuffer->bindDescriptorSet(rtPipeline, 0, descriptorSet);
+                rtCmdBuffer->bindDescriptorSet(rtPipeline, 0, rtDescriptorSet);
                 rtCmdBuffer->bindPipeline(rtPipeline);
                 rtCmdBuffer->draw(3, 0);
             }
@@ -235,7 +244,7 @@ public:
 
     void recordCommandBuffer(uint32_t index)
     {
-        std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
+        std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],
@@ -245,8 +254,8 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->bindDescriptorSet(texPipeline, 0, descriptorSet);
-                cmdBuffer->bindPipeline(texPipeline);
+                cmdBuffer->bindDescriptorSet(txPipeline, 0, txDescriptorSet);
+                cmdBuffer->bindPipeline(txPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(4, 0);
             }
