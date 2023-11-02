@@ -11,7 +11,7 @@ public:
         std::cerr.rdbuf(this);
     }
 
-    virtual int_type overflow(int_type n)
+    int_type overflow(int_type n) override
     {
         if (n != std::streambuf::traits_type::eof())
         {
