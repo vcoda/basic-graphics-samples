@@ -1,5 +1,6 @@
 #pragma once
 #include <streambuf>
+#include <mutex>
 
 class DebugOutputStream : public std::streambuf
 {
