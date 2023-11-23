@@ -3,9 +3,9 @@
 
 class VertexTransformApp : public VulkanApp
 {
+    // OpenGL uses right-handed coordinate system, whilst Direct3D and RenderMan use left-handed
     // https://www.evl.uic.edu/ralph/508S98/coordinates.html
     // https://msdn.microsoft.com/en-us/library/windows/desktop/bb204853(v=vs.85).aspx
-    // OpenGL uses right-handed coordinate system, whilst Direct3D and RenderMan use left-handed
     constexpr static bool rhs = true;
 
     struct DescriptorSetTable : magma::DescriptorSetTable
@@ -37,7 +37,7 @@ public:
         timer->run();
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
         submitCommandBuffer(bufferIndex);
@@ -83,7 +83,7 @@ public:
     {
         struct Vertex
         {
-            rapid::float2 pos;
+            float pos[2];
             uint8_t color[4];
         };
 
