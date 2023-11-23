@@ -222,7 +222,7 @@ public:
             "transform.o", "textureArray.o",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,
-            negateViewport ? magma::renderstate::fillCullBackCCw
+            negateViewport ? magma::renderstate::fillCullBackCcw
                            : magma::renderstate::fillCullBackCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLess,

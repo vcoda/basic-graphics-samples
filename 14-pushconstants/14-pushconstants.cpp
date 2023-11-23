@@ -91,7 +91,7 @@ public:
             "passthrough.o", "fill.o",
             magma::renderstate::pos2f,
             magma::renderstate::triangleList,
-            magma::renderstate::fillCullBackCCw,
+            magma::renderstate::fillCullBackCcw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

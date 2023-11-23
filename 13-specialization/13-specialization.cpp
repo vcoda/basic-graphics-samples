@@ -203,7 +203,7 @@ public:
                 magma::renderstate::triangleList,
                 magma::TesselationState(),
                 magma::ViewportState(),
-                negateViewport ? magma::renderstate::fillCullBackCCw
+                negateViewport ? magma::renderstate::fillCullBackCcw
                                : magma::renderstate::fillCullBackCw,
                 magma::renderstate::dontMultisample,
                 magma::renderstate::depthLessOrEqual,

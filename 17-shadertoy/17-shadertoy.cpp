@@ -172,7 +172,7 @@ public:
             magma::renderstate::triangleStrip,
             magma::TesselationState(),
             magma::ViewportState(0, 0, width, height),
-            magma::renderstate::fillCullBackCCw,
+            magma::renderstate::fillCullBackCcw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

@@ -114,9 +114,9 @@ public:
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform.o", "frontFace.o",
-            magma::renderstate::pos2fColor4b,
+            magma::renderstate::pos2fColor4ub,
             magma::renderstate::triangleList,
-            rhs ? magma::renderstate::fillCullNoneCCw
+            rhs ? magma::renderstate::fillCullNoneCcw
                 : magma::renderstate::fillCullNoneCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,

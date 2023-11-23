@@ -1,16 +1,24 @@
+#include "magma/core/pch.h"
 #include "linearAllocator.h"
-#include "magma/core/core.h"
+
+#ifdef _MSC_VER
+    #define MALLOC(size) _mm_malloc(size, MAGMA_ALIGNMENT)
+    #define FREE(p) _mm_free(p)
+#else
+    #define MAGMA_MALLOC(size) malloc(size)
+    #define MAGMA_FREE(p) free(p)
+#endif // _MSC_VER
 
 LinearAllocator::LinearAllocator():
     bufferSize(1024 * 64),
-    buffer(MAGMA_MALLOC(bufferSize)),
+    buffer(MALLOC(bufferSize)),
     head((char *)buffer),
     bytesAllocated(0)
 {}
 
 LinearAllocator::~LinearAllocator()
 {
-    MAGMA_FREE(buffer);
+    FREE(buffer);
 }
 
 void *LinearAllocator::alloc(size_t size)
@@ -25,7 +33,7 @@ void *LinearAllocator::alloc(size_t size)
         }
         else
         {   // Use malloc() on overflow
-            p = MAGMA_MALLOC(size);
+            p = MALLOC(size);
         }
         MAGMA_ASSERT(MAGMA_ALIGNED(p));
         bytesAllocated += size;
@@ -45,7 +53,7 @@ void LinearAllocator::free(void *p) noexcept
             blocks.erase(it);
         }
         if (p < buffer || p > head)
-            ::MAGMA_FREE(p);
+            FREE(p);
         else
             // Do nothing
             ;

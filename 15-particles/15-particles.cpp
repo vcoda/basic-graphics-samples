@@ -127,7 +127,7 @@ public:
             vertexInput,
             magma::renderstate::pointList,
             negateViewport ? magma::renderstate::lineCullBackCw
-                           : magma::renderstate::lineCullBackCCw,
+                           : magma::renderstate::lineCullBackCcw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::blendNormalRgb,

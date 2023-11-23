@@ -30,7 +30,7 @@ public:
             "position.o", "fill.o",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleList,
-            magma::renderstate::fillCullBackCCw,
+            magma::renderstate::fillCullBackCcw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,

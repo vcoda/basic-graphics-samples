@@ -156,7 +156,7 @@ public:
             "transform.o", "fill.o",
             teapot->getVertexInput(),
             magma::renderstate::triangleList,
-            negateViewport ? magma::renderstate::fillCullBackCCw
+            negateViewport ? magma::renderstate::fillCullBackCcw
                            : magma::renderstate::fillCullBackCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,
@@ -168,7 +168,7 @@ public:
             "transform.o", "fill.o",
             plane->getVertexInput(),
             magma::renderstate::triangleList,
-            negateViewport ? magma::renderstate::fillCullBackCCw
+            negateViewport ? magma::renderstate::fillCullBackCcw
                            : magma::renderstate::fillCullBackCw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,

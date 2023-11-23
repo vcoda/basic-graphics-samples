@@ -9,10 +9,10 @@
 #include <windows.h>
 #endif
 #include "platform.h"
-#include "magma/core/destructible.h"
+#include "magma/core/pch.h"
 
 class IApplication : public AlignAs<16>,
-    public magma::core::IDestructible
+    public magma::IDestructible
 {
 public:
     virtual void setWindowCaption(const std::tstring& caption) = 0;
