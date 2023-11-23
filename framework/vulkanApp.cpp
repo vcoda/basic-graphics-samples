@@ -9,7 +9,8 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     vSync(false),
     depthBuffer(depthBuffer),
     negateViewport(false),
-    waitMethod(WaitMethod::Fence)
+    waitMethod(WaitMethod::Fence),
+    frameIndex(0)
 {
     magma::CxxAllocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
 }
@@ -53,6 +54,7 @@ void VulkanApp::onPaint()
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
+    ++frameIndex;
 }
 
 void VulkanApp::initialize()
