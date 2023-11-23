@@ -30,7 +30,7 @@ public:
         timer->run();
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         updateVertexColors();
         std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[bufferIndex];

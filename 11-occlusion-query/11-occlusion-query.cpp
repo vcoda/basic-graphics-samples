@@ -44,7 +44,7 @@ public:
         recordCommandBuffer(BackBuffer);
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
         submitCommandBuffer(bufferIndex);

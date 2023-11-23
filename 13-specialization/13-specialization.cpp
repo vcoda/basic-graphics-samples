@@ -78,7 +78,7 @@ public:
         }
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
         graphicsQueue->submit(
@@ -89,7 +89,7 @@ public:
             waitFences[bufferIndex]);
     }
 
-    virtual void onKeyDown(char key, int repeat, uint32_t flags) override
+    void onKeyDown(char key, int repeat, uint32_t flags) override
     {
         switch (key)
         {
@@ -109,7 +109,7 @@ public:
         VulkanApp::onKeyDown(key, repeat, flags);
     }
 
-    virtual void createCommandBuffers() override
+    void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
         commandBuffers[FrontBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);

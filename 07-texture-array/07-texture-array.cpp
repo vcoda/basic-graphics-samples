@@ -48,13 +48,13 @@ public:
         timer->run();
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
         submitCommandBuffer(bufferIndex);
     }
 
-    virtual void onKeyDown(char key, int repeat, uint32_t flags) override
+    void onKeyDown(char key, int repeat, uint32_t flags) override
     {
         switch (key)
         {

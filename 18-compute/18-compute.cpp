@@ -42,7 +42,7 @@ public:
         close();
     }
 
-    virtual void createLogicalDevice() override
+    void createLogicalDevice() override
     {
         const std::vector<float> priority = {1.f};
         const std::vector<magma::DeviceQueueDescriptor> queueDescriptors = {
@@ -55,7 +55,7 @@ public:
         device = physicalDevice->createDevice(queueDescriptors, noLayers, noExtensions, noFeatures);
     }
 
-    virtual void createCommandBuffers() override
+    void createCommandBuffers() override
     {
         graphicsQueue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
         commandPools[0] = std::make_shared<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
@@ -158,12 +158,12 @@ public:
     }
 
     // This stuff not used in compute application
-    virtual void createSwapchain() override {}
-    virtual void createRenderPass() override {}
-    virtual void createFramebuffer() override {}
-    virtual void createSyncPrimitives() override {}
-    virtual void render(uint32_t bufferIndex) override {}
-    virtual void onPaint() override {}
+    void createSwapchain() override {}
+    void createRenderPass() override {}
+    void createFramebuffer() override {}
+    void createSyncPrimitives() override {}
+    void render(uint32_t bufferIndex) override {}
+    void onPaint() override {}
 };
 
 std::unique_ptr<IApplication> appFactory(const AppEntry& entry)

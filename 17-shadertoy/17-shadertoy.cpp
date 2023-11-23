@@ -51,7 +51,7 @@ public:
         timer->run();
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         if (rebuildCommandBuffers)
         {
@@ -65,7 +65,7 @@ public:
         submitCommandBuffer(bufferIndex);
     }
 
-    virtual void onMouseMove(int x, int y) override
+    void onMouseMove(int x, int y) override
     {
         if (dragging)
         {
@@ -74,7 +74,7 @@ public:
         }
     }
 
-    virtual void onMouseLButton(bool down, int x, int y) override
+    void onMouseLButton(bool down, int x, int y) override
     {
         dragging = down;
         if (dragging)

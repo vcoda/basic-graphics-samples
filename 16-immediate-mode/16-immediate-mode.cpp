@@ -32,7 +32,7 @@ public:
         ir->setLineWidth(2.f);
     }
 
-    virtual void createLogicalDevice() override
+    void createLogicalDevice() override
     {
         const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
 
@@ -50,7 +50,7 @@ public:
         device = physicalDevice->createDevice({graphicsQueue}, {}, enabledExtensions, features);
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         submitCommandBuffer(bufferIndex);
     }
