@@ -196,7 +196,7 @@ public:
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleList,
             magma::renderstate::fillCullBackCcw,
-            magma::MultisampleState(static_cast<VkSampleCountFlagBits>(fb.sampleCount)),
+            magma::MultisampleState(fb.sampleCount),
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
             rtPipelineLayout,
