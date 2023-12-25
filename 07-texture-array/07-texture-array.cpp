@@ -178,7 +178,7 @@ public:
                 mip.extent.height = ctx.image_height(0, level);
                 mip.extent.depth = 1;
                 mip.bufferOffset = (const uint8_t *)ctx.image_data(0, level) - frontImageFirstMipData;
-                MAGMA_ASSERT(mip.bufferOffset < totalSize);
+                MAGMA_ASSERT(mip.bufferOffset < (VkDeviceSize)totalSize);
                 mipMaps.push_back(mip);
             }
         }
