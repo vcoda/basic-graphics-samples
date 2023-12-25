@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "magma/allocator/cxxAllocator.h"
+#include "magma/src/allocator/cxxAllocator.h"
 
 class LinearAllocator : public magma::ICxxAllocator
 {

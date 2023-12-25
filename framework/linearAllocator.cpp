@@ -1,4 +1,4 @@
-#include "magma/core/pch.h"
+#include "magma/src/core/pch.h"
 #include "linearAllocator.h"
 
 #ifdef _MSC_VER

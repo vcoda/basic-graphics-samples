@@ -9,7 +9,7 @@
 #include <windows.h>
 #endif
 #include "platform.h"
-#include "magma/core/pch.h"
+#include "magma/src/core/pch.h"
 
 class IApplication : public AlignAs<16>,
     public magma::IDestructible
