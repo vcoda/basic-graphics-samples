@@ -2,12 +2,17 @@
 #include "../framework/bufferFromArray.h"
 #include "../framework/utilities.h"
 
+/* MSAA resolve operation may happen in the end of render pass
+   if resolve attachment is specified or programmer may perform
+   an explicit resolve using vkCmdResolveImage() call. */
+#define MSAA_EXPLICIT_RESOLVE 0
+
 class RenderToMsaaTextureApp : public VulkanApp
 {
-    constexpr static uint32_t fbSize = 128;
-
     struct Framebuffer
     {
+        constexpr static VkExtent2D extent = {128, 128};
+
         std::shared_ptr<magma::ColorAttachment> colorMsaa;
         std::shared_ptr<magma::ImageView> colorMsaaView;
         std::shared_ptr<magma::DepthStencilAttachment> depthMsaa;
@@ -48,7 +53,7 @@ public:
         VulkanApp(entry, TEXT("10.b - Render to multisample texture"), 512, 512)
     {
         initialize();
-        createMultisampleFramebuffer({fbSize, fbSize});
+        createMultisampleFramebuffer(Framebuffer::extent);
         createVertexBuffer();
         createUniformBuffer();
         createSampler();
@@ -95,14 +100,16 @@ public:
         // Choose supported multisample level
         fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, VK_FORMAT_R8G8B8A8_UNORM);
         // Create multisample color attachment
-        fb.colorMsaa = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount, dontSampled);
+        fb.colorMsaa = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount, dontSampled,
+            nullptr, MSAA_EXPLICIT_RESOLVE);
         fb.colorMsaaView = std::make_shared<magma::ImageView>(fb.colorMsaa);
         // Create multisample depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         fb.depthMsaa = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount, dontSampled);
         fb.depthMsaaView = std::make_shared<magma::ImageView>(fb.depthMsaa);
         // Create color resolve attachment
-        fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1, sampled);
+        fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1, sampled,
+            nullptr, MSAA_EXPLICIT_RESOLVE);
         fb.colorResolveView = std::make_shared<magma::ImageView>(fb.colorResolve);
         // Don't care about initial layout
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -121,6 +128,14 @@ public:
             magma::op::dontCare, // Don't care about stencil
             initialLayout,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL); // Stay as depth/stencil attachment
+    #if MSAA_EXPLICIT_RESOLVE
+        // Render pass defines attachment formats, load/store operations and final layouts
+        fb.renderPass = std::shared_ptr<magma::RenderPass>(new magma::RenderPass(
+            device, {colorMsaaAttachment, depthMsaaAttachment}));
+        // Framebuffer defines render pass, color/depth/stencil image views and dimensions
+        fb.framebuffer = std::shared_ptr<magma::Framebuffer>(new magma::Framebuffer(
+            fb.renderPass, {fb.colorMsaaView, fb.depthMsaaView}));
+    #else
         // Define that resolve attachment doesn't care about clear and should be read-only image
         const magma::AttachmentDescription colorResolveAttachment(fb.colorResolve->getFormat(), 1,
             magma::op::store, // Don't care about clear as it will be used as MSAA resolve target
@@ -133,6 +148,7 @@ public:
         // Framebuffer defines render pass, color/depth/stencil image views and dimensions
         fb.framebuffer = std::shared_ptr<magma::Framebuffer>(new magma::Framebuffer(
             fb.renderPass, {fb.colorMsaaView, fb.depthMsaaView, fb.colorResolveView}));
+    #endif // MSAA_EXPLICIT_RESOLVE
     }
 
     void createVertexBuffer()
@@ -216,6 +232,17 @@ public:
             pipelineCache);
     }
 
+    void msaaResolve(const Framebuffer& fb)
+    {
+        fb.colorMsaa->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rtCmdBuffer);
+        fb.colorResolve->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, rtCmdBuffer);
+        {
+            rtCmdBuffer->resolveImage(fb.colorMsaa, fb.colorResolve);
+        }
+        fb.colorMsaa->layoutTransition(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, rtCmdBuffer);
+        fb.colorResolve->layoutTransition(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, rtCmdBuffer);
+    }
+
     void recordOffscreenCommandBuffer(const Framebuffer& fb)
     {
         /* VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT specifies that
@@ -237,6 +264,13 @@ public:
                 rtCmdBuffer->draw(3, 0);
             }
             rtCmdBuffer->endRenderPass();
+        #if MSAA_EXPLICIT_RESOLVE
+            /* Normally multisample resolve happens in the vkEndRenderPass()
+               if resolve attachment is provided. Otherwise, we must resolve
+               a multisample color image to a non-multisample one using
+               vkCmdResolveImage() call. */
+            msaaResolve(fb);
+        #endif // MSAA_EXPLICIT_RESOLVE
         }
         rtCmdBuffer->end();
         rtSemaphore = std::make_shared<magma::Semaphore>(device);
