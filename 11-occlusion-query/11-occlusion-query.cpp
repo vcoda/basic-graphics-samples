@@ -68,7 +68,7 @@ public:
             else // Not ready
                 std::cout << "---" << std::endl;
         }
-        const std::tstring caption = TEXT("11 - Occlusion query samples passed : ") + std::to_tstring(sampleCount);
+        const std::tstring caption = TEXT("11 - Occlusion query samples: ") + std::to_tstring(sampleCount);
         setWindowCaption(caption);
     }
 
