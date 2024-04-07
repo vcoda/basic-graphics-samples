@@ -11,7 +11,8 @@ class RenderToMsaaTextureApp : public VulkanApp
 {
     struct Framebuffer
     {
-        constexpr static VkExtent2D extent = {128, 128};
+        constexpr static uint32_t width = 128;
+        constexpr static uint32_t height = 128;
 
         std::shared_ptr<magma::ColorAttachment> colorMsaa;
         std::shared_ptr<magma::ImageView> colorMsaaView;
@@ -53,7 +54,7 @@ public:
         VulkanApp(entry, TEXT("10.b - Render to multisample texture"), 512, 512)
     {
         initialize();
-        createMultisampleFramebuffer(Framebuffer::extent);
+        createMultisampleFramebuffer({fb.width, fb.height});
         createVertexBuffer();
         createUniformBuffer();
         createSampler();

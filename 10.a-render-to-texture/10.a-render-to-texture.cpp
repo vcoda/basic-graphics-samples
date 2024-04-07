@@ -4,10 +4,11 @@
 
 class RenderToTextureApp : public VulkanApp
 {
-    constexpr static uint32_t fbSize = 128;
-
     struct Framebuffer
     {
+        constexpr static uint32_t width = 128;
+        constexpr static uint32_t height = 128;
+
         std::shared_ptr<magma::ColorAttachment> color;
         std::shared_ptr<magma::ImageView> colorView;
         std::shared_ptr<magma::DepthStencilAttachment> depth;
@@ -45,7 +46,7 @@ public:
         VulkanApp(entry, TEXT("10.a - Render to texture"), 512, 512)
     {
         initialize();
-        createFramebuffer({fbSize, fbSize});
+        createFramebuffer({fb.width, fb.height});
         createVertexBuffer();
         createUniformBuffer();
         createSampler();
