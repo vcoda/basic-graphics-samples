@@ -1,4 +1,4 @@
-﻿## Basic C++ sample usages of Magma library and Vulkan graphics API
+﻿# Basic C++ sample usages of Magma library and Vulkan graphics API
 
 ## Cloning
 
@@ -15,7 +15,7 @@ git submodule update --init --recursive
 
 ## Build tools and SDK
 
-### Windows
+## Windows
 
 * [Microsoft Visual Studio Community 2017](https://www.visualstudio.com/downloads/)<br>
 * [Git for Windows](https://git-scm.com/download)<br>
@@ -27,8 +27,9 @@ echo %VK_SDK_PATH%
 ```
 Shaders are automatically compiled using glslangValidator as Custom Build Tool.
 If you use Visual Studio newer than 2017, change the SDK version in the project property pages or by right-clicking the solution and selecting "Retarget solution".
+</br>
 
-### Ubuntu Linux
+## Linux (Ubuntu)
 
 Install GCC and Git (if not available):
 ```
@@ -93,38 +94,41 @@ Desired=Unknown/Install/Remove/Purge/Hold
 +++-===============================-====================-====================-====================================================================
 ii  amdgpu-pro                      17.10-446706         amd64                Meta package to install amdgpu Pro components.
 ```
+### Systems with Nvidia graphics hardware
 
-To build all samples, go to the repo root directory and run make script for dependency libs, then for sample apps:
+TODO
+
+### Building
+
+To build all samples, go to the repo root directory and run make script:
 ```
-make magma
-make quadric
-make samples
+make -j<N>
 ```
-To build a particular sample, go to the sample's directory and run make script:
+where N is the number of threads to run with multi-threaded compilation. First, magma and quadric libraries will be built, then samples.
+To build a particular sample, you can build dependencies separately, then go to the sample's directory and run make script:
 ```
 cd 01-clear
 make
 ./01-clear
 ```
-Optionally use can use -jN flag (where N is the number of threads) to run multi-threaded compilation.
 There is debug build by default. For release build, set DEBUG variable to 0, e. g.:
 ```
-make magma DEBUG=0 -j8
+make magma DEBUG=0 -j<N>
 ```
 
-### Android
+## Android
 
 * [Android Studio](https://developer.android.com/studio/index.html)<br>
 * [Android NDK](https://github.com/android-ndk/ndk/wiki)<br>
 TODO
 
-### macOS and iOS
+## macOS and iOS
 
 * [XCode](https://developer.apple.com/xcode/)<br>
 * [MoltenVK](https://github.com/KhronosGroup/MoltenVK)<br>
 TODO
 
-## Examples
+## Samples
 
 ### [01 - Clear framebuffer](01-clear/)
 <img src="./screenshots/01.png" height="128px" align="left">
