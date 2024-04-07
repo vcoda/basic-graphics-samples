@@ -32,7 +32,7 @@ void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const r
 
 void ParticleSystem::initialize(std::shared_ptr<magma::Device> device)
 {
-    const bool barStagedMemory = device->getDeviceFeatures()->hasLocalHostVisibleMemory();
+    const bool barStagedMemory = device->getFeatures()->supportsDeviceLocalHostVisibleMemory();
     vertexBuffer = std::make_shared<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), barStagedMemory);
     drawParams = std::make_shared<magma::DrawIndirectBuffer>(device, 1);
     drawParams->writeDrawCommand(0, 0); // Submit stub draw call to command buffer

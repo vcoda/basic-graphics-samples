@@ -61,12 +61,12 @@ catch (const magma::exception::ErrorResult& exc)
 {
     std::ostringstream msg;
     if (!exc.location().file_name())
-        msg << magma::helpers::stringize(exc.error()) << std::endl << exc.what();
+        msg << exc.error() << std::endl << exc.what();
     else
     {
         msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
             << std::endl
-            << magma::helpers::stringize(exc.error()) << std::endl
+            << exc.error() << std::endl
             << exc.what();
     }
     onError(msg.str(), "Vulkan");
@@ -75,12 +75,12 @@ catch (const magma::exception::ReflectionErrorResult& exc)
 {
     std::ostringstream msg;
     if (!exc.location().file_name())
-        msg << magma::helpers::stringize(exc.error()) << std::endl << exc.what();
+        msg << exc.error() << std::endl << exc.what();
     else
     {
         msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
             << std::endl
-            << magma::helpers::stringize(exc.error()) << std::endl
+            << exc.error() << std::endl
             << exc.what();
     }
     onError(msg.str(), "SPIRV-Reflect");

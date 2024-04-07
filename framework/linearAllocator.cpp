@@ -5,8 +5,8 @@
     #define MALLOC(size) _mm_malloc(size, MAGMA_ALIGNMENT)
     #define FREE(p) _mm_free(p)
 #else
-    #define MAGMA_MALLOC(size) malloc(size)
-    #define MAGMA_FREE(p) free(p)
+    #define MALLOC(size) malloc(size)
+    #define FREE(p) free(p)
 #endif // _MSC_VER
 
 LinearAllocator::LinearAllocator():

@@ -81,7 +81,7 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT);
         // Specify push constant range
-        constexpr magma::pushconstant::VertexConstantRange<PushConstants> pushConstantRange;
+        constexpr magma::push::VertexConstantRange<PushConstants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
