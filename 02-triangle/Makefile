@@ -1,11 +1,11 @@
 include ../Makeshared.mk
 
-default:
-	02-triangle position.o fill.o
+default: 02-triangle shaders 
 
-02-triangle:
-	02-triangle.o $(FRAMEWORK_OBJS)
+02-triangle: 02-triangle.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
+
+shaders: position.o fill.o
 
 clean:
 	@find . -iregex '.*\.\(d\|o\)' -delete

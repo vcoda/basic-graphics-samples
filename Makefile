@@ -2,13 +2,9 @@ THIRD_PARTY=third-party
 MAGMA=$(THIRD_PARTY)/magma
 QUADRIC=$(THIRD_PARTY)/quadric
 
-magma:
+basic-graphics-samples:
 	$(MAKE) -C $(MAGMA)
-
-quadric:
 	$(MAKE) -C $(QUADRIC)
-
-samples:
 	$(MAKE) -C 01-clear
 	$(MAKE) -C 02-triangle
 	$(MAKE) -C 03-vertex-buffer
@@ -28,6 +24,12 @@ samples:
 	$(MAKE) -C 16-immediate-mode
 	$(MAKE) -C 17-shadertoy
 	$(MAKE) -C 18-compute
+
+magma:
+	$(MAKE) -C $(MAGMA)
+
+quadric:	
+	$(MAKE) -C $(QUADRIC)
 
 clean:
 	$(MAKE) -C $(MAGMA) clean

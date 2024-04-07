@@ -11,11 +11,13 @@ DEBUG ?= 1
 ifeq ($(DEBUG), 1)
 	CFLAGS=$(BASE_CFLAGS) -O0 -g -D_DEBUG
 	MAGMA=magmad
+	QUADRIC=quadricd
 else
 	CFLAGS=$(BASE_CFLAGS) -O3 -DNDEBUG
 	MAGMA=magma
+	QUADRIC=quadric
 endif
-LDFLAGS=$(LIB_DIR) -lpthread -lxcb -lvulkan -l$(MAGMA)
+LDFLAGS=$(LIB_DIR) -l$(MAGMA) -lpthread -lxcb -lvulkan
 
 FRAMEWORK=../framework
 FRAMEWORK_OBJS= \

@@ -1,7 +1,6 @@
 include ../Makeshared.mk
 
-16-immediate-mode:
-	16-immediate-mode.o $(FRAMEWORK_OBJS)
+16-immediate-mode: 16-immediate-mode.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
