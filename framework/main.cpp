@@ -36,12 +36,12 @@ void runApp(const AppEntry& entry)
         {
             std::ostringstream msg;
             if (!location.file_name())
-                msg << magma::helpers::stringize(result) << std::endl << message;
+                msg << result << std::endl << message;
             else
             {
                 msg << location.file_name() << "(" << location.line() << "):" << std::endl
                     << std::endl
-                    << magma::helpers::stringize(result) << std::endl << message;
+                    << result << std::endl << message;
             }
             onError(msg.str(), "Vulkan");
             abort();
