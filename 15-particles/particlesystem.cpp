@@ -16,7 +16,8 @@ Math and logic of original code is preserved.
 
 ParticleSystem::ParticleSystem()
 {
-    rng.seed(static_cast<std::mt19937::result_type>(clock()));
+    const auto seed = std::random_device()();
+    rng.seed(seed);
 }
 
 void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
