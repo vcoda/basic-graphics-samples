@@ -80,7 +80,6 @@ public:
     void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer);
 
 private:
-    float randomScalar(float min, float max);
     rapid::float3 randomVector();
     rapid::float3 randomColor();
 
@@ -88,6 +87,9 @@ private:
     std::list<Particle> activeList, freeList;
     std::list<Plane> planes;
     std::mt19937 rng;
+    std::uniform_real_distribution<float> rgbDistribution;
+    std::uniform_real_distribution<float> normalDistribution;
+    std::uniform_real_distribution<float> discDistribution;
     float currentTime = 0.f;
     float lastUpdate = 0.f;
 

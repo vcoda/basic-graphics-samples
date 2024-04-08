@@ -14,7 +14,10 @@ Math and logic of original code is preserved.
 #include <ctime>
 #include "particlesystem.h"
 
-ParticleSystem::ParticleSystem()
+ParticleSystem::ParticleSystem():
+    rgbDistribution{0.f, 1.f},
+    normalDistribution{-1.f, 1.f},
+    discDistribution{-rapid::constants::pi, rapid::constants::pi}
 {
     const auto seed = std::random_device()();
     rng.seed(seed);
@@ -152,18 +155,12 @@ void ParticleSystem::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer)
     cmdBuffer->drawIndirect(drawParams);
 }
 
-float ParticleSystem::randomScalar(float min, float max)
-{
-    float f = rng()/(float)rng.max();
-    return min + (max - min) * f;
-}
-
 rapid::float3 ParticleSystem::randomVector()
 {
     rapid::float3 v;
-    v.z = randomScalar(-1.f, 1.f);
+    v.z = normalDistribution(rng);
     float radius = sqrtf(1.f - v.z * v.z); // Get radius of this circle
-    float t = randomScalar(-rapid::constants::pi, rapid::constants::pi); // Pick a random point on a circle
+    float t = discDistribution(rng); // Pick a random point on a circle
     v.x = (float)cosf(t) * radius; // Compute matching X and Y for our Z
     v.y = (float)sinf(t) * radius;
     return v;
@@ -172,9 +169,9 @@ rapid::float3 ParticleSystem::randomVector()
 rapid::float3 ParticleSystem::randomColor()
 {
     rapid::float3 color;
-    color.x = rng()/(float)rng.max();
-    color.y = rng()/(float)rng.max();
-    color.z = rng()/(float)rng.max();
+    color.x = rgbDistribution(rng);
+    color.y = rgbDistribution(rng);
+    color.z = rgbDistribution(rng);
     return color;
 }
 
