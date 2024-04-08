@@ -21,16 +21,12 @@ Math and logic of original code is preserved.
 
 enum class ClassifyPoint
 {
-    FRONT,
-    BACK,
-    ONPLANE
+    Front, Back, InPlane
 };
 
 enum class CollisionResult
 {
-    BOUNCE,
-    STICK,
-    RECYCLE
+    Bounce, Stick, Recycle
 };
 
 class ParticleSystem : public AlignAs<16>
@@ -60,7 +56,6 @@ public:
 
 public:
     ParticleSystem();
-
     void setMaxParticles(uint32_t maxParticles) { this->maxParticles = maxParticles; }
     void setNumToRelease(uint32_t numToRelease) { this->numToRelease = numToRelease; }
     void setReleaseInterval(float releaseInterval) { this->releaseInterval = releaseInterval; }
@@ -72,8 +67,7 @@ public:
     void setAirResistence(bool airResistence) { this->airResistence = airResistence; }
     void setVelocityScale(float scale) { this->velocityScale = scale; }
     void setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
-        float bounceFactor = 1.f, CollisionResult collisionResult = CollisionResult::BOUNCE);
-
+        float bounceFactor = 1.f, CollisionResult collisionResult = CollisionResult::Bounce);
     void initialize(std::shared_ptr<magma::Device> device);
     void update(float dt);
     void reset(void);
@@ -83,13 +77,12 @@ private:
     rapid::float3 randomVector();
     rapid::float3 randomColor();
 
-private:
-    std::list<Particle> activeList, freeList;
-    std::list<Plane> planes;
     std::mt19937 rng;
     std::uniform_real_distribution<float> rgbDistribution;
     std::uniform_real_distribution<float> normalDistribution;
     std::uniform_real_distribution<float> discDistribution;
+    std::list<Particle> activeList, freeList;
+    std::list<Plane> planes;
     float currentTime = 0.f;
     float lastUpdate = 0.f;
 

@@ -24,7 +24,7 @@ ParticleSystem::ParticleSystem():
 }
 
 void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
-    float bounceFactor /* 1 */, CollisionResult collisionResult /* CollisionResult::BOUNCE */)
+    float bounceFactor /* 1 */, CollisionResult collisionResult /* CollisionResult::Bounce */)
 {
     Plane plane;
     plane.normal = planeNormal;
@@ -66,28 +66,30 @@ void ParticleSystem::update(float dt)
             const rapid::vector3 oldPosition = particle.position;
             particle.position += particle.velocity * dt;
             // Checking the particle against each plane that was set up
-            for (auto& plane : planes)
+            for (auto const& plane: planes)
             {
                 ClassifyPoint result = classifyPoint(particle.position, plane);
-                if (result == ClassifyPoint::BACK)
+                if (ClassifyPoint::Back == result)
                 {
-                    if (plane.collisionResult == CollisionResult::BOUNCE)
+                    switch (plane.collisionResult)
                     {
+                    case CollisionResult::Bounce:
                         particle.position = oldPosition;
-                        const float Kr = plane.bounceFactor;
-                        const rapid::vector3 vn = (plane.normal | particle.velocity) * plane.normal;
-                        const rapid::vector3 vt = particle.velocity - vn;
-                        const rapid::vector3 vp = vt - Kr * vn;
-                        particle.velocity = vp;
-                    }
-                    else if (plane.collisionResult == CollisionResult::RECYCLE)
-                    {
+                        {
+                            const float Kr = plane.bounceFactor;
+                            const rapid::vector3 vn = (plane.normal | particle.velocity) * plane.normal;
+                            const rapid::vector3 vt = particle.velocity - vn;
+                            const rapid::vector3 vp = vt - Kr * vn;
+                            particle.velocity = vp;
+                        }
+                        break;
+                    case CollisionResult::Recycle:
                         particle.startTime -= lifeCycle;
-                    }
-                    else if (plane.collisionResult == CollisionResult::STICK)
-                    {
+                        break;
+                    case CollisionResult::Stick:
                         particle.position = oldPosition;
                         particle.velocity.zero();
+                        break;
                     }
                 }
             }
@@ -132,7 +134,7 @@ void ParticleSystem::update(float dt)
         magma::helpers::mapScoped<ParticleVertex>(vertexBuffer,
             [this](auto *pv)
             {
-                for (const auto& particle : activeList)
+                for (auto const& particle: activeList)
                 {
                     particle.position.store(&pv->position);
                     pv->color = particle.color;
@@ -140,7 +142,7 @@ void ParticleSystem::update(float dt)
                 }
             });
         drawParams->reset();
-        drawParams->writeDrawCommand(static_cast<uint32_t>(activeList.size()), 0);
+        drawParams->writeDrawCommand(MAGMA_COUNT(activeList), 0);
     }
 }
 
@@ -178,10 +180,10 @@ rapid::float3 ParticleSystem::randomColor()
 inline ClassifyPoint classifyPoint(const rapid::vector3& point, const ParticleSystem::Plane& plane)
 {
     const rapid::vector3 direction = plane.point - point;
-    const float dp = direction | plane.normal;
-    if (dp < -0.001f)
-        return ClassifyPoint::FRONT;
-    if (dp > 0.001f)
-        return ClassifyPoint::BACK;
-    return ClassifyPoint::ONPLANE;
+    const float dotProduct = direction | plane.normal;
+    if (dotProduct < -0.001f)
+        return ClassifyPoint::Front;
+    if (dotProduct > 0.001f)
+        return ClassifyPoint::Back;
+    return ClassifyPoint::InPlane;
 }
