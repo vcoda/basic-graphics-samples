@@ -11,4 +11,3 @@ clean:
 	@find . -iregex '.*\.\(d\|o\)' -delete
 	@find $(FRAMEWORK) -iregex '.*\.\(d\|o\)' -delete
 	@rm -rf 10b-render-to-msaa-texture
-

@@ -13,4 +13,3 @@ clean:
 	@find . -iregex '.*\.\(d\|o\)' -delete
 	@find $(FRAMEWORK) -iregex '.*\.\(d\|o\)' -delete
 	@rm -rf 13-specialization
-
