@@ -82,19 +82,19 @@ void VulkanApp::createInstance()
         layerNames.push_back("VK_LAYER_LUNARG_standard_validation");
 #endif // _DEBUG
 
-    std::vector<const char*> extensionNames = {
+    magma::NullTerminatedStringArray enabledExtensions = {
         VK_KHR_SURFACE_EXTENSION_NAME,
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    #if defined(VK_USE_PLATFORM_WIN32_KHR)
         VK_KHR_WIN32_SURFACE_EXTENSION_NAME
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+    #elif defined(VK_USE_PLATFORM_XLIB_KHR)
         VK_KHR_XLIB_SURFACE_EXTENSION_NAME
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
+    #elif defined(VK_USE_PLATFORM_XCB_KHR)
         VK_KHR_XCB_SURFACE_EXTENSION_NAME
-#endif // VK_USE_PLATFORM_XCB_KHR
+    #endif // VK_USE_PLATFORM_XCB_KHR
     };
     instanceExtensions = std::make_unique<magma::InstanceExtensions>();
     if (instanceExtensions->EXT_debug_report)
-        extensionNames.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+        enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     MAGMA_STACK_ARRAY(char, appName, caption.length() + 1);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     size_t count = 0;
@@ -107,7 +107,7 @@ void VulkanApp::createInstance()
         "Magma", 1,
         VK_API_VERSION_1_0);
 
-    instance = std::make_shared<magma::Instance>(layerNames, extensionNames, nullptr, &appInfo, nullptr,
+    instance = std::make_shared<magma::Instance>(layerNames, enabledExtensions, nullptr, &appInfo, nullptr,
     #if defined(_DEBUG) && defined(VK_EXT_debug_utils)
         utilities::reportCallback);
     #else
@@ -146,8 +146,9 @@ void VulkanApp::createLogicalDevice()
     features.textureCompressionBC = VK_TRUE;
     features.occlusionQueryPrecise = VK_TRUE;
 
-    std::vector<const char*> enabledExtensions;
-    enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    magma::NullTerminatedStringArray enabledExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
     if (extensions->AMD_negative_viewport_height)
         enabledExtensions.push_back(VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_EXTENSION_NAME);
     else if (extensions->KHR_maintenance1)
