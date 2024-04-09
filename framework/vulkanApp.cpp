@@ -290,13 +290,13 @@ void VulkanApp::createCommandBuffers()
     try
     {
         transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
-        commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
-        // Create buffer copy command buffer
-        cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
-    } catch (...)
-    {
-        std::cout << "Transfer queue not present\n";
-    }
+        if (transferQueue)
+        {
+            commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
+            // Create buffer copy command buffer
+            cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
+        }
+    } catch (...) { std::cout << "transfer queue not present" << std::endl; }
 }
 
 void VulkanApp::createSyncPrimitives()
