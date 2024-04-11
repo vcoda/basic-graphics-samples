@@ -10,6 +10,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     depthBuffer(depthBuffer),
     negateViewport(false),
     waitMethod(WaitMethod::Fence),
+    bufferIndex(0),
     frameIndex(0)
 {
     magma::CxxAllocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
@@ -23,8 +24,7 @@ VulkanApp::~VulkanApp()
 
 void VulkanApp::close()
 {
-    if (WaitMethod::Device != waitMethod)
-        device->waitIdle();
+    device->waitIdle();
     quit = true;
 }
 
@@ -35,21 +35,24 @@ void VulkanApp::onIdle()
 
 void VulkanApp::onPaint()
 {
-    const uint32_t bufferIndex = swapchain->acquireNextImage(presentFinished, nullptr);
-    if (WaitMethod::Fence == waitMethod)
+    switch (waitMethod)
     {
+    case WaitMethod::Fence:
         waitFences[bufferIndex]->wait();
-        waitFences[bufferIndex]->reset();
-    }
-    render(bufferIndex);
-    graphicsQueue->present(swapchain, bufferIndex, renderFinished);
-    if (WaitMethod::Queue == waitMethod)
+        break;
+    case WaitMethod::Queue:
         graphicsQueue->waitIdle();
-    else if (WaitMethod::Device == waitMethod)
-    {   // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
+        break;
+    case WaitMethod::Device:
+        // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
         // for all queues owned by device.
         device->waitIdle();
+        break;
     }
+    bufferIndex = swapchain->acquireNextImage(presentFinished, nullptr);
+    waitFences[bufferIndex]->reset();
+    render(bufferIndex);
+    graphicsQueue->present(swapchain, bufferIndex, renderFinished);
     if (!vSync)
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));

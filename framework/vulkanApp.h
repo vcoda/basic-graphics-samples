@@ -91,5 +91,6 @@ protected:
     bool depthBuffer;
     bool negateViewport;
     WaitMethod waitMethod;
+    uint32_t bufferIndex;
     uint32_t frameIndex;
 };

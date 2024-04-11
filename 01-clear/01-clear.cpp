@@ -28,14 +28,14 @@ public:
         device = physicalDevice->createDefaultDevice();
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {   // Submit commant buffer for execution
         graphicsQueue->submit(
             commandBuffers[bufferIndex],
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             presentFinished,
             renderFinished,
-            waitFences[bufferIndex]);
+            (WaitMethod::Fence == waitMethod) ? waitFences[bufferIndex] : nullptr);
     }
 };
 
