@@ -28,10 +28,7 @@ protected:
         BackBuffer
     };
 
-    enum class WaitMethod
-    {
-        Fence, Queue, Device
-    };
+    enum class PresentationWait : uint8_t;
 
 public:
     VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
@@ -57,6 +54,7 @@ protected:
     void submitCommandBuffer(uint32_t bufferIndex);
     void submitCopyImageCommands();
     void submitCopyBufferCommands();
+    void waitForLastPresentation();
 
     std::shared_ptr<magma::Instance> instance;
     std::shared_ptr<magma::DebugReportCallback> debugReportCallback;
@@ -81,6 +79,7 @@ protected:
     std::shared_ptr<magma::Semaphore> presentFinished;
     std::shared_ptr<magma::Semaphore> renderFinished;
     std::vector<std::shared_ptr<magma::Fence>> waitFences;
+    std::shared_ptr<magma::Fence> waitFence;
 
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::PipelineCache> pipelineCache;
@@ -90,7 +89,12 @@ protected:
     bool vSync;
     bool depthBuffer;
     bool negateViewport;
-    WaitMethod waitMethod;
+    PresentationWait presentWait;
     uint32_t bufferIndex;
     uint32_t frameIndex;
+};
+
+enum class VulkanApp::PresentationWait : uint8_t
+{
+    Fence, Queue, Device
 };

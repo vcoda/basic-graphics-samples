@@ -9,7 +9,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     vSync(false),
     depthBuffer(depthBuffer),
     negateViewport(false),
-    waitMethod(WaitMethod::Fence),
+    presentWait(PresentationWait::Fence),
     bufferIndex(0),
     frameIndex(0)
 {
@@ -35,22 +35,13 @@ void VulkanApp::onIdle()
 
 void VulkanApp::onPaint()
 {
-    switch (waitMethod)
-    {
-    case WaitMethod::Fence:
-        waitFences[bufferIndex]->wait();
-        break;
-    case WaitMethod::Queue:
-        graphicsQueue->waitIdle();
-        break;
-    case WaitMethod::Device:
-        // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
-        // for all queues owned by device.
-        device->waitIdle();
-        break;
-    }
+    waitForLastPresentation();
     bufferIndex = swapchain->acquireNextImage(presentFinished, nullptr);
-    waitFences[bufferIndex]->reset();
+    if (PresentationWait::Fence == presentWait)
+    {   // Fence to be signaled when command buffer completed execution
+        waitFence = waitFences[bufferIndex];
+        waitFence->reset();
+    }
     render(bufferIndex);
     graphicsQueue->present(swapchain, bufferIndex, renderFinished);
     if (!vSync)
@@ -312,6 +303,7 @@ void VulkanApp::createSyncPrimitives()
         constexpr bool signaled = true; // Don't wait on first render of each command buffer
         waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, signaled));
     }
+    waitFence = waitFences.front();
 }
 
 void VulkanApp::createDescriptorPool()
@@ -340,8 +332,8 @@ void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
     graphicsQueue->submit(commandBuffers[bufferIndex],
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
         presentFinished, // Wait for swapchain
-        renderFinished, // Signal when command buffer execution finished
-        (WaitMethod::Fence == waitMethod) ? waitFences[bufferIndex] : nullptr);
+        renderFinished, // Semaphore to be signaled when command buffer completed execution
+        waitFence); // Fence to be signaled when command buffer completed execution
 }
 
 void VulkanApp::submitCopyImageCommands()
@@ -356,4 +348,22 @@ void VulkanApp::submitCopyBufferCommands()
     waitFences[1]->reset();
     transferQueue->submit(cmdBufferCopy, 0, nullptr, nullptr, waitFences[1]);
     waitFences[1]->wait();
+}
+
+void VulkanApp::waitForLastPresentation()
+{
+    switch (presentWait)
+    {
+    case PresentationWait::Fence:
+        waitFence->wait();
+        break;
+    case PresentationWait::Queue:
+        graphicsQueue->waitIdle();
+        break;
+    case PresentationWait::Device:
+        // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
+        // for all queues owned by device.
+        device->waitIdle();
+        break;
+    }
 }

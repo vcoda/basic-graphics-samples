@@ -30,12 +30,7 @@ public:
 
     void render(uint32_t bufferIndex) override
     {   // Submit commant buffer for execution
-        graphicsQueue->submit(
-            commandBuffers[bufferIndex],
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            presentFinished,
-            renderFinished,
-            (WaitMethod::Fence == waitMethod) ? waitFences[bufferIndex] : nullptr);
+        submitCommandBuffer(bufferIndex);
     }
 };
 
