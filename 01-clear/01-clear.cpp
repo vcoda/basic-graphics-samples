@@ -23,7 +23,7 @@ public:
         }
     }
 
-    virtual void createLogicalDevice() override
+    void createLogicalDevice() override
     {   // Default device without enabled features is enough for us
         device = physicalDevice->createDefaultDevice();
     }

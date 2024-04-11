@@ -14,12 +14,12 @@ public:
         recordCommandBuffer(BackBuffer);
     }
 
-    virtual void render(uint32_t bufferIndex) override
+    void render(uint32_t bufferIndex) override
     {
         submitCommandBuffer(bufferIndex);
     }
 
-    virtual void createLogicalDevice() override
+    void createLogicalDevice() override
     {
         device = physicalDevice->createDefaultDevice();
     }
