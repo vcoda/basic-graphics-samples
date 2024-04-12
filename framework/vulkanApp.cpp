@@ -303,7 +303,6 @@ void VulkanApp::createSyncPrimitives()
         constexpr bool signaled = true; // Don't wait on first render of each command buffer
         waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, signaled));
     }
-    waitFence = waitFences.front();
 }
 
 void VulkanApp::createDescriptorPool()
@@ -355,7 +354,8 @@ void VulkanApp::waitForLastPresentation()
     switch (presentWait)
     {
     case PresentationWait::Fence:
-        waitFence->wait();
+        if (waitFence)
+            waitFence->wait();
         break;
     case PresentationWait::Queue:
         graphicsQueue->waitIdle();
