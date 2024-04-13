@@ -13,16 +13,14 @@ public:
 
     int_type overflow(int_type n) override
     {
+        std::lock_guard<std::mutex> lock(mtx);
         if (n != std::streambuf::traits_type::eof())
         {
             if (pos == sizeof(buf) - 2)
-            {
                 buf[pos++] = '\n';
-                flush();
-            }
-            const char ch = static_cast<char>(n);
-            buf[pos++] = ch;
-            if ('\n' == ch || '.' == ch || ',' == ch)
+            else
+                buf[pos++] = (char)n;
+            if (buf[pos - 1] == '\n')
                 flush();
         }
         return n;
@@ -30,7 +28,6 @@ public:
 
     void flush()
     {
-        std::lock_guard<std::mutex> lock(mtx);
         buf[pos] = '\0';
         OutputDebugStringA(buf);
         pos = 0;
