@@ -156,29 +156,16 @@ public:
     {
         struct Vertex
         {
-            rapid::float2 position;
-            rapid::float2 uv;
+            float x, y;
+            float u, v;
         };
 
-        constexpr float hw = 0.75f;
-        constexpr float hh = 0.75f;
-        const Vertex vertices[] = {
-            {   // top left
-                {-hw, -hh},
-                {0.f, 0.f},
-            },
-            {   // bottom left
-                {-hw, hh},
-                {0.f, 1.f},
-            },
-            {   // top right
-                {hw, -hh},
-                {1.f, 0.f},
-            },
-            {   // bottom right
-                {hw, hh},
-                {1.f, 1.f},
-            }
+        constexpr float w = 0.75f, h = 0.75f;
+        const std::vector<Vertex> vertices = {
+            {-w, -h, 0.f, 0.f},
+            {-w,  h, 0.f, 1.f},
+            { w, -h, 1.f, 0.f},
+            { w,  h, 1.f, 1.f}
         };
         vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }

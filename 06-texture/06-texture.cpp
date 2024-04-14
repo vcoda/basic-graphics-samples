@@ -152,32 +152,19 @@ public:
     {
         struct Vertex
         {
-            rapid::float2 position;
-            rapid::float2 uv;
+            float x, y;
+            float u, v;
         };
 
-        const auto extent = diffuse->getImage()->calculateMipExtent(0);
-        const float width = static_cast<float>(extent.width);
-        const float height = static_cast<float>(extent.height);
-        constexpr float hw = 0.5f;
-        const float hh = height/width * hw;
+        const float width = static_cast<float>(diffuse->getImage()->getWidth());
+        const float height = static_cast<float>(diffuse->getImage()->getHeight());
+        constexpr float w = 0.5f;
+        const float h = height/width * w; // Keep aspect ratio
         const std::vector<Vertex> vertices = {
-            {   // top left
-                {-hw, -hh},
-                {0.f, 0.f},
-            },
-            {   // bottom left
-                {-hw, hh},
-                {0.f, 1.f},
-            },
-            {   // top right
-                {hw, -hh},
-                {1.f, 0.f},
-            },
-            {   // bottom right
-                {hw, hh},
-                {1.f, 1.f},
-            }
+            {-w, -h, 0.f, 0.f},
+            {-w,  h, 0.f, 1.f},
+            { w, -h, 1.f, 0.f},
+            { w,  h, 1.f, 1.f}
         };
         vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
     }
