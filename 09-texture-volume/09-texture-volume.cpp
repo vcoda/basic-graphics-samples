@@ -159,7 +159,8 @@ public:
 
     void loadTextures()
     {
-        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, 16 * 1024 * 1024);
+        constexpr VkDeviceSize bufferSize = 16 * 1024 * 1024;
+        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
         cmdImageCopy->begin();
         {
             volume = loadVolumeTexture("head256.raw", 256, 256, 225, buffer);

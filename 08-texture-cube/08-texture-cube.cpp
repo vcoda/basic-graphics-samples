@@ -134,7 +134,8 @@ public:
 
     void loadCubeMaps()
     {
-        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, 1024 * 1024);
+        constexpr VkDeviceSize bufferSize = 1024 * 1024;
+        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
         cmdImageCopy->begin();
         {
             diffuse = loadCubeMap("diff.dds", buffer);
