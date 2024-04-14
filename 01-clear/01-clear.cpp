@@ -4,7 +4,7 @@ class ClearApp : public VulkanApp
 {
 public:
     ClearApp(const AppEntry& entry):
-        VulkanApp(entry, TEXT("01 - Clear window"), 512, 512)
+        VulkanApp(entry, TEXT("01 - Clear framebuffer"), 512, 512)
     {   // Initialize basic framework
         initialize();
         int i = 0;
