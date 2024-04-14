@@ -8,14 +8,14 @@ public:
     {   // Initialize basic framework
         initialize();
         int i = 0;
-        // Prepare draw command buffers
-        for (std::shared_ptr<magma::CommandBuffer> cmdBuffer : commandBuffers)
-        {
+        for (auto& cmdBuffer: commandBuffers)
+        {   // Record command buffer
             cmdBuffer->begin();
             {
-                constexpr magma::ClearColor clearColor(0.35f, 0.53f, 0.7f, 1.f);
                 cmdBuffer->beginRenderPass(renderPass, framebuffers[i],
-                    {clearColor}); // Set our clear color
+                    {   // Set our clear color
+                        magma::ClearColor(0.35f, 0.53f, 0.7f, 1.f)
+                    });
                 cmdBuffer->endRenderPass();
             }
             cmdBuffer->end();

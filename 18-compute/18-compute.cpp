@@ -147,14 +147,15 @@ public:
 
     void printOutputValues(const char *description)
     {
-        magma::helpers::mapScoped<float>(readbackBuffer, [&](float *values)
-        {
-            std::cout << std::setw(6) << std::left << description << ": ";
-            const uint32_t count = static_cast<uint32_t>(readbackBuffer->getMemory()->getSize()/sizeof(float));
-            for (uint32_t i = 0; i < count; ++i)
-                std::cout << std::setw(4) << std::right << values[i] << ", ";
-            std::cout << std::endl;
-        });
+        magma::helpers::mapScoped<float>(readbackBuffer,
+            [&](float *values)
+            {
+                std::cout << std::setw(6) << std::left << description << ": ";
+                const uint32_t count = static_cast<uint32_t>(readbackBuffer->getMemory()->getSize()/sizeof(float));
+                for (uint32_t i = 0; i < count; ++i)
+                    std::cout << std::setw(4) << std::right << values[i] << ", ";
+                std::cout << std::endl;
+            });
     }
 
     // This stuff not used in compute application
