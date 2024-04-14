@@ -217,16 +217,13 @@ void VulkanApp::createSwapchain()
             presentMode = VK_PRESENT_MODE_FIFO_KHR;
         }
     }
+    magma::Swapchain::Initializer initializer;
+    initializer.debugReportCallback = debugReportCallback;
     swapchain = std::make_shared<magma::Swapchain>(device, surface,
         std::min(2U, surfaceCaps.maxImageCount),
         surfaceFormats[0], surfaceCaps.currentExtent, 1,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
-        preTransform, compositeAlpha, presentMode,
-    #ifdef VK_KHR_device_group
-        0, // VkDeviceGroupPresentModeFlagsKHR
-    #endif
-        0, nullptr, nullptr,
-        debugReportCallback);
+        preTransform, compositeAlpha, presentMode, initializer);
 }
 
 void VulkanApp::createRenderPass()
