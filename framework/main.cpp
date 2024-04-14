@@ -18,28 +18,28 @@ void onError(
 void runApp(const AppEntry& entry)
 {
     magma::exception::setExceptionHandler(
-        [](const char *message, const magma::exception::source_location& location)
+        [](const char *message, const magma::exception::source_where& where)
         {
             std::ostringstream msg;
-            if (!location.file_name())
+            if (!where.file_name())
                 msg << "Error: " << message;
             else
             {
-                msg << location.file_name() << "(" << location.line() << "):" << std::endl
+                msg << where.file_name() << "(" << where.line() << "):" << std::endl
                     << "Error: " << message;
             }
             onError(msg.str(), "Magma");
             abort();
         });
     magma::exception::setErrorHandler(
-        [](VkResult result, const char *message, const magma::exception::source_location& location)
+        [](VkResult result, const char *message, const magma::exception::source_where& where)
         {
             std::ostringstream msg;
-            if (!location.file_name())
+            if (!where.file_name())
                 msg << result << std::endl << message;
             else
             {
-                msg << location.file_name() << "(" << location.line() << "):" << std::endl
+                msg << where.file_name() << "(" << where.line() << "):" << std::endl
                     << std::endl
                     << result << std::endl << message;
             }
@@ -60,11 +60,11 @@ void runAppWithExceptionHandling(const AppEntry& entry) try
 catch (const magma::exception::ErrorResult& exc)
 {
     std::ostringstream msg;
-    if (!exc.location().file_name())
+    if (!exc.where().file_name())
         msg << exc.error() << std::endl << exc.what();
     else
     {
-        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
+        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
             << std::endl
             << exc.error() << std::endl
             << exc.what();
@@ -74,11 +74,11 @@ catch (const magma::exception::ErrorResult& exc)
 catch (const magma::exception::ReflectionErrorResult& exc)
 {
     std::ostringstream msg;
-    if (!exc.location().file_name())
+    if (!exc.where().file_name())
         msg << exc.error() << std::endl << exc.what();
     else
     {
-        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
+        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
             << std::endl
             << exc.error() << std::endl
             << exc.what();
@@ -88,11 +88,11 @@ catch (const magma::exception::ReflectionErrorResult& exc)
 catch (const magma::exception::NotImplemented& exc)
 {
     std::ostringstream msg;
-    if (!exc.location().file_name())
+    if (!exc.where().file_name())
         msg << "Error: " << exc.what();
     else
     {
-        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
+        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
             << "Error: " << exc.what();
     }
     onError(msg.str(), "Not implemented");
@@ -100,11 +100,11 @@ catch (const magma::exception::NotImplemented& exc)
 catch (const magma::exception::Exception& exc)
 {
     std::ostringstream msg;
-    if (!exc.location().file_name())
+    if (!exc.where().file_name())
         msg << "Error: " << exc.what();
     else
     {
-        msg << exc.location().file_name() << "(" << exc.location().line() << "):" << std::endl
+        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
             << "Error: " << exc.what();
     }
     onError(msg.str(), "Magma");

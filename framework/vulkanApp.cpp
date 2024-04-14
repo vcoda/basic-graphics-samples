@@ -36,7 +36,7 @@ void VulkanApp::onIdle()
 void VulkanApp::onPaint()
 {
     waitForLastPresentation();
-    bufferIndex = swapchain->acquireNextImage(presentFinished, nullptr);
+    bufferIndex = swapchain->acquireNextImage(presentFinished);
     if (PresentationWait::Fence == presentWait)
     {   // Fence to be signaled when command buffer completed execution
         waitFence = waitFences[bufferIndex];
@@ -101,12 +101,14 @@ void VulkanApp::createInstance()
         "Magma", 1,
         VK_API_VERSION_1_0);
 
-    instance = std::make_shared<magma::Instance>(layerNames, enabledExtensions, nullptr, &appInfo, nullptr,
-    #if defined(_DEBUG) && defined(VK_EXT_debug_utils)
-        utilities::reportCallback);
-    #else
-        nullptr);
-    #endif // _DEBUG
+    instance = std::make_shared<magma::Instance>(layerNames, enabledExtensions, nullptr, &appInfo, 0,
+    #ifdef VK_EXT_debug_report
+        utilities::reportCallback,
+    #endif
+    #ifdef VK_EXT_debug_utils
+        nullptr,
+    #endif
+        nullptr); // userData
 
     debugReportCallback = std::make_shared<magma::DebugReportCallback>(
         instance,
@@ -117,7 +119,7 @@ void VulkanApp::createInstance()
     std::cout << "Running on " << properties.deviceName << "\n";
 
     instanceExtensions = std::make_unique<magma::InstanceExtensions>();
-    extensions = std::make_unique<magma::PhysicalDeviceExtensions>(physicalDevice);
+    extensions = std::make_unique<magma::DeviceExtensions>(physicalDevice);
 
     // https://stackoverflow.com/questions/48036410/why-doesnt-vulkan-use-the-standard-cartesian-coordinate-system
     negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
