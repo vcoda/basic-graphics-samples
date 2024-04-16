@@ -2,6 +2,15 @@
 #include "quadric/include/plane.h"
 #include "quadric/include/teapot.h"
 
+#define NON_COHERENT_UNIFORM_BUFFER 0
+
+template<class Type> using DynamicUniformBuffer =
+#if NON_COHERENT_UNIFORM_BUFFER
+    magma::NonCoherentDynamicUniformBuffer<Type>;
+#else
+    magma::DynamicUniformBuffer<Type>;
+#endif
+
 // Use L button + mouse to rotate scene
 class OcclusionQueryApp : public VulkanApp
 {
@@ -20,8 +29,8 @@ class OcclusionQueryApp : public VulkanApp
     std::unique_ptr<quadric::Plane> plane;
     std::unique_ptr<quadric::Teapot> teapot;
     std::shared_ptr<magma::OcclusionQuery> occlusionQuery;
-    std::shared_ptr<magma::DynamicUniformBuffer<rapid::matrix>> transformUniforms;
-    std::shared_ptr<magma::DynamicUniformBuffer<rapid::vector4>> colorUniforms;
+    std::shared_ptr<DynamicUniformBuffer<rapid::matrix>> transformUniforms;
+    std::shared_ptr<DynamicUniformBuffer<rapid::vector4>> colorUniforms;
     std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
     std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> teapotPipeline;
@@ -37,7 +46,7 @@ public:
         setupView();
         createOcclusionQuery();
         createMeshes();
-        createUniformBuffer();
+        createUniformBuffers();
         setupDescriptorSet();
         setupPipeline();
         recordCommandBuffer(FrontBuffer);
@@ -94,7 +103,7 @@ public:
         const rapid::matrix worldPlane = rapid::rotationX(rapid::radians(90.f)) * transPlane * pitch * yaw;
         const rapid::matrix worldMesh = transMesh * pitch * yaw;
         magma::helpers::mapScoped<rapid::matrix>(transformUniforms,
-            [this, &worldPlane, &worldMesh](magma::helpers::AlignedUniformArray<rapid::matrix>& transforms)
+            [this, &worldPlane, &worldMesh](auto& transforms)
             {
                 transforms[0] = worldPlane * viewProj;
                 transforms[1] = worldMesh * viewProj;
@@ -120,17 +129,22 @@ public:
         teapot = std::make_unique<quadric::Teapot>(subdivisionDegree, cmdBufferCopy);
     }
 
-    void createUniformBuffer()
+    void createUniformBuffers()
     {
-        transformUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::matrix>>(device, 2, false);
-        updatePerspectiveTransform();
-        colorUniforms = std::make_shared<magma::DynamicUniformBuffer<rapid::vector4>>(device, 2, false);
+    #if NON_COHERENT_UNIFORM_BUFFER
+        constexpr bool ubFlag = true; // mappedPersistently
+    #else
+        const bool ubFlag = device->getFeatures()->supportsDeviceLocalHostVisibleMemory(); // stagedPool
+    #endif
+        transformUniforms = std::make_shared<DynamicUniformBuffer<rapid::matrix>>(device, 2, ubFlag);
+        colorUniforms = std::make_shared<DynamicUniformBuffer<rapid::vector4>>(device, 2, ubFlag);
         magma::helpers::mapScoped<rapid::vector4>(colorUniforms,
-            [](magma::helpers::AlignedUniformArray<rapid::vector4>& colors)
-        {   // Update only once
-            colors[0] = rapid::vector4(0.f, 0.f, 1.f, 1.f);
-            colors[1] = rapid::vector4(1.f, 0.f, 0.f, 1.f);
-        });
+            [](auto& colors)
+            {   // Update only once
+                colors[0] = rapid::vector4(0.f, 0.f, 1.f, 1.f);
+                colors[1] = rapid::vector4(1.f, 0.f, 0.f, 1.f);
+            });
+        updatePerspectiveTransform();
     }
 
     void setupDescriptorSet()
