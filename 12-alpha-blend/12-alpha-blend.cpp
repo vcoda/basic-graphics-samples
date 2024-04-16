@@ -92,7 +92,7 @@ public:
         ctx.enable_dxt(true);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
         VkDeviceSize baseMipOffset = 0;
-        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);

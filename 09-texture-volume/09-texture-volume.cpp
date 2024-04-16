@@ -112,7 +112,7 @@ public:
         MAGMA_ASSERT(size == width * height * depth);
         file.seekg(0, std::ios::beg);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
-        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&file, size](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);
@@ -138,7 +138,7 @@ public:
             throw std::runtime_error("failed to open file \"" + filename + "\"");
         const VkDeviceSize size = width * sizeof(uint32_t);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
-        magma::helpers::mapRangeScoped<uint8_t>(buffer, bufferOffset, size,
+        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, size,
             [&file, size](uint8_t *data)
             {
                 memset(data, 0, size); // Clear first as not an entire buffer may be filled
