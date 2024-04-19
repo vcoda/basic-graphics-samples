@@ -35,7 +35,6 @@ void VulkanApp::onIdle()
 
 void VulkanApp::onPaint()
 {
-    waitForLastPresentation();
     bufferIndex = swapchain->acquireNextImage(presentFinished);
     if (PresentationWait::Fence == presentWait)
     {   // Fence to be signaled when command buffer completed execution
@@ -44,6 +43,7 @@ void VulkanApp::onPaint()
     }
     render(bufferIndex);
     graphicsQueue->present(swapchain, bufferIndex, renderFinished);
+    waitForLastPresentation();
     if (!vSync)
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
