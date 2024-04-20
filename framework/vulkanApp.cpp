@@ -43,7 +43,21 @@ void VulkanApp::onPaint()
     }
     render(bufferIndex);
     graphicsQueue->present(swapchain, bufferIndex, renderFinished);
-    waitForLastPresentation();
+    switch (presentWait)
+    {
+    case PresentationWait::Fence:
+        if (waitFence)
+            waitFence->wait();
+        break;
+    case PresentationWait::Queue:
+        graphicsQueue->waitIdle();
+        break;
+    case PresentationWait::Device:
+        // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
+        // for all queues owned by device.
+        device->waitIdle();
+        break;
+    }
     if (!vSync)
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -346,23 +360,4 @@ void VulkanApp::submitCopyBufferCommands()
     waitFences[1]->reset();
     transferQueue->submit(cmdBufferCopy, 0, nullptr, nullptr, waitFences[1]);
     waitFences[1]->wait();
-}
-
-void VulkanApp::waitForLastPresentation()
-{
-    switch (presentWait)
-    {
-    case PresentationWait::Fence:
-        if (waitFence)
-            waitFence->wait();
-        break;
-    case PresentationWait::Queue:
-        graphicsQueue->waitIdle();
-        break;
-    case PresentationWait::Device:
-        // vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle
-        // for all queues owned by device.
-        device->waitIdle();
-        break;
-    }
 }
