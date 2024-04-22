@@ -91,7 +91,8 @@ void XcbApp::run()
             free(event);
             event = xcb_poll_for_event(connection);
         }
-        onIdle();
+        if (!quit)
+            onIdle();
     }
 }
 

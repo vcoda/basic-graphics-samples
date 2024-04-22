@@ -96,7 +96,8 @@ void XlibApp::run()
             XNextEvent(dpy, &event);
             handleEvent(event);
         }
-        onIdle();
+        if (!quit)
+            onIdle();
     }
 }
 
