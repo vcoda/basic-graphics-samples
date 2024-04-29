@@ -161,8 +161,10 @@ void VulkanApp::createLogicalDevice()
     };
     if (extensions->AMD_negative_viewport_height)
         enabledExtensions.push_back(VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_EXTENSION_NAME);
+#ifdef VK_KHR_maintenance1
     else if (extensions->KHR_maintenance1)
         enabledExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
+#endif // VK_KHR_maintenance1
 
     const std::vector<const char*> noLayers;
     device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features);
