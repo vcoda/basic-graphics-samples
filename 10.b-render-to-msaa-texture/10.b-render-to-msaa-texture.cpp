@@ -61,8 +61,8 @@ public:
         setupDescriptorSet();
         setupPipelines();
         recordOffscreenCommandBuffer(fb);
-        recordCommandBuffer(FrontBuffer);
-        recordCommandBuffer(BackBuffer);
+        recordCommandBuffer(Buffer::Front);
+        recordCommandBuffer(Buffer::Back);
         timer->run();
     }
 

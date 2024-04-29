@@ -73,8 +73,8 @@ public:
         buildPipelines();
         for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
-            recordCommandBuffer(FrontBuffer, i);
-            recordCommandBuffer(BackBuffer, i);
+            recordCommandBuffer(Buffer::Front, i);
+            recordCommandBuffer(Buffer::Back, i);
         }
     }
 
@@ -112,8 +112,8 @@ public:
     void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
-        commandBuffers[FrontBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
-        commandBuffers[BackBuffer] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
+        commandBuffers[Buffer::Front] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
+        commandBuffers[Buffer::Back] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
     }
 
     void setupView()

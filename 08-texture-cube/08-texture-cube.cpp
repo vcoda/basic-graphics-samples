@@ -45,8 +45,8 @@ public:
         createUniformBuffer();
         setupDescriptorSet();
         setupPipeline();
-        recordCommandBuffer(FrontBuffer);
-        recordCommandBuffer(BackBuffer);
+        recordCommandBuffer(Buffer::Front);
+        recordCommandBuffer(Buffer::Back);
     }
 
     void render(uint32_t bufferIndex) override

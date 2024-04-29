@@ -37,8 +37,8 @@ public:
         createUniformBuffer();
         setupDescriptorSet();
         setupPipeline();
-        recordCommandBuffer(FrontBuffer);
-        recordCommandBuffer(BackBuffer);
+        recordCommandBuffer(Buffer::Front);
+        recordCommandBuffer(Buffer::Back);
         timer->run();
     }
 

@@ -20,8 +20,8 @@ public:
         drawTriangles();
         drawTriangleStrip();
         drawTriangleFan();
-        recordCommandBuffer(FrontBuffer);
-        recordCommandBuffer(BackBuffer);
+        recordCommandBuffer(Buffer::Front);
+        recordCommandBuffer(Buffer::Back);
         ir->reset();
     }
 

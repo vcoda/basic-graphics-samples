@@ -46,8 +46,8 @@ public:
         createUniformBuffer();
         setupDescriptorSet();
         setupPipeline();
-        recordCommandBuffer(FrontBuffer);
-        recordCommandBuffer(BackBuffer);
+        recordCommandBuffer(Buffer::Front);
+        recordCommandBuffer(Buffer::Back);
         timer->run();
     }
 
@@ -57,8 +57,8 @@ public:
         {
             waitFences[1 - bufferIndex]->wait();
             setupPipeline();
-            recordCommandBuffer(FrontBuffer);
-            recordCommandBuffer(BackBuffer);
+            recordCommandBuffer(Buffer::Front);
+            recordCommandBuffer(Buffer::Back);
             rebuildCommandBuffers = false;
         }
         updateUniforms();
