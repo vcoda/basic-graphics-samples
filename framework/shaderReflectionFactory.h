@@ -20,7 +20,7 @@ public:
         constexpr bool reflect = true;
         std::shared_ptr<magma::ShaderModule> shaderModule = std::make_shared<magma::ShaderModule>(device,
             reinterpret_cast<const magma::SpirvWord *>(bytecode.data()), bytecode.size(), 0,
-            nullptr, reflect, 0, nullptr);
+            nullptr, reflect, 0);
         return shaderModule->getReflection();
     }
 

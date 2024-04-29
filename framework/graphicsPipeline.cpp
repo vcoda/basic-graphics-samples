@@ -45,7 +45,7 @@ magma::PipelineShaderStage GraphicsPipeline::loadShader(
     constexpr bool reflect = true;
     std::shared_ptr<magma::ShaderModule> module(std::make_shared<magma::ShaderModule>(std::move(device),
         reinterpret_cast<const magma::SpirvWord *>(bytecode.data()), bytecode.size(), 0,
-        std::move(allocator), reflect, 0, nullptr));
+        std::move(allocator), reflect, 0));
     const VkShaderStageFlagBits stage = module->getReflection()->getShaderStage();
     const char *const entrypoint = module->getReflection()->getEntryPointName(0);
     return magma::PipelineShaderStage(stage, std::move(module), entrypoint);
