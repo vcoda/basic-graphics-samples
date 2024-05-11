@@ -101,8 +101,14 @@ void VulkanApp::createInstance()
     #endif // VK_USE_PLATFORM_XCB_KHR
     };
     instanceExtensions = std::make_unique<magma::InstanceExtensions>();
+#ifdef VK_EXT_debug_report
     if (instanceExtensions->EXT_debug_report)
         enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+#endif
+#ifdef VK_EXT_debug_utils
+    if (instanceExtensions->EXT_debug_utils)
+        enabledExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
     MAGMA_STACK_ARRAY(char, appName, caption.length() + 1);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     size_t count = 0;
@@ -136,7 +142,9 @@ void VulkanApp::createInstance()
     extensions = std::make_unique<magma::DeviceExtensions>(physicalDevice);
 
     // https://stackoverflow.com/questions/48036410/why-doesnt-vulkan-use-the-standard-cartesian-coordinate-system
+#if defined(VK_KHR_maintenance1) || defined(VK_AMD_negative_viewport_height)
     negateViewport = extensions->KHR_maintenance1 || extensions->AMD_negative_viewport_height;
+#endif
 }
 
 void VulkanApp::createLogicalDevice()
@@ -159,12 +167,19 @@ void VulkanApp::createLogicalDevice()
     magma::NullTerminatedStringArray enabledExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
+#ifdef VK_AMD_negative_viewport_height
     if (extensions->AMD_negative_viewport_height)
         enabledExtensions.push_back(VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_EXTENSION_NAME);
+    else
+#endif // VK_AMD_negative_viewport_height
 #ifdef VK_KHR_maintenance1
-    else if (extensions->KHR_maintenance1)
+    if (extensions->KHR_maintenance1)
         enabledExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
 #endif // VK_KHR_maintenance1
+#ifdef VK_EXT_debug_marker
+    if (extensions->EXT_debug_marker)
+        enabledExtensions.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
+#endif // VK_EXT_debug_marker
 
     const std::vector<const char*> noLayers;
     device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features);
