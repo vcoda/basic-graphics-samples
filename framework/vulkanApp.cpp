@@ -132,10 +132,13 @@ void VulkanApp::createInstance()
         nullptr,
     #endif
         nullptr); // userData
-
-    debugReportCallback = std::make_shared<magma::DebugReportCallback>(
-        instance,
-        utilities::reportCallback);
+#ifdef VK_EXT_debug_report
+    if (instanceExtensions->EXT_debug_report)
+    {
+        debugReportCallback = std::make_shared<magma::DebugReportCallback>(
+            instance, utilities::reportCallback);
+    }
+#endif // VK_EXT_debug_report
 
     physicalDevice = instance->getPhysicalDevice(0);
     const VkPhysicalDeviceProperties& properties = physicalDevice->getProperties();
