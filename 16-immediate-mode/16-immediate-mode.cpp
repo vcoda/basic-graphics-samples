@@ -99,9 +99,9 @@ public:
 
     void drawLineStrip()
     {
-        ir->color(1.f, 1.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_LINE_STRIP);
         {
+            ir->color(1.f, 1.f, 0.f);
             ir->vertex(0.266f, 0.754f);
             ir->vertex(0.379f, 0.953f);
             ir->vertex(0.473f, 0.777f);
@@ -137,9 +137,9 @@ public:
     {   // Polygons are not present in Vulkan, have to be emulated by triangle fan
         ir->setRasterizationState(negateViewport ? magma::renderstate::fillCullBackCw
                                                  : magma::renderstate::fillCullBackCcw);
-        ir->color(0.f, 0.5f, 0.5f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
         {
+            ir->color(0.f, 0.5f, 0.5f);
             ir->vertex(-0.277, 0.277f);
             ir->vertex(-0.211f, 0.477f);
             ir->vertex(-0.063f, 0.477f);
@@ -153,18 +153,18 @@ public:
     {   // Quads are not present in Vulkan, have to be emulated by triangle strips
         ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCcw
                                                  : magma::renderstate::lineCullBackCw);
-        ir->color(1.f, 0.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
         {
+            ir->color(1.f, 0.f, 0.f);
             ir->vertex(0.301f, 0.476f);
             ir->vertex(0.438f, 0.273f);
             ir->vertex(0.434f, 0.543f);
             ir->vertex(0.586f, 0.406f);
         }
         ir->endPrimitive();
-        ir->color(0.f, 1.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
         {
+            ir->color(0.f, 1.f, 0.f);
             ir->vertex(0.66f, 0.27f);
             ir->vertex(0.878f, 0.27f);
             ir->vertex(0.66f, 0.476f);
@@ -177,9 +177,9 @@ public:
     {   // Quad strip not present in Vulkan, have to be emulated by triangle strip
         ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCw
                                                  : magma::renderstate::lineCullBackCcw);
-        ir->color(0.f, 0.f, 0.5f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
         {
+            ir->color(0.f, 0.f, 0.5f);
             ir->vertex(-0.746f, -0.203f);
             ir->vertex(-0.746f, -0.066f);
             ir->vertex(-0.613f, -0.203f);
@@ -245,9 +245,9 @@ public:
         ir->setLineWidth(3.f);
         ir->setRasterizationState(negateViewport ? magma::renderstate::lineCullBackCw
                                                  : magma::renderstate::lineCullBackCcw);
-        ir->color(0.f, 0.f, 0.f);
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
         {
+            ir->color(0.f, 0.f, 0.f);
             ir->vertex(0.586f, -0.75f);
             ir->vertex(0.297f, -0.676f);
             ir->vertex(0.375f, -0.609f);
