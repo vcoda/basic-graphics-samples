@@ -86,7 +86,7 @@ public:
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             presentFinished,
             renderFinished,
-            waitFences[bufferIndex]);
+            waitFence);
     }
 
     void onKeyDown(char key, int repeat, uint32_t flags) override
