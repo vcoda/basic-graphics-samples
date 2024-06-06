@@ -193,7 +193,7 @@ public:
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
         };
-        pipelineBatch = std::make_unique<magma::GraphicsPipelineBatch>(ShadingType::MaxPermutations);
+        pipelineBatch = std::make_unique<magma::GraphicsPipelineBatch>(device);
         for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
             const magma::FragmentShaderStage fragmentStage = specializeFragmentStage((ShadingType)i, "main");
@@ -212,7 +212,7 @@ public:
                 pipelineLayout,
                 renderPass, 0);
         }
-        std::future<void> buildResult = pipelineBatch->buildPipelinesAsync(device, pipelineCache);
+        std::future<void> buildResult = pipelineBatch->buildPipelinesAsync(pipelineCache);
         std::future_status status;
         do
         {
