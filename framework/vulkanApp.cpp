@@ -58,6 +58,7 @@ void VulkanApp::onPaint()
         device->waitIdle();
         break;
     }
+    commandBuffers[bufferIndex]->finishedExecution();
     if (!vSync)
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
