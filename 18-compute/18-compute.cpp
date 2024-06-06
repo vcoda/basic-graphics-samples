@@ -131,9 +131,7 @@ public:
         }
         computeCmdBuffer->end();
         // Execute
-        fence->reset();
-        graphicsQueue->submit(computeCmdBuffer, 0, nullptr, nullptr, fence);
-        fence->wait();
+        magma::flush(computeCmdBuffer);
         computeCmdBuffer->reset(false); // Reset and record again between each submission
         // Output computed values
         printOutputValues(description);
