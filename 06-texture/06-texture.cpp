@@ -3,6 +3,11 @@
 #include "../framework/bufferFromArray.h"
 #include "../framework/utilities.h"
 
+/* Place all texture data (with mipmaps) into one large
+   source transfer buffer and copy all textures to device
+   using single vkQueueSubmit() call. */
+#define BATCH_LOAD
+
 // Use Space to enable/disable multitexturing
 class TextureApp : public VulkanApp
 {
@@ -88,7 +93,7 @@ public:
             });
     }
 
-    std::shared_ptr<magma::ImageView> loadTexture(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
+    std::shared_ptr<magma::ImageView> loadTextureBatch(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -131,17 +136,49 @@ public:
         return std::make_shared<magma::ImageView>(std::move(image));
     }
 
+    std::shared_ptr<magma::ImageView> loadTextureFromData(const std::string& filename)
+    {   // Simple, but suboptimal way to load texture from host memory
+        auto buffer = utilities::loadBinaryFile(filename);
+        gliml::context ctx;
+        ctx.enable_dxt(true);
+        if (!ctx.load(buffer.data(), static_cast<unsigned>(buffer.size())))
+            throw std::runtime_error("failed to open file \"" + filename + "\"");
+        // Setup texture data description
+        const VkFormat format = utilities::getBlockCompressedFormat(ctx);
+        std::vector<magma::Image::MipData> mipMaps;
+        for (int level = 0; level < ctx.num_mipmaps(0); ++level)
+        {
+            magma::Image::MipData mip;
+            mip.extent.width = ctx.image_width(0, level);
+            mip.extent.height = ctx.image_height(0, level);
+            mip.extent.depth = 1;
+            mip.texels = ctx.image_data(0, level);
+            mip.size = ctx.image_size(0, level);
+            mipMaps.push_back(mip);
+        }
+        // Upload texture from host memory
+        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, mipMaps,
+            nullptr, magma::Image::Initializer{}, magma::Sharing(), memcpy);
+        // Create image view for shader
+        return std::make_shared<magma::ImageView>(std::move(image));
+    }
+
     void loadTextures()
     {
+    #ifdef BATCH_LOAD
         constexpr VkDeviceSize bufferSize = 1024 * 1024;
         auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
-        cmdImageCopy->begin();
+        cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
-            diffuse = loadTexture("brick.dds", buffer);
-            lightmap = loadTexture("spot.dds", buffer);
+            diffuse = loadTextureBatch("brick.dds", buffer);
+            lightmap = loadTextureBatch("spot.dds", buffer);
         }
         cmdImageCopy->end();
         submitCopyImageCommands();
+    #else
+        diffuse = loadTextureFromData("brick.dds");
+        lightmap = loadTextureFromData("spot.dds");
+    #endif // BATCH_LOAD
     }
 
     void createSampler()
