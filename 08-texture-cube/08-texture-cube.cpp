@@ -136,7 +136,7 @@ public:
     {
         constexpr VkDeviceSize bufferSize = 1024 * 1024;
         auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
-        cmdImageCopy->begin();
+        cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
             diffuse = loadCubeMap("diff.dds", buffer);
             specular = loadCubeMap("spec.dds", buffer);

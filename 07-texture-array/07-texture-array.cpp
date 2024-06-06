@@ -183,7 +183,7 @@ public:
             }
         }
         // Upload texture array data from buffer
-        cmdImageCopy->begin();
+        cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         const magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
         std::shared_ptr<magma::Image2DArray> imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy,
             format, MAGMA_COUNT(ctxArray), buffer, mipMaps, bufferLayout);
