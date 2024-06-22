@@ -121,8 +121,7 @@ public:
             negateViewport ? "particleNeg.o" : "particle.o",
             vertexInput,
             magma::renderstate::pointList,
-            negateViewport ? magma::renderstate::lineCullBackCw
-                           : magma::renderstate::lineCullBackCcw,
+            magma::renderstate::pointCullNoneCcw,
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::blendNormalRgb,
