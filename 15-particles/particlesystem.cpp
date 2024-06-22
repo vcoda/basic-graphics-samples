@@ -23,6 +23,22 @@ ParticleSystem::ParticleSystem():
     rng.seed(seed);
 }
 
+void ParticleSystem::setResolution(uint32_t width, uint32_t height) noexcept
+{
+    constants.width = static_cast<float>(width);
+    constants.height = static_cast<float>(height);
+}
+
+void ParticleSystem::setFieldOfView(float fov) noexcept
+{
+    constants.h = constants.height / (2.f * tanf(fov / 2.f)); // Scale with distance
+}
+
+void ParticleSystem::setPointSize(float pointSize) noexcept
+{
+    constants.pointSize = pointSize;
+}
+
 void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
     float bounceFactor /* 1 */, CollisionResult collisionResult /* CollisionResult::Bounce */)
 {
@@ -36,8 +52,8 @@ void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const r
 
 void ParticleSystem::initialize(std::shared_ptr<magma::Device> device)
 {
-    const bool barStagedMemory = device->getFeatures()->supportsDeviceLocalHostVisibleMemory();
-    vertexBuffer = std::make_shared<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), barStagedMemory);
+    const bool stagedPool = device->getFeatures()->supportsDeviceLocalHostVisibleMemory();
+    vertexBuffer = std::make_shared<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), stagedPool);
     drawParams = std::make_shared<magma::DrawIndirectBuffer>(device, 1);
     drawParams->writeDrawCommand(0, 0); // Submit stub draw call to command buffer
 }
@@ -151,8 +167,10 @@ void ParticleSystem::reset()
     freeList.splice(freeList.end(), activeList);
 }
 
-void ParticleSystem::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer)
+void ParticleSystem::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer, std::shared_ptr<magma::Pipeline> pipeline) noexcept
 {
+    cmdBuffer->pushConstantBlock(pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, constants);
+    cmdBuffer->bindPipeline(pipeline);
     cmdBuffer->bindVertexBuffer(0, vertexBuffer);
     cmdBuffer->drawIndirect(drawParams);
 }

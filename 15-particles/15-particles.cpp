@@ -4,14 +4,6 @@
 // Use Space to reset particles + mouse to rotate scene
 class ParticlesApp : public VulkanApp
 {
-    struct PushConstants
-    {
-        float width;
-        float height;
-        float h;
-        float pointSize;
-    };
-
     struct DescriptorSetTable : magma::DescriptorSetTable
     {
         magma::descriptor::UniformBuffer viewProj = 0;
@@ -63,6 +55,9 @@ public:
     void initParticleSystem()
     {
         particles = std::unique_ptr<ParticleSystem>(new ParticleSystem());
+        particles->setResolution(width, height);
+        particles->setFieldOfView(fov);
+        particles->setPointSize(1.f/3.f);
         particles->setMaxParticles(200);
         particles->setNumToRelease(10);
         particles->setReleaseInterval(0.05f);
@@ -112,7 +107,7 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, shaderReflectionFactory, "pointSize.o");
-        constexpr magma::push::VertexFragmentConstantRange<PushConstants> pushConstantRange;
+        constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
@@ -147,18 +142,10 @@ public:
                     magma::clear::depthOne
                 });
             {
-                PushConstants pushConstants;
-                pushConstants.width = static_cast<float>(width);
-                pushConstants.height = static_cast<float>(height);
-                pushConstants.h = (float)height/(2.f * tanf(fov * .5f)); // Scale with distance
-                pushConstants.pointSize = .5f;
-
                 cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
-                cmdBuffer->pushConstantBlock(pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, pushConstants);
-                cmdBuffer->bindPipeline(graphicsPipeline);
-                particles->draw(cmdBuffer);
+                particles->draw(cmdBuffer, graphicsPipeline);
             }
             cmdBuffer->endRenderPass();
         }

@@ -54,8 +54,19 @@ public:
         CollisionResult collisionResult;
     };
 
+    struct Constants
+    {
+        float width;
+        float height;
+        float h;
+        float pointSize;
+    };
+
 public:
     ParticleSystem();
+    void setResolution(uint32_t width, uint32_t height) noexcept;
+    void setFieldOfView(float fov) noexcept;
+    void setPointSize(float pointSize) noexcept;
     void setMaxParticles(uint32_t maxParticles) { this->maxParticles = maxParticles; }
     void setNumToRelease(uint32_t numToRelease) { this->numToRelease = numToRelease; }
     void setReleaseInterval(float releaseInterval) { this->releaseInterval = releaseInterval; }
@@ -71,7 +82,8 @@ public:
     void initialize(std::shared_ptr<magma::Device> device);
     void update(float dt);
     void reset(void);
-    void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer);
+    void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer,
+        std::shared_ptr<magma::Pipeline> pipeline) noexcept;
 
 private:
     rapid::float3 randomVector();
@@ -83,6 +95,8 @@ private:
     std::uniform_real_distribution<float> discDistribution;
     std::list<Particle> activeList, freeList;
     std::list<Plane> planes;
+
+    Constants constants = {};
     float currentTime = 0.f;
     float lastUpdate = 0.f;
 
