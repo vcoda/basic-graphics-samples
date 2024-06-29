@@ -84,12 +84,8 @@ VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObje
 {
     if (strstr(pMessage, "Extension"))
         return VK_FALSE;
-    std::stringstream msg;
-    msg << "[" << pLayerPrefix << "] " << pMessage << "\n";
-    if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
-        std::cerr << msg.str();
-    else
-        std::cout << msg.str();
+    std::ostream& cout = (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) ? std::cerr : std::cout;
+    cout << "[" << pLayerPrefix << "] " << pMessage << "\n";
     return VK_FALSE;
 }
 
