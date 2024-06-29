@@ -338,10 +338,7 @@ void VulkanApp::createSyncPrimitives()
     presentFinished = std::make_shared<magma::Semaphore>(device);
     renderFinished = std::make_shared<magma::Semaphore>(device);
     for (int i = 0; i < (int)commandBuffers.size(); ++i)
-    {
-        constexpr bool signaled = true; // Don't wait on first render of each command buffer
-        waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, signaled));
-    }
+        waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
 }
 
 void VulkanApp::createDescriptorPool()
