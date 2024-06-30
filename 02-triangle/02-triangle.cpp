@@ -41,7 +41,7 @@ public:
 
     void recordCommandBuffer(uint32_t index)
     {
-        std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
+        std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clear::gray});

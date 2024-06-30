@@ -194,7 +194,7 @@ public:
 
     void recordCommandBuffer(uint32_t index)
     {
-        std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[index];
+        std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
             cmdBuffer->resetQueryPool(occlusionQuery, 0, occlusionQuery->getQueryCount());
