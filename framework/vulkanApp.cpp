@@ -11,7 +11,8 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     negateViewport(false),
     presentWait(PresentationWait::Fence),
     bufferIndex(0),
-    frameIndex(0)
+    frameIndex(0),
+    waitFence(&nullFence)
 {
     magma::CxxAllocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
 }
@@ -38,8 +39,8 @@ void VulkanApp::onPaint()
     bufferIndex = swapchain->acquireNextImage(presentFinished);
     if (PresentationWait::Fence == presentWait)
     {   // Fence to be signaled when command buffer completed execution
-        waitFence = waitFences[bufferIndex];
-        waitFence->reset();
+        waitFences[bufferIndex]->reset();
+        waitFence = &waitFences[bufferIndex];
     }
     render(bufferIndex);
     graphicsQueue->present(swapchain, bufferIndex, renderFinished);
@@ -47,7 +48,7 @@ void VulkanApp::onPaint()
     {
     case PresentationWait::Fence:
         if (waitFence)
-            waitFence->wait();
+            (*waitFence)->wait();
         break;
     case PresentationWait::Queue:
         graphicsQueue->waitIdle();
@@ -165,7 +166,7 @@ void VulkanApp::createLogicalDevice()
         queueDescriptors.push_back(transferQueueDesc);
 
     // Enable some widely used features
-    VkPhysicalDeviceFeatures features = {0};
+    VkPhysicalDeviceFeatures features = {};
     features.fillModeNonSolid = VK_TRUE;
     features.samplerAnisotropy = VK_TRUE;
     features.textureCompressionBC = VK_TRUE;
@@ -259,7 +260,7 @@ void VulkanApp::createSwapchain()
     }
     magma::Swapchain::Initializer initializer;
     initializer.debugReportCallback = debugReportCallback;
-    swapchain = std::make_shared<magma::Swapchain>(device, surface,
+    swapchain = std::make_unique<magma::Swapchain>(device, surface,
         std::min(2U, surfaceCaps.maxImageCount),
         surfaceFormats[0], surfaceCaps.currentExtent, 1,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
@@ -338,7 +339,7 @@ void VulkanApp::createSyncPrimitives()
     presentFinished = std::make_shared<magma::Semaphore>(device);
     renderFinished = std::make_shared<magma::Semaphore>(device);
     for (int i = 0; i < (int)commandBuffers.size(); ++i)
-        waitFences.push_back(std::make_shared<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
+        waitFences.push_back(std::make_unique<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
 }
 
 void VulkanApp::createDescriptorPool()
@@ -368,7 +369,7 @@ void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
         presentFinished, // Wait for swapchain
         renderFinished, // Semaphore to be signaled when command buffer completed execution
-        waitFence); // Fence to be signaled when command buffer completed execution
+        *waitFence); // Fence to be signaled when command buffer completed execution
 }
 
 void VulkanApp::submitCopyImageCommands()
@@ -376,6 +377,7 @@ void VulkanApp::submitCopyImageCommands()
     waitFences[0]->reset();
     graphicsQueue->submit(cmdImageCopy, 0, nullptr, nullptr, waitFences[0]);
     waitFences[0]->wait();
+    cmdImageCopy->finishedExecution();
 }
 
 void VulkanApp::submitCopyBufferCommands()
@@ -383,4 +385,5 @@ void VulkanApp::submitCopyBufferCommands()
     waitFences[1]->reset();
     transferQueue->submit(cmdBufferCopy, 0, nullptr, nullptr, waitFences[1]);
     waitFences[1]->wait();
+    cmdBufferCopy->finishedExecution();
 }

@@ -56,7 +56,7 @@ protected:
     std::shared_ptr<magma::Surface> surface;
     std::shared_ptr<magma::PhysicalDevice> physicalDevice;
     std::shared_ptr<magma::Device> device;
-    std::shared_ptr<magma::Swapchain> swapchain;
+    std::unique_ptr<magma::Swapchain> swapchain;
     std::unique_ptr<magma::InstanceExtensions> instanceExtensions;
     std::unique_ptr<magma::DeviceExtensions> extensions;
 
@@ -73,8 +73,9 @@ protected:
     std::shared_ptr<magma::Queue> transferQueue;
     std::shared_ptr<magma::Semaphore> presentFinished;
     std::shared_ptr<magma::Semaphore> renderFinished;
-    std::vector<std::shared_ptr<magma::Fence>> waitFences;
-    std::shared_ptr<magma::Fence> waitFence;
+    std::vector<std::unique_ptr<magma::Fence>> waitFences;
+    const std::unique_ptr<magma::Fence> nullFence;
+    const std::unique_ptr<magma::Fence> *waitFence;
 
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::shared_ptr<magma::PipelineCache> pipelineCache;

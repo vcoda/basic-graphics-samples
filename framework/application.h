@@ -12,7 +12,7 @@
 #include "magma/src/core/pch.h"
 
 class IApplication : public AlignAs<16>,
-    public magma::IDestructible
+    public magma::IClass
 {
 public:
     virtual void setWindowCaption(const std::tstring& caption) = 0;

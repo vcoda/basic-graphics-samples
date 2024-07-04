@@ -130,8 +130,8 @@ public:
                 magma::BufferMemoryBarrier(readbackBuffer, magma::barrier::transferWriteHostRead));
         }
         computeCmdBuffer->end();
-        // Execute
-        magma::flush(computeCmdBuffer);
+        // Block until all command buffer execution is complete
+        magma::finish(computeCmdBuffer);
         computeCmdBuffer->reset(false); // Reset and record again between each submission
         // Output computed values
         printOutputValues(description);
