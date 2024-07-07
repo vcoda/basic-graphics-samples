@@ -10,14 +10,19 @@ layout(location = 2) in vec3 color;
 
 layout(location = 0) out vec4 oColor;
 
+float easeOutExp(float t)
+{
+    return 1 - pow(2, -8 * t);
+}
+
 void main()
 {
     vec2 screenPos = pos * resolution;
     float radius = pointSize * .5;
-    vec2 fragCoord = gl_FragCoord.xy;
-    float d = length(fragCoord - screenPos)/radius;
-    if (d >= 1.)
+    float d = length(gl_FragCoord.xy - screenPos) / radius;
+    if (d >= 1)
         discard; // Do not blend zeros
-    float alpha = 1. - pow(d, 4.); // Adjust alpha smoothness
-    oColor = vec4(color, alpha * 0.8);
+    float alpha = easeOutExp(1 - d);
+    float transparency = 0.8;
+    oColor = vec4(color, alpha * transparency);
 }
