@@ -8,6 +8,7 @@ layout(push_constant) uniform PushConstants {
     vec2 resolution;
     float h;
     float pointSize;
+    bool negateViewport;
 };
 
 layout(location = 0) in vec4 position;
@@ -24,9 +25,11 @@ out gl_PerVertex {
 void main()
 {
     gl_Position = viewProj * position;
-    float wclipInv = 1./gl_Position.w;
+    float wclipInv = 1 / gl_Position.w;
     gl_PointSize = h * pointSize * wclipInv; // scale with distance
     oPos = gl_Position.xy * wclipInv * .5 + .5; // screen space pos
+    if (negateViewport)
+        oPos.y = 1 - oPos.y;
     oPointSize = gl_PointSize;
     oColor = color;
 }

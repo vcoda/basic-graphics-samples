@@ -23,10 +23,11 @@ ParticleSystem::ParticleSystem():
     rng.seed(seed);
 }
 
-void ParticleSystem::setResolution(uint32_t width, uint32_t height) noexcept
+void ParticleSystem::setResolution(uint32_t width, int32_t height) noexcept
 {
     constants.width = static_cast<float>(width);
-    constants.height = static_cast<float>(height);
+    constants.height = static_cast<float>(std::abs(height));
+    constants.negateViewport = (height < 0);
 }
 
 void ParticleSystem::setFieldOfView(float fov) noexcept

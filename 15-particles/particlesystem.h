@@ -60,11 +60,12 @@ public:
         float height;
         float h;
         float pointSize;
+        VkBool32 negateViewport;
     };
 
 public:
     ParticleSystem();
-    void setResolution(uint32_t width, uint32_t height) noexcept;
+    void setResolution(uint32_t width, int32_t height) noexcept;
     void setFieldOfView(float fov) noexcept;
     void setPointSize(float pointSize) noexcept;
     void setMaxParticles(uint32_t maxParticles) { this->maxParticles = maxParticles; }

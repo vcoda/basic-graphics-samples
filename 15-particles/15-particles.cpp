@@ -55,7 +55,7 @@ public:
     void initParticleSystem()
     {
         particles = std::unique_ptr<ParticleSystem>(new ParticleSystem());
-        particles->setResolution(width, height);
+        particles->setResolution(width, negateViewport ? -height : height);
         particles->setFieldOfView(fov);
         particles->setPointSize(1.f/3.f);
         particles->setMaxParticles(200);
@@ -117,8 +117,7 @@ public:
             {0, &ParticleSystem::ParticleVertex::position},
             {1, &ParticleSystem::ParticleVertex::color}});
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "pointSize",
-            negateViewport ? "particleNeg" : "particle",
+            "pointSize","particle",
             vertexInput,
             magma::renderstate::pointList,
             magma::renderstate::pointCullNoneCcw,
