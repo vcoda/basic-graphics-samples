@@ -191,14 +191,14 @@ public:
         setTable.lookup = {lookup, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "raycast.o");
+            nullptr, shaderReflectionFactory, "raycast");
     }
 
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "quad.o", "raycast.o",
+            "quad", "raycast",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleStrip,
             magma::renderstate::fillCullBackCw,

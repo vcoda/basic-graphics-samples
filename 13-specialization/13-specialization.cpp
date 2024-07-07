@@ -169,7 +169,7 @@ public:
         setTable.transforms = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "transform.o");
+            nullptr, shaderReflectionFactory, "transform");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 

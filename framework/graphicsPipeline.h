@@ -20,5 +20,5 @@ public:
 
 private:
     magma::PipelineShaderStage loadShader(std::shared_ptr<magma::Device> device,
-        const char *shaderFileName) const;
+        const char *fileName) const;
 };

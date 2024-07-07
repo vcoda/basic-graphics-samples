@@ -106,7 +106,7 @@ public:
         setTable.viewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "pointSize.o");
+            nullptr, shaderReflectionFactory, "pointSize");
         constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
@@ -117,8 +117,8 @@ public:
             {0, &ParticleSystem::ParticleVertex::position},
             {1, &ParticleSystem::ParticleVertex::color}});
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "pointSize.o",
-            negateViewport ? "particleNeg.o" : "particle.o",
+            "pointSize",
+            negateViewport ? "particleNeg" : "particle",
             vertexInput,
             magma::renderstate::pointList,
             magma::renderstate::pointCullNoneCcw,

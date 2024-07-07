@@ -212,14 +212,14 @@ public:
         setTable.imageArray = {imageArrayView, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "textureArray.o");
+            nullptr, shaderReflectionFactory, "textureArray");
     }
 
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "transform.o", "textureArray.o",
+            "transform", "textureArray",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,
             negateViewport ? magma::renderstate::fillCullBackCcw

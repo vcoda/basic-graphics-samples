@@ -27,7 +27,7 @@ public:
     void setupPipeline()
     {
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "position.o", "fill.o",
+            "position", "fill",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleList,
             magma::renderstate::fillCullBackCcw,

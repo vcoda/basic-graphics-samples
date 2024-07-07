@@ -88,7 +88,7 @@ public:
     void setupPipeline()
     {
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "passthrough.o", "fill.o",
+            "passthrough", "fill",
             magma::renderstate::pos2f,
             magma::renderstate::triangleList,
             magma::renderstate::fillCullBackCcw,

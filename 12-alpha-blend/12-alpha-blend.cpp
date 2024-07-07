@@ -152,14 +152,14 @@ public:
         setTable.diffuse = {logo, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "texture.o");
+            nullptr, shaderReflectionFactory, "texture");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
         return std::make_shared<GraphicsPipeline>(device,
-            "transform.o", "texture.o",
+            "transform", "texture",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,
             rasterizationState,

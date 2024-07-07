@@ -106,14 +106,14 @@ public:
         setTable.worldViewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "transform.o");
+            nullptr, shaderReflectionFactory, "transform");
     }
 
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "transform.o", "frontFace.o",
+            "transform", "frontFace",
             magma::renderstate::pos2fColor4ub,
             magma::renderstate::triangleList,
             rhs ? magma::renderstate::fillCullNoneCcw

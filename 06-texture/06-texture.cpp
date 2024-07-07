@@ -220,14 +220,14 @@ public:
         setTable.lightmapImage = {lightmap, bilinearSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "multitexture.o");
+            nullptr, shaderReflectionFactory, "multitexture");
     }
 
     void setupPipeline()
     {
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
-            "passthrough.o", "multitexture.o",
+            "passthrough", "multitexture",
             magma::renderstate::pos2fTex2f,
             magma::renderstate::triangleStrip,
             magma::renderstate::fillCullBackCcw,

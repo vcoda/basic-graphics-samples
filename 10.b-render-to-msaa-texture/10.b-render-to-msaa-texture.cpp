@@ -185,18 +185,18 @@ public:
         setTableRt.world = uniformBuffer;
         rtDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTableRt, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "triangle.o");
+            nullptr, shaderReflectionFactory, "triangle");
         setTableTx.texture = {fb.colorResolveView, nearestSampler};
         txDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTableTx, VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "tex.o");
+            nullptr, shaderReflectionFactory, "tex");
     }
 
     void setupPipelines()
     {
         rtPipelineLayout = std::make_shared<magma::PipelineLayout>(rtDescriptorSet->getLayout());
         rtPipeline = std::make_shared<GraphicsPipeline>(device,
-            "triangle.o", "fill.o",
+            "triangle", "fill",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleList,
             magma::renderstate::fillCullBackCcw,
@@ -208,7 +208,7 @@ public:
             pipelineCache);
         txPipelineLayout = std::make_shared<magma::PipelineLayout>(txDescriptorSet->getLayout());
         txPipeline = std::make_shared<GraphicsPipeline>(device,
-            "passthrough.o", "tex.o",
+            "passthrough", "tex",
             magma::renderstate::pos2fTex2f,
             magma::renderstate::triangleStrip,
             magma::renderstate::fillCullBackCcw,

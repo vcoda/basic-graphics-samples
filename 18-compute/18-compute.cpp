@@ -31,9 +31,9 @@ public:
         initialize();
         createInputOutputBuffers();
         setupDescriptorSet();
-        computeSum = createComputePipeline("sum.o", "sum");
-        computeMul = createComputePipeline("mul.o", "mul");
-        computePower = createComputePipeline("power.o", "power");
+        computeSum = createComputePipeline("sum", "sum");
+        computeMul = createComputePipeline("mul", "mul");
+        computePower = createComputePipeline("power", "power");
         printInputValues(numbers, "a");
         printInputValues(numbers, "b");
         compute(computeSum, "a + b");
@@ -84,13 +84,13 @@ public:
         setTable.outputBuffer = outputBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_COMPUTE_BIT,
-            nullptr, shaderReflectionFactory, "sum.o");
+            nullptr, shaderReflectionFactory, "sum");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
     {
-        const aligned_vector<char> bytecode = utilities::loadBinaryFile(filename);
+        const aligned_vector<char> bytecode = utilities::loadBinaryFile(filename + std::string(".o"));
         auto computeShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
         return std::make_shared<magma::ComputePipeline>(device,
             magma::ComputeShaderStage(computeShader, entrypoint),

@@ -33,14 +33,15 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
 {}
 
 magma::PipelineShaderStage GraphicsPipeline::loadShader(
-    std::shared_ptr<magma::Device> device, const char *shaderFileName) const
+    std::shared_ptr<magma::Device> device, const char *fileName) const
 {
+    const std::string shaderFileName = fileName + std::string(".o");
     std::ifstream file(shaderFileName, std::ios::in | std::ios::binary);
     if (!file.is_open())
-        throw std::runtime_error("file \"" + std::string(shaderFileName) + "\" not found");
+        throw std::runtime_error("file \"" + shaderFileName + "\" not found");
     std::vector<char> bytecode((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     if (bytecode.size() % sizeof(magma::SpirvWord))
-        throw std::runtime_error("size of \"" + std::string(shaderFileName) + "\" bytecode must be a multiple of SPIR-V word");
+        throw std::runtime_error("size of \"" + shaderFileName + "\" bytecode must be a multiple of SPIR-V word");
     auto allocator = device->getHostAllocator();
     constexpr bool reflect = true;
     std::shared_ptr<magma::ShaderModule> module(std::make_shared<magma::ShaderModule>(std::move(device),
