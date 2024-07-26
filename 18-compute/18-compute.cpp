@@ -102,12 +102,11 @@ public:
         std::shared_ptr<magma::CommandBuffer> computeCmdBuffer = commandBuffers[0];
         computeCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {   // Ensure that transfer write is finished before compute shader execution
-            const std::vector<magma::BufferMemoryBarrier> bufferMemoryBarriers = {
-                {inputBuffers[0], magma::barrier::transferWriteShaderRead},
-                {inputBuffers[0], magma::barrier::transferWriteShaderRead},
-            };
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                {}, bufferMemoryBarriers, {});
+                {
+                    {inputBuffers[0], magma::barrier::buffer::transferWriteShaderRead},
+                    {inputBuffers[0], magma::barrier::buffer::transferWriteShaderRead},
+                });
             // Bind input and output buffers
             computeCmdBuffer->bindDescriptorSet(pipeline, 0, descriptorSet);
             // Bind pipeline
@@ -117,7 +116,7 @@ public:
             computeCmdBuffer->dispatch(workgroups, 1, 1);
             // Ensure that shader writes are finished before transfer readback
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                magma::BufferMemoryBarrier(outputBuffer, magma::barrier::shaderWriteTransferRead));
+                magma::BufferMemoryBarrier(outputBuffer, magma::barrier::buffer::shaderWriteTransferRead));
             // Copy output local buffer to readback buffer
             computeCmdBuffer->copyBuffer(outputBuffer, readbackBuffer);
             /* The memory dependency defined by signaling a fence and waiting on the host
@@ -127,7 +126,7 @@ public:
                and the end of the submission that will signal the fence,
                to guarantee completion of the writes. */
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT,
-                magma::BufferMemoryBarrier(readbackBuffer, magma::barrier::transferWriteHostRead));
+                magma::BufferMemoryBarrier(readbackBuffer, magma::barrier::buffer::transferWriteHostRead));
         }
         computeCmdBuffer->end();
         // Block until all command buffer execution is complete
