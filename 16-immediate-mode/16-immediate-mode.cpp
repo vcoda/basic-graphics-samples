@@ -42,8 +42,10 @@ public:
 
         std::vector<const char*> enabledExtensions;
         enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    #ifdef VK_AMD_negative_viewport_height
         if (extensions->AMD_negative_viewport_height)
             enabledExtensions.push_back(VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_EXTENSION_NAME);
+    #endif // VK_AMD_negative_viewport_height
     #ifdef VK_KHR_maintenance1
         else if (extensions->KHR_maintenance1)
             enabledExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
