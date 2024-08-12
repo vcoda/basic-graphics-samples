@@ -269,8 +269,7 @@ void VulkanApp::createSwapchain()
 
 void VulkanApp::createRenderPass()
 {
-    const std::vector<VkSurfaceFormatKHR> surfaceFormats = physicalDevice->getSurfaceFormats(surface);
-    const magma::AttachmentDescription colorAttachment(surfaceFormats[0].format, 1,
+    const magma::AttachmentDescription colorAttachment(swapchain->getSurfaceFormat().format, 1,
         magma::op::clearStore, // Color clear, store
         magma::op::dontCare,
         VK_IMAGE_LAYOUT_UNDEFINED,
