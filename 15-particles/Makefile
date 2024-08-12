@@ -5,7 +5,7 @@ default: 15-particles shaders
 15-particles: 15-particles.o particlesystem.o $(FRAMEWORK_OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-shaders: pointSize.o particle.o particleNeg.o
+shaders: pointSize.o particle.o
 
 clean:
 	@find . -iregex '.*\.\(d\|o\)' -delete
