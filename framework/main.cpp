@@ -85,18 +85,6 @@ catch (const magma::exception::ReflectionErrorResult& exc)
     }
     onError(msg.str(), "SPIRV-Reflect");
 }
-catch (const magma::exception::NotImplemented& exc)
-{
-    std::ostringstream msg;
-    if (!exc.where().file_name())
-        msg << "Error: " << exc.what();
-    else
-    {
-        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
-            << "Error: " << exc.what();
-    }
-    onError(msg.str(), "Not implemented");
-}
 catch (const magma::exception::Exception& exc)
 {
     std::ostringstream msg;

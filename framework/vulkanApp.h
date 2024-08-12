@@ -60,17 +60,18 @@ protected:
     std::unique_ptr<magma::InstanceExtensions> instanceExtensions;
     std::unique_ptr<magma::DeviceExtensions> extensions;
 
+    std::shared_ptr<magma::RenderPass> renderPass;
+    std::shared_ptr<magma::DepthStencilAttachment> depthStencil;
+    std::shared_ptr<magma::ImageView> depthStencilView;
+    std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;
+
+    std::unique_ptr<magma::Queue> graphicsQueue;
+    std::unique_ptr<magma::Queue> transferQueue;
     std::shared_ptr<magma::CommandPool> commandPools[2];
     std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers;
     std::shared_ptr<magma::CommandBuffer> cmdImageCopy;
     std::shared_ptr<magma::CommandBuffer> cmdBufferCopy;
 
-    std::shared_ptr<magma::DepthStencilAttachment> depthStencil;
-    std::shared_ptr<magma::ImageView> depthStencilView;
-    std::shared_ptr<magma::RenderPass> renderPass;
-    std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;
-    std::shared_ptr<magma::Queue> graphicsQueue;
-    std::shared_ptr<magma::Queue> transferQueue;
     std::shared_ptr<magma::Semaphore> presentFinished;
     std::shared_ptr<magma::Semaphore> renderFinished;
     std::vector<std::unique_ptr<magma::Fence>> waitFences;

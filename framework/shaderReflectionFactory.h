@@ -8,7 +8,7 @@ public:
         device(std::move(device))
     {}
 
-    std::shared_ptr<const magma::ShaderReflection> getReflection(const std::string& fileName) override
+    const std::unique_ptr<const magma::ShaderReflection>& getReflection(const std::string& fileName) override
     {
         const std::string shaderFileName = fileName + std::string(".o");
         std::ifstream file(shaderFileName, std::ios::in | std::ios::binary);
@@ -19,12 +19,13 @@ public:
             throw std::runtime_error("size of \"" + shaderFileName + "\" bytecode must be a multiple of SPIR-V word");
         auto allocator = device->getHostAllocator();
         constexpr bool reflect = true;
-        std::shared_ptr<magma::ShaderModule> shaderModule = std::make_shared<magma::ShaderModule>(device,
+        shaderModule = std::make_unique<magma::ShaderModule>(device,
             reinterpret_cast<const magma::SpirvWord *>(bytecode.data()), bytecode.size(), 0,
-            nullptr, reflect, 0);
+            std::move(allocator), reflect, 0);
         return shaderModule->getReflection();
     }
 
 private:
     std::shared_ptr<magma::Device> device;
+    std::unique_ptr<magma::ShaderModule> shaderModule;
 };
