@@ -6,7 +6,7 @@ THIRD_PARTY=../third-party
 INCLUDE_DIR=-I$(VULKAN_SDK)/include -I$(THIRD_PARTY) -I$(THIRD_PARTY)/rapid
 LIB_DIR=-L$(VULKAN_SDK)/lib -L$(THIRD_PARTY)/magma -L$(THIRD_PARTY)/quadric
 
-BASE_CFLAGS=-std=c++14 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(INCLUDE_DIR)
+BASE_CFLAGS=-std=c++17 -m64 -msse4 -pthread -MD -D$(PLATFORM) $(INCLUDE_DIR)
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
 	CFLAGS=$(BASE_CFLAGS) -O0 -g -D_DEBUG
