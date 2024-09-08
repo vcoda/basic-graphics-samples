@@ -216,7 +216,7 @@ public:
         std::future_status status;
         do
         {
-            status = buildResult.wait_for(std::chrono::microseconds(5));
+            status = buildResult.wait_for(std::chrono::milliseconds(1));
             std::cout << "You can do something useful here while waiting for completion of graphics pipeline building" << std::endl;
         } while (status != std::future_status::ready);
     }
