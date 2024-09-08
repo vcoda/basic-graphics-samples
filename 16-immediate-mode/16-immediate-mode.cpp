@@ -34,8 +34,6 @@ public:
 
     void createLogicalDevice() override
     {
-        const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
-
         VkPhysicalDeviceFeatures features = {VK_FALSE};
         features.fillModeNonSolid = VK_TRUE;
         features.wideLines = VK_TRUE;
@@ -51,7 +49,8 @@ public:
             enabledExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
     #endif // VK_KHR_maintenance1
 
-        device = physicalDevice->createDevice({graphicsQueue}, {}, enabledExtensions, features);
+        const magma::DeviceQueueDescriptor graphicsQueueDesc(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
+        device = physicalDevice->createDevice({graphicsQueueDesc}, {}, enabledExtensions, features);
     }
 
     void render(uint32_t bufferIndex) override
