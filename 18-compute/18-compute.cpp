@@ -47,10 +47,9 @@ public:
         const std::vector<float> defaultQueuePriorities = {1.f};
         const magma::DeviceQueueDescriptor computeQueueDesc(physicalDevice, VK_QUEUE_COMPUTE_BIT, defaultQueuePriorities);
         const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice, VK_QUEUE_TRANSFER_BIT, defaultQueuePriorities);
-        std::vector<magma::DeviceQueueDescriptor> queueDescriptors;
-        queueDescriptors.push_back(computeQueueDesc);
-        if (transferQueueDesc.queueFamilyIndex != computeQueueDesc.queueFamilyIndex)
-            queueDescriptors.push_back(transferQueueDesc);
+        std::set<magma::DeviceQueueDescriptor> queueDescriptors;
+        queueDescriptors.insert(computeQueueDesc);
+        queueDescriptors.insert(transferQueueDesc);
         const std::vector<const char*> noLayers;
         std::vector<const char*> noExtensions;
         VkPhysicalDeviceFeatures noFeatures = {0};
@@ -84,7 +83,7 @@ public:
         setTable.outputBuffer = outputBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_COMPUTE_BIT,
-            nullptr, shaderReflectionFactory, "sum");
+            nullptr, 0, shaderReflectionFactory, "sum");
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 

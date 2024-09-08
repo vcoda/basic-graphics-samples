@@ -212,7 +212,7 @@ public:
         setTable.imageArray = {imageArrayView, anisotropicSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "textureArray");
+            nullptr, 0, shaderReflectionFactory, "textureArray");
     }
 
     void setupPipeline()

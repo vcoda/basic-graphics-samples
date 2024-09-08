@@ -106,7 +106,7 @@ public:
         setTable.viewProj = uniformBuffer;
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "pointSize");
+            nullptr, 0, shaderReflectionFactory, "pointSize");
         constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
         pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }

@@ -48,7 +48,10 @@ void VulkanApp::onPaint()
     {
     case PresentationWait::Fence:
         if (waitFence)
+        {
             (*waitFence)->wait();
+            graphicsQueue->onIdle();
+        }
         break;
     case PresentationWait::Queue:
         graphicsQueue->waitIdle();
@@ -59,7 +62,6 @@ void VulkanApp::onPaint()
         device->waitIdle();
         break;
     }
-    commandBuffers[bufferIndex]->finishedExecution();
     if (!vSync)
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -137,7 +139,7 @@ void VulkanApp::createInstance()
 #ifdef VK_EXT_debug_report
     if (instanceExtensions->EXT_debug_report)
     {
-        debugReportCallback = std::make_shared<magma::DebugReportCallback>(
+        debugReportCallback = std::make_unique<magma::DebugReportCallback>(
             instance, utilities::reportCallback);
     }
 #endif // VK_EXT_debug_report
@@ -160,10 +162,9 @@ void VulkanApp::createLogicalDevice()
     const std::vector<float> defaultQueuePriorities = {1.f};
     const magma::DeviceQueueDescriptor graphicsQueueDesc(physicalDevice, VK_QUEUE_GRAPHICS_BIT, defaultQueuePriorities);
     const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice, VK_QUEUE_TRANSFER_BIT, defaultQueuePriorities);
-    std::vector<magma::DeviceQueueDescriptor> queueDescriptors;
-    queueDescriptors.push_back(graphicsQueueDesc);
-    if (transferQueueDesc.queueFamilyIndex != graphicsQueueDesc.queueFamilyIndex)
-        queueDescriptors.push_back(transferQueueDesc);
+    std::set<magma::DeviceQueueDescriptor> queueDescriptors;
+    queueDescriptors.insert(graphicsQueueDesc);
+    queueDescriptors.insert(transferQueueDesc);
 
     // Enable some widely used features
     VkPhysicalDeviceFeatures features = {};
@@ -259,7 +260,7 @@ void VulkanApp::createSwapchain()
         }
     }
     magma::Swapchain::Initializer initializer;
-    initializer.debugReportCallback = debugReportCallback;
+    initializer.debugReportCallback = debugReportCallback.get();
     swapchain = std::make_unique<magma::Swapchain>(device, surface,
         std::min(2U, surfaceCaps.maxImageCount),
         surfaceFormats[0], surfaceCaps.currentExtent, 1,
@@ -376,7 +377,7 @@ void VulkanApp::submitCopyImageCommands()
     waitFences[0]->reset();
     graphicsQueue->submit(cmdImageCopy, 0, nullptr, nullptr, waitFences[0]);
     waitFences[0]->wait();
-    cmdImageCopy->finishedExecution();
+    graphicsQueue->onIdle();
 }
 
 void VulkanApp::submitCopyBufferCommands()
@@ -384,5 +385,5 @@ void VulkanApp::submitCopyBufferCommands()
     waitFences[1]->reset();
     transferQueue->submit(cmdBufferCopy, 0, nullptr, nullptr, waitFences[1]);
     waitFences[1]->wait();
-    cmdBufferCopy->finishedExecution();
+    transferQueue->onIdle();
 }

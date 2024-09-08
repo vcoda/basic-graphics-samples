@@ -152,11 +152,11 @@ public:
         setTable0.worldViewProj = transformUniforms;
         descriptorSets[0] = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable0, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "transform", 0);
+            nullptr, 0, shaderReflectionFactory, "transform", 0);
         setTable1.color = colorUniforms;
         descriptorSets[1] = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable1, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "transform", 1);
+            nullptr, 0, shaderReflectionFactory, "transform", 1);
     }
 
     void setupPipeline()

@@ -152,11 +152,11 @@ public:
         setTableRt.world = uniformBuffer;
         rtDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTableRt, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, shaderReflectionFactory, "triangle");
+            nullptr, 0, shaderReflectionFactory, "triangle");
         setTableTx.texture = {fb.colorView, nearestSampler};
         txDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTableTx, VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "tex");
+            nullptr, 0, shaderReflectionFactory, "tex");
     }
 
     void setupPipelines()

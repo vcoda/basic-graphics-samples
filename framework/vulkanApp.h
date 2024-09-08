@@ -52,7 +52,7 @@ protected:
     void submitCopyBufferCommands();
 
     std::shared_ptr<magma::Instance> instance;
-    std::shared_ptr<magma::DebugReportCallback> debugReportCallback;
+    std::unique_ptr<magma::DebugReportCallback> debugReportCallback;
     std::shared_ptr<magma::Surface> surface;
     std::shared_ptr<magma::PhysicalDevice> physicalDevice;
     std::shared_ptr<magma::Device> device;
@@ -65,8 +65,8 @@ protected:
     std::shared_ptr<magma::ImageView> depthStencilView;
     std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;
 
-    std::unique_ptr<magma::Queue> graphicsQueue;
-    std::unique_ptr<magma::Queue> transferQueue;
+    std::shared_ptr<magma::Queue> graphicsQueue;
+    std::shared_ptr<magma::Queue> transferQueue;
     std::shared_ptr<magma::CommandPool> commandPools[2];
     std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers;
     std::shared_ptr<magma::CommandBuffer> cmdImageCopy;

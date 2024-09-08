@@ -191,7 +191,7 @@ public:
         setTable.lookup = {lookup, nearestSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "raycast");
+            nullptr, 0, shaderReflectionFactory, "raycast");
     }
 
     void setupPipeline()

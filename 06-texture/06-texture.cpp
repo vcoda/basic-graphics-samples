@@ -220,7 +220,7 @@ public:
         setTable.lightmapImage = {lightmap, bilinearSampler};
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr, shaderReflectionFactory, "multitexture");
+            nullptr, 0, shaderReflectionFactory, "multitexture");
     }
 
     void setupPipeline()
