@@ -1,5 +1,4 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/bufferFromArray.h"
 
 class VertexBufferApp : public VulkanApp
 {
@@ -31,12 +30,12 @@ public:
         };
 
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        alignas(MAGMA_ALIGNMENT) Vertex vertices[] = {
+        alignas(MAGMA_ALIGNMENT) const Vertex vertices[] = {
             {{ 0.0f,-0.3f}, {255, 0, 0, 255}}, // top
             {{-0.6f, 0.3f}, {0, 255, 0, 255}}, // left
             {{ 0.6f, 0.3f}, {0, 0, 255, 255}}  // right
         };
-        vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
+        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void setupPipeline()

@@ -1,6 +1,5 @@
 #include <fstream>
 #include "../framework/vulkanApp.h"
-#include "../framework/bufferFromArray.h"
 #include "../framework/utilities.h"
 
 /* Place all texture data (with mipmaps) into one large
@@ -198,13 +197,13 @@ public:
         const float height = static_cast<float>(diffuse->getImage()->getHeight());
         constexpr float w = 0.5f;
         const float h = height/width * w; // Keep aspect ratio
-        const std::vector<Vertex> vertices = {
+        alignas(MAGMA_ALIGNMENT) const Vertex vertices[] = {
             {-w, -h, 0.f, 0.f},
             {-w,  h, 0.f, 1.f},
             { w, -h, 1.f, 0.f},
             { w,  h, 1.f, 1.f}
         };
-        vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
+        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void createUniformBuffer()

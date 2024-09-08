@@ -1,5 +1,4 @@
 #include "../framework/vulkanApp.h"
-#include "../framework/bufferFromArray.h"
 
 class PushConstantsApp : public VulkanApp
 {
@@ -73,7 +72,7 @@ public:
             {-0.6f, 0.3f},
             { 0.6f, 0.3f}
         };
-        vertexBuffer = vertexBufferFromArray<magma::VertexBuffer>(cmdBufferCopy, vertices);
+        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void setupDescriptorSet()

@@ -72,9 +72,6 @@
     <ClInclude Include="graphicsPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bufferFromArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shaderReflectionFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -164,7 +164,6 @@
     <ClInclude Include="application.h" />
     <ClInclude Include="graphicsPipeline.h" />
     <ClInclude Include="linearAllocator.h" />
-    <ClInclude Include="bufferFromArray.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="shaderReflectionFactory.h" />
     <ClInclude Include="timer.h" />
