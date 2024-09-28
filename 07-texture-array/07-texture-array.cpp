@@ -185,12 +185,12 @@ public:
         // Upload texture array data from buffer
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         const magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
-        std::shared_ptr<magma::Image2DArray> imageArray = std::make_shared<magma::Image2DArray>(cmdImageCopy,
-            format, MAGMA_COUNT(ctxArray), buffer, mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> imageArray = std::make_unique<magma::Image2DArray>(cmdImageCopy,
+            format, magma::core::countof(ctxArray), buffer, mipMaps, bufferLayout);
         cmdImageCopy->end();
         submitCopyImageCommands();
         // Create image view for fragment shader
-        imageArrayView = std::make_shared<magma::ImageView>(std::move(imageArray));
+        imageArrayView = std::make_shared<magma::UniqueImageView>(std::move(imageArray));
     }
 
     void createSampler()

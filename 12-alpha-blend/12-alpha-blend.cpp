@@ -119,9 +119,9 @@ public:
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::shared_ptr<magma::Image2D> image = std::make_shared<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::ImageView>(std::move(image));
+        return std::make_shared<magma::UniqueImageView>(std::move(image));
     }
 
     void loadTextures()

@@ -8,9 +8,7 @@ class RenderToTextureApp : public VulkanApp
         constexpr static uint32_t width = 128;
         constexpr static uint32_t height = 128;
 
-        std::shared_ptr<magma::ColorAttachment> color;
         std::shared_ptr<magma::ImageView> colorView;
-        std::shared_ptr<magma::DepthStencilAttachment> depth;
         std::shared_ptr<magma::ImageView> depthView;
         std::shared_ptr<magma::RenderPass> renderPass;
         std::shared_ptr<magma::Framebuffer> framebuffer;
@@ -89,23 +87,24 @@ public:
     {
         constexpr bool sampled = true;
         constexpr bool dontSampled = false;
+        constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
         // Create color attachment
-        fb.color = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, 1, sampled);
-        fb.colorView = std::make_shared<magma::ImageView>(fb.color);
+        std::unique_ptr<magma::Image> color = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, 1, sampled);
+        fb.colorView = std::make_shared<magma::UniqueImageView>(std::move(color));
         // Create depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        fb.depth = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, 1, dontSampled);
-        fb.depthView = std::make_shared<magma::ImageView>(fb.depth);
+        std::unique_ptr<magma::Image> depth = std::make_unique<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, 1, dontSampled);
+        fb.depthView = std::make_shared<magma::UniqueImageView>(std::move(depth));
         // Don't care about initial layout
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // Define that color attachment can be cleared, can store shader output and should be read-only image
-        const magma::AttachmentDescription colorAttachment(fb.color->getFormat(), 1,
+        const magma::AttachmentDescription colorAttachment(colorFormat, 1,
             magma::op::clearStore, // Color clear, store
             magma::op::dontCare, // Inapplicable
             initialLayout,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Should be read-only in the shader when a render pass instance ends
         // Define that depth attachment can be cleared and can store shader output
-        const magma::AttachmentDescription depthAttachment(fb.depth->getFormat(), 1,
+        const magma::AttachmentDescription depthAttachment(depthFormat, 1,
             magma::op::clearStore, // Depth clear, store
             magma::op::dontCare, // Don't care about stencil
             initialLayout,

@@ -159,9 +159,8 @@ void VulkanApp::createInstance()
 
 void VulkanApp::createLogicalDevice()
 {
-    const std::vector<float> defaultQueuePriorities = {1.f};
-    const magma::DeviceQueueDescriptor graphicsQueueDesc(physicalDevice, VK_QUEUE_GRAPHICS_BIT, defaultQueuePriorities);
-    const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice, VK_QUEUE_TRANSFER_BIT, defaultQueuePriorities);
+    const magma::DeviceQueueDescriptor graphicsQueueDesc(physicalDevice, VK_QUEUE_GRAPHICS_BIT, magma::QueuePriorityHighest);
+    const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice, VK_QUEUE_TRANSFER_BIT, magma::QueuePriorityDefault);
     std::set<magma::DeviceQueueDescriptor> queueDescriptors;
     queueDescriptors.insert(graphicsQueueDesc);
     queueDescriptors.insert(transferQueueDesc);
@@ -299,13 +298,13 @@ void VulkanApp::createFramebuffer()
     {
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         constexpr bool dontSampled = false;
-        depthStencil = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, surfaceCaps.currentExtent, 1, 1, dontSampled);
-        depthStencilView = std::make_shared<magma::ImageView>(depthStencil);
+        std::unique_ptr<magma::Image> depthStencil = std::make_unique<magma::DepthStencilAttachment>(device, depthFormat, surfaceCaps.currentExtent, 1, 1, dontSampled);
+        depthStencilView = std::make_shared<magma::UniqueImageView>(std::move(depthStencil));
     }
     for (const auto& image : swapchain->getImages())
     {
         std::vector<std::shared_ptr<magma::ImageView>> attachments;
-        std::shared_ptr<magma::ImageView> colorView(std::make_shared<magma::ImageView>(image));
+        std::shared_ptr<magma::SharedImageView> colorView = std::make_shared<magma::SharedImageView>(std::move(image));
         attachments.push_back(colorView);
         if (depthBuffer)
             attachments.push_back(depthStencilView);

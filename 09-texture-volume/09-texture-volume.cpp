@@ -126,9 +126,9 @@ public:
         const std::vector<magma::Image::Mip> mipMaps = {volumeMip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
         // Upload volume data from buffer
-        std::shared_ptr<magma::Image3D> image = std::make_shared<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::ImageView>(std::move(image));
+        return std::make_shared<magma::UniqueImageView>(std::move(image));
     }
 
     std::shared_ptr<magma::ImageView> loadTransferFunctionTexture(const std::string& filename, uint32_t width, std::shared_ptr<magma::SrcTransferBuffer> buffer)
@@ -152,9 +152,9 @@ public:
         mip.bufferOffset = 0;
         const std::vector<magma::Image::Mip> mipMaps = {mip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
-        std::shared_ptr<magma::Image1D> image = std::make_shared<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::ImageView>(std::move(image));
+        return std::make_shared<magma::UniqueImageView>(std::move(image));
     }
 
     void loadTextures()

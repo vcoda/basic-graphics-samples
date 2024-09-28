@@ -13,11 +13,8 @@ class RenderToMsaaTextureApp : public VulkanApp
         constexpr static uint32_t width = 128;
         constexpr static uint32_t height = 128;
 
-        std::shared_ptr<magma::ColorAttachment> colorMsaa;
         std::shared_ptr<magma::ImageView> colorMsaaView;
-        std::shared_ptr<magma::DepthStencilAttachment> depthMsaa;
         std::shared_ptr<magma::ImageView> depthMsaaView;
-        std::shared_ptr<magma::ColorAttachment> colorResolve;
         std::shared_ptr<magma::ImageView> colorResolveView;
         std::shared_ptr<magma::RenderPass> renderPass;
         std::shared_ptr<magma::Framebuffer> framebuffer;
@@ -97,24 +94,25 @@ public:
     {
         constexpr bool sampled = true;
         constexpr bool dontSampled = false;
+        constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
         // Choose supported multisample level
-        fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, VK_FORMAT_R8G8B8A8_UNORM);
+        fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, colorFormat);
         // Create multisample color attachment
-        fb.colorMsaa = std::make_shared<magma::ColorAttachment>(device, VK_FORMAT_R8G8B8A8_UNORM, extent, 1, fb.sampleCount, dontSampled,
+        std::unique_ptr<magma::Image> colorMsaa = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, fb.sampleCount, dontSampled,
             nullptr, MSAA_EXPLICIT_RESOLVE);
-        fb.colorMsaaView = std::make_shared<magma::ImageView>(fb.colorMsaa);
+        fb.colorMsaaView = std::make_shared<magma::UniqueImageView>(std::move(colorMsaa));
         // Create multisample depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
-        fb.depthMsaa = std::make_shared<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount, dontSampled);
-        fb.depthMsaaView = std::make_shared<magma::ImageView>(fb.depthMsaa);
+        std::unique_ptr<magma::Image> depthMsaa = std::make_unique<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount, dontSampled);
+        fb.depthMsaaView = std::make_shared<magma::UniqueImageView>(std::move(depthMsaa));
         // Create color resolve attachment
-        fb.colorResolve = std::make_shared<magma::ColorAttachment>(device, fb.colorMsaa->getFormat(), extent, 1, 1, sampled,
+        std::unique_ptr<magma::Image> colorResolve = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, 1, sampled,
             nullptr, MSAA_EXPLICIT_RESOLVE);
-        fb.colorResolveView = std::make_shared<magma::ImageView>(fb.colorResolve);
+        fb.colorResolveView = std::make_shared<magma::UniqueImageView>(std::move(colorResolve));
         // Don't care about initial layout
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // Define that multisample color attachment can be cleared and can store shader output
-        const magma::AttachmentDescription colorMsaaAttachment(fb.colorMsaa->getFormat(), fb.colorMsaa->getSamples(),
+        const magma::AttachmentDescription colorMsaaAttachment(colorFormat, fb.sampleCount,
             // Typically, after the multisampled image is resolved, we don't need the
             // multisampled image anymore. Therefore, the multisampled image must be
             // discarded by using STORE_OP_DONT_CARE.
@@ -123,7 +121,7 @@ public:
             initialLayout,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL); // Stay as color attachment
         // Define that multisample depth attachment can be cleared and can store shader output
-        const magma::AttachmentDescription depthMsaaAttachment(fb.depthMsaa->getFormat(), fb.depthMsaa->getSamples(),
+        const magma::AttachmentDescription depthMsaaAttachment(depthFormat, fb.sampleCount,
             magma::op::clear, // Depth clear, don't care about store
             magma::op::dontCare, // Don't care about stencil
             initialLayout,
@@ -137,7 +135,7 @@ public:
             fb.renderPass, {fb.colorMsaaView, fb.depthMsaaView}));
     #else
         // Define that resolve attachment doesn't care about clear and should be read-only image
-        const magma::AttachmentDescription colorResolveAttachment(fb.colorResolve->getFormat(), 1,
+        const magma::AttachmentDescription colorResolveAttachment(colorFormat, 1,
             magma::op::store, // Don't care about clear as it will be used as MSAA resolve target
             magma::op::dontCare,
             initialLayout,
@@ -221,13 +219,13 @@ public:
 
     void msaaResolve(const Framebuffer& fb)
     {
-        fb.colorMsaa->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rtCmdBuffer);
-        fb.colorResolve->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, rtCmdBuffer);
+        fb.colorMsaaView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rtCmdBuffer);
+        fb.colorResolveView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, rtCmdBuffer);
         {
-            rtCmdBuffer->resolveImage(fb.colorMsaa, fb.colorResolve);
+            //rtCmdBuffer->resolveImage(fb.colorMsaa, fb.colorResolve);
         }
-        fb.colorMsaa->layoutTransition(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, rtCmdBuffer);
-        fb.colorResolve->layoutTransition(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, rtCmdBuffer);
+        fb.colorMsaaView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, rtCmdBuffer);
+        fb.colorResolveView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, rtCmdBuffer);
     }
 
     void recordOffscreenCommandBuffer(const Framebuffer& fb)

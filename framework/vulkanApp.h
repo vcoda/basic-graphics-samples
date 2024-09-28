@@ -61,7 +61,6 @@ protected:
     std::unique_ptr<magma::DeviceExtensions> extensions;
 
     std::shared_ptr<magma::RenderPass> renderPass;
-    std::shared_ptr<magma::DepthStencilAttachment> depthStencil;
     std::shared_ptr<magma::ImageView> depthStencilView;
     std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;
 
