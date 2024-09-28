@@ -13,9 +13,9 @@ class RenderToMsaaTextureApp : public VulkanApp
         constexpr static uint32_t width = 128;
         constexpr static uint32_t height = 128;
 
-        std::shared_ptr<magma::ImageView> colorMsaaView;
+        std::shared_ptr<magma::SharedImageView> colorMsaaView;
         std::shared_ptr<magma::ImageView> depthMsaaView;
-        std::shared_ptr<magma::ImageView> colorResolveView;
+        std::shared_ptr<magma::SharedImageView> colorResolveView;
         std::shared_ptr<magma::RenderPass> renderPass;
         std::shared_ptr<magma::Framebuffer> framebuffer;
         uint32_t sampleCount = 0;
@@ -98,17 +98,17 @@ public:
         // Choose supported multisample level
         fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, colorFormat);
         // Create multisample color attachment
-        std::unique_ptr<magma::Image> colorMsaa = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, fb.sampleCount, dontSampled,
+        std::shared_ptr<magma::Image> colorMsaa = std::make_shared<magma::ColorAttachment>(device, colorFormat, extent, 1, fb.sampleCount, dontSampled,
             nullptr, MSAA_EXPLICIT_RESOLVE);
-        fb.colorMsaaView = std::make_shared<magma::UniqueImageView>(std::move(colorMsaa));
+        fb.colorMsaaView = std::make_shared<magma::SharedImageView>(std::move(colorMsaa));
         // Create multisample depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         std::unique_ptr<magma::Image> depthMsaa = std::make_unique<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount, dontSampled);
         fb.depthMsaaView = std::make_shared<magma::UniqueImageView>(std::move(depthMsaa));
         // Create color resolve attachment
-        std::unique_ptr<magma::Image> colorResolve = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, 1, sampled,
+        std::shared_ptr<magma::Image> colorResolve = std::make_shared<magma::ColorAttachment>(device, colorFormat, extent, 1, 1, sampled,
             nullptr, MSAA_EXPLICIT_RESOLVE);
-        fb.colorResolveView = std::make_shared<magma::UniqueImageView>(std::move(colorResolve));
+        fb.colorResolveView = std::make_shared<magma::SharedImageView>(std::move(colorResolve));
         // Don't care about initial layout
         constexpr VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // Define that multisample color attachment can be cleared and can store shader output
@@ -222,7 +222,7 @@ public:
         fb.colorMsaaView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rtCmdBuffer);
         fb.colorResolveView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, rtCmdBuffer);
         {
-            //rtCmdBuffer->resolveImage(fb.colorMsaa, fb.colorResolve);
+            rtCmdBuffer->resolveImage(fb.colorMsaaView->getImagePointer(), fb.colorResolveView->getImagePointer());
         }
         fb.colorMsaaView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, rtCmdBuffer);
         fb.colorResolveView->getImage()->layoutTransition(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, rtCmdBuffer);
