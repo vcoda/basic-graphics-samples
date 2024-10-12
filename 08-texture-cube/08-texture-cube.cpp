@@ -27,7 +27,6 @@ class TextureCubeApp : public VulkanApp
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<TransformMatrices>> uniformTransforms;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     rapid::matrix view;
@@ -148,7 +147,7 @@ public:
 
     void createSampler()
     {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdge);
+        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
     }
 
     void createUniformBuffer()
@@ -168,7 +167,7 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform", "envmap",
             mesh->getVertexInput(),
@@ -178,7 +177,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }

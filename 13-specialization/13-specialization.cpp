@@ -50,7 +50,6 @@ class SpecializationApp : public VulkanApp
     std::shared_ptr<magma::ShaderModule> fragmentShader;
     std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::unique_ptr<magma::GraphicsPipelineBatch> pipelineBatch;
     std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers[2];
 
@@ -170,7 +169,7 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "transform");
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+
     }
 
     magma::FragmentShaderStage specializeFragmentStage(ShadingType shadingType, const char *entrypoint) const
@@ -197,6 +196,8 @@ public:
         for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
             const magma::FragmentShaderStage fragmentStage = specializeFragmentStage((ShadingType)i, "main");
+            // TODO: implemented shared pipeline layout for specialized pipelines
+            std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
             pipelineBatch->batchPipeline(
                 {vertexStage, fragmentStage},
                 mesh->getVertexInput(),
@@ -209,7 +210,7 @@ public:
                 magma::renderstate::depthLessOrEqual,
                 magma::renderstate::dontBlendRgb,
                 dynamicStates,
-                pipelineLayout,
+                std::move(layout),
                 renderPass, 0);
         }
         std::future<void> buildResult = pipelineBatch->buildPipelinesAsync(pipelineCache);

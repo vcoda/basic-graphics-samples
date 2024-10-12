@@ -32,10 +32,8 @@ class RenderToTextureApp : public VulkanApp
     std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
     std::shared_ptr<magma::DescriptorSet> rtDescriptorSet;
-    std::shared_ptr<magma::PipelineLayout> rtPipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
     std::shared_ptr<magma::DescriptorSet> txDescriptorSet;
-    std::shared_ptr<magma::PipelineLayout> txPipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> txPipeline;
 
 public:
@@ -159,7 +157,7 @@ public:
 
     void setupPipelines()
     {
-        rtPipelineLayout = std::make_shared<magma::PipelineLayout>(rtDescriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> rtLayout = std::make_unique<magma::PipelineLayout>(rtDescriptorSet->getLayout());
         rtPipeline = std::make_shared<GraphicsPipeline>(device,
             "triangle", "fill",
             magma::renderstate::nullVertexInput,
@@ -168,10 +166,10 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            rtPipelineLayout,
+            std::move(rtLayout),
             fb.renderPass, 0,
             pipelineCache);
-        txPipelineLayout = std::make_shared<magma::PipelineLayout>(txDescriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> txLayout = std::make_unique<magma::PipelineLayout>(txDescriptorSet->getLayout());
         txPipeline = std::make_shared<GraphicsPipeline>(device,
             "passthrough", "tex",
             magma::renderstate::pos2fTex2f,
@@ -180,7 +178,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            txPipelineLayout,
+            std::move(txLayout),
             renderPass, 0,
             pipelineCache);
     }

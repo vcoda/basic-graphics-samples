@@ -12,7 +12,6 @@ class MeshApp : public VulkanApp
     std::unique_ptr<quadric::Teapot> mesh;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> wireframePipeline;
 
     rapid::matrix viewProj;
@@ -85,7 +84,7 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         wireframePipeline = std::make_shared<GraphicsPipeline>(device,
             "transform", "normal",
             mesh->getVertexInput(),
@@ -95,7 +94,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }

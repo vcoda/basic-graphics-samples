@@ -18,7 +18,6 @@ class ComputeApp : public VulkanApp
     std::shared_ptr<magma::StorageBuffer> outputBuffer;
     std::shared_ptr<magma::DstTransferBuffer> readbackBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::ComputePipeline> computeSum;
     std::shared_ptr<magma::ComputePipeline> computeMul;
     std::shared_ptr<magma::ComputePipeline> computePower;
@@ -83,16 +82,16 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_COMPUTE_BIT,
             nullptr, 0, shaderReflectionFactory, "sum");
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
     {
         const aligned_vector<char> bytecode = utilities::loadBinaryFile(filename + std::string(".o"));
         auto computeShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         return std::make_shared<magma::ComputePipeline>(device,
             magma::ComputeShaderStage(computeShader, entrypoint),
-            pipelineLayout, nullptr, pipelineCache);
+            std::move(layout), nullptr, pipelineCache);
     }
 
     void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
@@ -102,8 +101,8 @@ public:
         {   // Ensure that transfer write is finished before compute shader execution
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 {
-                    {inputBuffers[0], magma::barrier::buffer::transferWriteShaderRead},
-                    {inputBuffers[0], magma::barrier::buffer::transferWriteShaderRead},
+                    {inputBuffers[0].get(), magma::barrier::buffer::transferWriteShaderRead},
+                    {inputBuffers[0].get(), magma::barrier::buffer::transferWriteShaderRead},
                 });
             // Bind input and output buffers
             computeCmdBuffer->bindDescriptorSet(pipeline, 0, descriptorSet);
@@ -114,7 +113,7 @@ public:
             computeCmdBuffer->dispatch(workgroups, 1, 1);
             // Ensure that shader writes are finished before transfer readback
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                magma::BufferMemoryBarrier(outputBuffer, magma::barrier::buffer::shaderWriteTransferRead));
+                magma::BufferMemoryBarrier(outputBuffer.get(), magma::barrier::buffer::shaderWriteTransferRead));
             // Copy output local buffer to readback buffer
             computeCmdBuffer->copyBuffer(outputBuffer, readbackBuffer);
             /* The memory dependency defined by signaling a fence and waiting on the host
@@ -124,7 +123,7 @@ public:
                and the end of the submission that will signal the fence,
                to guarantee completion of the writes. */
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT,
-                magma::BufferMemoryBarrier(readbackBuffer, magma::barrier::buffer::transferWriteHostRead));
+                magma::BufferMemoryBarrier(readbackBuffer.get(), magma::barrier::buffer::transferWriteHostRead));
         }
         computeCmdBuffer->end();
         // Block until all command buffer execution is complete

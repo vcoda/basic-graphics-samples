@@ -16,7 +16,6 @@ class VertexTransformApp : public VulkanApp
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     rapid::matrix viewProj;
@@ -110,7 +109,7 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform", "frontFace",
             magma::renderstate::pos2fColor4ub,
@@ -120,7 +119,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }

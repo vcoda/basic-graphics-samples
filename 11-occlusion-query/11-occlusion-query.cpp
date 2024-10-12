@@ -32,7 +32,6 @@ class OcclusionQueryApp : public VulkanApp
     std::shared_ptr<DynamicUniformBuffer<rapid::matrix>> transformUniforms;
     std::shared_ptr<DynamicUniformBuffer<rapid::vector4>> colorUniforms;
     std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> teapotPipeline;
     std::shared_ptr<magma::GraphicsPipeline> planePipeline;
 
@@ -161,11 +160,12 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(
+        std::unique_ptr<magma::PipelineLayout> teapotLayout = std::make_unique<magma::PipelineLayout>(
             std::initializer_list<std::shared_ptr<const magma::DescriptorSetLayout>>{
                 descriptorSets[0]->getLayout(),
                 descriptorSets[1]->getLayout()
             });
+        std::unique_ptr<magma::PipelineLayout> planeLayout = teapotLayout->clone();
         teapotPipeline = std::make_shared<GraphicsPipeline>(device,
             "transform", "fill",
             teapot->getVertexInput(),
@@ -175,7 +175,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(teapotLayout),
             renderPass, 0,
             pipelineCache);
         planePipeline = std::make_shared<GraphicsPipeline>(device,
@@ -187,7 +187,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthLessOrEqual,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(planeLayout),
             renderPass, 0,
             pipelineCache);
     }

@@ -13,7 +13,6 @@ class ParticlesApp : public VulkanApp
     std::unique_ptr<ParticleSystem> particles;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     static constexpr float fov = rapid::radians(60.f);
@@ -107,8 +106,6 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "pointSize");
-        constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
     void setupPipeline()
@@ -116,6 +113,8 @@ public:
         const magma::VertexInputStructure<ParticleSystem::ParticleVertex> vertexInput(0, {
             {0, &ParticleSystem::ParticleVertex::position},
             {1, &ParticleSystem::ParticleVertex::color}});
+        constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "pointSize","particle",
             vertexInput,
@@ -124,7 +123,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::blendNormalRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }

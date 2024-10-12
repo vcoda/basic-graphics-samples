@@ -15,7 +15,6 @@ class PushConstantsApp : public VulkanApp
 
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
 public:
@@ -41,7 +40,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->pushConstantBlock(pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushConstants);
+                cmdBuffer->pushConstantBlock(*graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, pushConstants);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(3, 0);
@@ -79,13 +78,14 @@ public:
     {
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT);
-        // Specify push constant range
-        constexpr magma::push::VertexConstantRange<PushConstants> pushConstantRange;
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
     }
 
     void setupPipeline()
     {
+        // Specify push constant range
+        constexpr magma::push::VertexConstantRange<PushConstants> pushConstantRange;
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(
+            descriptorSet->getLayout(), pushConstantRange);
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "passthrough", "fill",
             magma::renderstate::pos2f,
@@ -94,7 +94,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }

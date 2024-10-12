@@ -25,7 +25,6 @@ class TextureVolumeApp : public VulkanApp
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::UniformBuffer<IntegrationParameters>> uniformParameters;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     float power = 0.4f;
@@ -196,7 +195,7 @@ public:
 
     void setupPipeline()
     {
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
             "quad", "raycast",
             magma::renderstate::nullVertexInput,
@@ -205,7 +204,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }

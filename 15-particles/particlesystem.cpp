@@ -170,7 +170,7 @@ void ParticleSystem::reset()
 
 void ParticleSystem::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer, std::shared_ptr<magma::Pipeline> pipeline) noexcept
 {
-    cmdBuffer->pushConstantBlock(pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, constants);
+    cmdBuffer->pushConstantBlock(*pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, constants);
     cmdBuffer->bindPipeline(pipeline);
     cmdBuffer->bindVertexBuffer(0, vertexBuffer);
     cmdBuffer->drawIndirect(drawParams);

@@ -26,7 +26,6 @@ class ShaderToyApp : public VulkanApp
     std::shared_ptr<magma::ShaderModule> fragmentShader;
     std::shared_ptr<magma::UniformBuffer<BuiltInUniforms>> builtinUniforms;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     std::atomic<bool> rebuildCommandBuffers;
@@ -165,7 +164,7 @@ public:
             magma::VertexShaderStage(vertexShader, "main"),
             magma::FragmentShaderStage(fragmentShader, "main")
         };
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device,
             shaderStages,
             magma::renderstate::nullVertexInput,
@@ -177,7 +176,7 @@ public:
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::dontBlendRgb,
             std::initializer_list<VkDynamicState>{},
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             nullptr,
             pipelineCache);

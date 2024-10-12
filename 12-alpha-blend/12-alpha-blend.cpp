@@ -16,7 +16,6 @@ class AlphaBlendApp : public VulkanApp
     std::shared_ptr<magma::Sampler> anisotropicSampler;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::PipelineLayout> pipelineLayout;
     std::shared_ptr<magma::GraphicsPipeline> cullFrontPipeline;
     std::shared_ptr<magma::GraphicsPipeline> cullBackPipeline;
 
@@ -143,7 +142,7 @@ public:
 
     void createSampler()
     {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdge);
+        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
     }
 
     void setupDescriptorSet()
@@ -153,11 +152,11 @@ public:
         descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "texture");
-        pipelineLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
     }
 
     std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
+        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         return std::make_shared<GraphicsPipeline>(device,
             "transform", "texture",
             mesh->getVertexInput(),
@@ -166,7 +165,7 @@ public:
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::blendNormalRgb,
-            pipelineLayout,
+            std::move(layout),
             renderPass, 0,
             pipelineCache);
     }
