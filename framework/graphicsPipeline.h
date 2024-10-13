@@ -13,7 +13,7 @@ public:
         const magma::MultisampleState& multisampleState,
         const magma::DepthStencilState& depthStencilState,
         const magma::ColorBlendState& colorBlendState,
-        std::unique_ptr<magma::PipelineLayout> layout,
+        magma::core::variant_ptr<magma::PipelineLayout> layout,
         std::shared_ptr<magma::RenderPass> renderPass,
         uint32_t subpass = 0,
         std::shared_ptr<magma::PipelineCache> pipelineCache = nullptr);
