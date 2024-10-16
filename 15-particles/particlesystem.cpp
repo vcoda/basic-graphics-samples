@@ -168,7 +168,7 @@ void ParticleSystem::reset()
     freeList.splice(freeList.end(), activeList);
 }
 
-void ParticleSystem::draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer, std::shared_ptr<magma::Pipeline> pipeline) noexcept
+void ParticleSystem::draw(const std::unique_ptr<magma::CommandBuffer>& cmdBuffer, std::shared_ptr<magma::Pipeline> pipeline) noexcept
 {
     cmdBuffer->pushConstantBlock(*pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, constants);
     cmdBuffer->bindPipeline(pipeline);

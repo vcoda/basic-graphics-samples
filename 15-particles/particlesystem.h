@@ -83,7 +83,7 @@ public:
     void initialize(std::shared_ptr<magma::Device> device);
     void update(float dt);
     void reset(void);
-    void draw(std::shared_ptr<magma::CommandBuffer> cmdBuffer,
+    void draw(const std::unique_ptr<magma::CommandBuffer>& cmdBuffer,
         std::shared_ptr<magma::Pipeline> pipeline) noexcept;
 
 private:

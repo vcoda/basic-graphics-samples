@@ -13,7 +13,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     magma::core::variant_ptr<magma::PipelineLayout> layout,
     std::shared_ptr<magma::RenderPass> renderPass,
     uint32_t subpass /* 0 */,
-    std::shared_ptr<magma::PipelineCache> pipelineCache /* nullptr */):
+    const std::unique_ptr<magma::PipelineCache>& pipelineCache /* nullptr */):
     magma::GraphicsPipeline(device,
     std::vector<magma::PipelineShaderStage>{
         loadShader(device, vertexShaderFileName),
@@ -28,7 +28,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::move(renderPass),
     subpass,
     nullptr,
-    std::move(pipelineCache),
+    pipelineCache,
     nullptr, 0)
 {}
 

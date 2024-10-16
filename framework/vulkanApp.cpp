@@ -79,7 +79,7 @@ void VulkanApp::initialize()
     createCommandBuffers();
     createSyncPrimitives();
     createDescriptorPool();
-    pipelineCache = std::make_shared<magma::PipelineCache>(device);
+    pipelineCache = std::make_unique<magma::PipelineCache>(device);
     shaderReflectionFactory = std::make_shared<ShaderReflectionFactory>(device);
 }
 
@@ -198,11 +198,11 @@ void VulkanApp::createLogicalDevice()
 void VulkanApp::createSwapchain()
 {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-    surface = std::make_shared<magma::Win32Surface>(instance, hInstance, hWnd);
+    surface = std::make_unique<magma::Win32Surface>(instance, hInstance, hWnd);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
-    surface = std::make_shared<magma::XlibSurface>(instance, dpy, window);
+    surface = std::make_unique<magma::XlibSurface>(instance, dpy, window);
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-    surface = std::make_shared<magma::XcbSurface>(instance, connection, window);
+    surface = std::make_unique<magma::XcbSurface>(instance, connection, window);
 #endif // VK_USE_PLATFORM_XCB_KHR
     const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
     if (!physicalDevice->getSurfaceSupport(surface, graphicsQueue.queueFamilyIndex))
@@ -316,19 +316,19 @@ void VulkanApp::createFramebuffer()
 void VulkanApp::createCommandBuffers()
 {
     graphicsQueue = device->getQueue(VK_QUEUE_GRAPHICS_BIT, 0);
-    commandPools[0] = std::make_shared<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
+    commandPools[0] = std::make_unique<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
     // Create draw command buffers
     commandBuffers = commandPools[0]->allocateCommandBuffers(static_cast<uint32_t>(framebuffers.size()), true);
     // Create image copy command buffer
-    cmdImageCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
+    cmdImageCopy = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[0]);
     try
     {
         transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         if (transferQueue)
         {
-            commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
+            commandPools[1] = std::make_unique<magma::CommandPool>(device, transferQueue->getFamilyIndex());
             // Create buffer copy command buffer
-            cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
+            cmdBufferCopy = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[1]);
         }
     } catch (...) { std::cout << "transfer queue not present" << std::endl; }
 }

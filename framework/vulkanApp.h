@@ -53,7 +53,7 @@ protected:
 
     std::shared_ptr<magma::Instance> instance;
     std::unique_ptr<magma::DebugReportCallback> debugReportCallback;
-    std::shared_ptr<magma::Surface> surface;
+    std::unique_ptr<magma::Surface> surface;
     std::shared_ptr<magma::PhysicalDevice> physicalDevice;
     std::shared_ptr<magma::Device> device;
     std::unique_ptr<magma::Swapchain> swapchain;
@@ -66,10 +66,10 @@ protected:
 
     std::shared_ptr<magma::Queue> graphicsQueue;
     std::shared_ptr<magma::Queue> transferQueue;
-    std::shared_ptr<magma::CommandPool> commandPools[2];
-    std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers;
-    std::shared_ptr<magma::CommandBuffer> cmdImageCopy;
-    std::shared_ptr<magma::CommandBuffer> cmdBufferCopy;
+    std::unique_ptr<magma::CommandPool> commandPools[2];
+    std::vector<std::unique_ptr<magma::CommandBuffer>> commandBuffers;
+    std::unique_ptr<magma::CommandBuffer> cmdImageCopy;
+    std::unique_ptr<magma::CommandBuffer> cmdBufferCopy;
 
     std::shared_ptr<magma::Semaphore> presentFinished;
     std::shared_ptr<magma::Semaphore> renderFinished;
@@ -78,7 +78,7 @@ protected:
     const std::unique_ptr<magma::Fence> *waitFence;
 
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
-    std::shared_ptr<magma::PipelineCache> pipelineCache;
+    std::unique_ptr<magma::PipelineCache> pipelineCache;
 
     std::shared_ptr<ShaderReflectionFactory> shaderReflectionFactory;
     std::unique_ptr<Timer> timer;

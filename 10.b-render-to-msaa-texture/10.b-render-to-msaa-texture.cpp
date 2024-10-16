@@ -36,7 +36,7 @@ class RenderToMsaaTextureApp : public VulkanApp
     std::shared_ptr<magma::VertexBuffer> vertexBuffer;
     std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::shared_ptr<magma::Sampler> nearestSampler;
-    std::shared_ptr<magma::CommandBuffer> rtCmdBuffer;
+    std::unique_ptr<magma::CommandBuffer> rtCmdBuffer;
     std::shared_ptr<magma::Semaphore> rtSemaphore;
     std::shared_ptr<magma::DescriptorSet> rtDescriptorSet;
     std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
@@ -231,7 +231,7 @@ public:
         /* VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT specifies that
            a command buffer can be resubmitted to a queue while it is in
            the pending state, and recorded into multiple primary command buffers. */
-        rtCmdBuffer = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
+        rtCmdBuffer = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[0]);
         rtCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
         {
             rtCmdBuffer->beginRenderPass(fb.renderPass, fb.framebuffer,
@@ -261,7 +261,7 @@ public:
 
     void recordCommandBuffer(uint32_t index)
     {
-        std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
+        auto& cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index],

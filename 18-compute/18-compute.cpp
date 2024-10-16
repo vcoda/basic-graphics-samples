@@ -57,12 +57,11 @@ public:
     void createCommandBuffers() override
     {
         graphicsQueue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
-        commandPools[0] = std::make_shared<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
+        commandPools[0] = std::make_unique<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
         commandBuffers = commandPools[0]->allocateCommandBuffers(1, true);
         transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
-        commandPools[1] = std::make_shared<magma::CommandPool>(device, transferQueue->getFamilyIndex());
-        cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
-        fence = std::make_shared<magma::Fence>(device, nullptr, true);
+        commandPools[1] = std::make_unique<magma::CommandPool>(device, transferQueue->getFamilyIndex());
+        cmdBufferCopy = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[1]);
     }
 
     void createInputOutputBuffers()
@@ -96,7 +95,7 @@ public:
 
     void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
     {   // Record command buffer
-        std::shared_ptr<magma::CommandBuffer> computeCmdBuffer = commandBuffers[0];
+        auto& computeCmdBuffer = commandBuffers[0];
         computeCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {   // Ensure that transfer write is finished before compute shader execution
             computeCmdBuffer->pipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,

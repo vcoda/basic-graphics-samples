@@ -52,7 +52,7 @@ class SpecializationApp : public VulkanApp
     std::shared_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> sharedLayout;
     std::unique_ptr<magma::GraphicsPipelineBatch> pipelineBatch;
-    std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers[2];
+    std::vector<std::unique_ptr<magma::CommandBuffer>> commandBuffers[2];
 
     rapid::matrix view;
     rapid::matrix proj;
@@ -223,7 +223,7 @@ public:
 
     void recordCommandBuffer(uint32_t bufferIndex, uint32_t pipelineIndex)
     {
-        std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[bufferIndex][pipelineIndex];
+        auto& cmdBuffer = commandBuffers[bufferIndex][pipelineIndex];
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex],

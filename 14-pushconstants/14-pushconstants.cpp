@@ -31,7 +31,7 @@ public:
     void render(uint32_t bufferIndex) override
     {
         updateVertexColors();
-        std::shared_ptr<magma::CommandBuffer> cmdBuffer = commandBuffers[bufferIndex];
+        auto& cmdBuffer = commandBuffers[bufferIndex];
         // To show push constants in dynamic, we have to rebuild command buffer each frame
         cmdBuffer->reset(false);
         cmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);

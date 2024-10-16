@@ -16,7 +16,7 @@ public:
         magma::core::variant_ptr<magma::PipelineLayout> layout,
         std::shared_ptr<magma::RenderPass> renderPass,
         uint32_t subpass = 0,
-        std::shared_ptr<magma::PipelineCache> pipelineCache = nullptr);
+        const std::unique_ptr<magma::PipelineCache>& pipelineCache = nullptr);
 
 private:
     magma::PipelineShaderStage loadShader(std::shared_ptr<magma::Device> device,

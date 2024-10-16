@@ -28,7 +28,7 @@ public:
     void createImmediateRender()
     {
         constexpr uint32_t maxVertexCount = 1024;
-        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, renderPass, nullptr, pipelineCache);
+        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, renderPass, nullptr);
         ir->setLineWidth(2.f);
     }
 
@@ -261,7 +261,7 @@ public:
 
     void recordCommandBuffer(uint32_t index)
     {
-        std::shared_ptr<magma::CommandBuffer>& cmdBuffer = commandBuffers[index];
+        auto& cmdBuffer = commandBuffers[index];
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(renderPass, framebuffers[index], {magma::clear::gray});
