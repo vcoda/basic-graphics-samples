@@ -80,7 +80,7 @@ protected:
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::unique_ptr<magma::PipelineCache> pipelineCache;
 
-    std::shared_ptr<ShaderReflectionFactory> shaderReflectionFactory;
+    std::unique_ptr<magma::IShaderReflectionFactory> shaderReflectionFactory;
     std::unique_ptr<Timer> timer;
     bool vSync;
     bool depthBuffer;

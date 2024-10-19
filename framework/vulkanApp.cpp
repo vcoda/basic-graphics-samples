@@ -80,7 +80,7 @@ void VulkanApp::initialize()
     createSyncPrimitives();
     createDescriptorPool();
     pipelineCache = std::make_unique<magma::PipelineCache>(device);
-    shaderReflectionFactory = std::make_shared<ShaderReflectionFactory>(device);
+    shaderReflectionFactory = std::make_unique<ShaderReflectionFactory>(device);
 }
 
 void VulkanApp::createInstance()
