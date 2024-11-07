@@ -85,8 +85,8 @@ catch (const magma::exception::Exception& exc)
 catch (const std::exception& exc)
 {
     std::ostringstream oss;
-    oss << oss.what() << std::endl;
-    onError(msg.str(), "Error");
+    oss << exc.what() << std::endl;
+    onError(oss.str(), "Error");
 }
 #endif // MAGMA_NO_EXCEPTIONS
 
