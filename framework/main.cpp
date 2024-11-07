@@ -2,48 +2,58 @@
 #include "application.h"
 #include "magma/magma.h"
 
-void onError(
-    const std::string& msg,
-    const char *caption)
+void onError(const std::string& message, const std::string& caption)
 {
-    std::cerr << msg << std::endl;
+    std::cerr << message << std::endl;
 #ifdef _WIN32
-    MessageBoxA(NULL,
-        msg.c_str(), caption,
-        MB_ICONHAND);
+    MessageBoxA(NULL, message.c_str(), caption.c_str(), MB_ICONHAND);
 #endif
+}
+
+std::string format(const char *what,
+    const magma::exception::source_location& where)
+{
+    std::ostringstream oss;
+    oss << what;
+#ifdef _DEBUG
+    if (where.file_name())
+        oss << std::endl << std::endl <<
+        "file: " << where.file_name() << std::endl <<
+        "line: " << where.line();
+#endif // _DEBUG
+    return oss.str();
+}
+
+template<class Error>
+std::string formatError(Error error, const char *what,
+    const magma::exception::source_location& where)
+{
+    std::ostringstream oss;
+    oss << error << std::endl << what;
+#ifdef _DEBUG
+    if (where.file_name())
+        oss << std::endl << std::endl <<
+        "file: " << where.file_name() << std::endl <<
+        "line: " << where.line();
+#endif // _DEBUG
+    return oss.str();
 }
 
 #ifdef MAGMA_NO_EXCEPTIONS
 void runApp(const AppEntry& entry)
 {
     magma::exception::setExceptionHandler(
-        [](const char *message, const magma::exception::source_where& where)
+        [](const char *what, const magma::exception::source_location& where)
         {
-            std::ostringstream msg;
-            if (!where.file_name())
-                msg << "Error: " << message;
-            else
-            {
-                msg << where.file_name() << "(" << where.line() << "):" << std::endl
-                    << "Error: " << message;
-            }
-            onError(msg.str(), "Magma");
+            std::string message = format(what, where);
+            onError(message, "Magma");
             abort();
         });
     magma::exception::setErrorHandler(
-        [](VkResult result, const char *message, const magma::exception::source_where& where)
+        [](VkResult error, const char *what, const magma::exception::source_location& where)
         {
-            std::ostringstream msg;
-            if (!where.file_name())
-                msg << result << std::endl << message;
-            else
-            {
-                msg << where.file_name() << "(" << where.line() << "):" << std::endl
-                    << std::endl
-                    << result << std::endl << message;
-            }
-            onError(msg.str(), "Vulkan");
+            std::string message = formatError(error, what, where);
+            onError(message, "Vulkan");
             abort();
         });
     std::unique_ptr<IApplication> app = appFactory(entry);
@@ -59,48 +69,23 @@ void runAppWithExceptionHandling(const AppEntry& entry) try
 }
 catch (const magma::exception::ErrorResult& exc)
 {
-    std::ostringstream msg;
-    if (!exc.where().file_name())
-        msg << exc.error() << std::endl << exc.what();
-    else
-    {
-        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
-            << std::endl
-            << exc.error() << std::endl
-            << exc.what();
-    }
-    onError(msg.str(), "Vulkan");
+    std::string message = formatError(exc.error(), exc.what(), exc.where());
+    onError(message, "Vulkan");
 }
 catch (const magma::exception::ReflectionErrorResult& exc)
 {
-    std::ostringstream msg;
-    if (!exc.where().file_name())
-        msg << exc.error() << std::endl << exc.what();
-    else
-    {
-        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
-            << std::endl
-            << exc.error() << std::endl
-            << exc.what();
-    }
-    onError(msg.str(), "SPIRV-Reflect");
+    std::string message = formatError(exc.error(), exc.what(), exc.where());
+    onError(message, "SPIRV-Reflect");
 }
 catch (const magma::exception::Exception& exc)
 {
-    std::ostringstream msg;
-    if (!exc.where().file_name())
-        msg << "Error: " << exc.what();
-    else
-    {
-        msg << exc.where().file_name() << "(" << exc.where().line() << "):" << std::endl
-            << "Error: " << exc.what();
-    }
-    onError(msg.str(), "Magma");
+    std::string message = format(exc.what(), exc.where());
+    onError(message, "Magma");
 }
 catch (const std::exception& exc)
 {
-    std::ostringstream msg;
-    msg << "Error: " << exc.what() << std::endl;
+    std::ostringstream oss;
+    oss << oss.what() << std::endl;
     onError(msg.str(), "Error");
 }
 #endif // MAGMA_NO_EXCEPTIONS
