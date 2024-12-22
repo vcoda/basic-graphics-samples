@@ -78,7 +78,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <AdditionalOptions>/MP16 %(AdditionalOptions)</AdditionalOptions>
@@ -96,7 +96,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <AdditionalOptions>/MP16 %(AdditionalOptions)</AdditionalOptions>
@@ -116,7 +116,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <AdditionalOptions>/MP16 %(AdditionalOptions)</AdditionalOptions>
@@ -138,7 +138,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <AdditionalOptions>/MP16 %(AdditionalOptions)</AdditionalOptions>

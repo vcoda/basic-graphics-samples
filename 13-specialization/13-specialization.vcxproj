@@ -21,10 +21,10 @@
   <ItemGroup>
     <CustomBuild Include="specialized.frag">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling fragment shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling fragment shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling fragment shader</Message>
@@ -36,10 +36,10 @@
     </CustomBuild>
     <CustomBuild Include="transform.vert">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VK_SDK_PATH)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VULKAN_SDK)\Bin\glslangValidator.exe -V %(FullPath) -o %(Filename).o</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling vertex shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling vertex shader</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling vertex shader</Message>
@@ -125,14 +125,14 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib;..\x64\Debug\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib;..\x64\Debug\</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;magma.lib;quadric.lib;framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,14 +143,14 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib32;..\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib32;..\Debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;magma.lib;quadric.lib;framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -163,7 +163,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -173,7 +173,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib32;..\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib32;..\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;magma.lib;quadric.lib;framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -186,7 +186,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VK_SDK_PATH)\Include;..\third-party</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100;4146;4305;4324;4458;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -196,7 +196,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib;..\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib;..\x64\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;magma.lib;quadric.lib;framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
