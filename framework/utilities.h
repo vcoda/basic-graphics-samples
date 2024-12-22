@@ -53,7 +53,7 @@ namespace utilities
         MAGMA_ASSERT(!vertices.empty());
         auto vertexBuffer = std::make_unique<magma::VertexBuffer>(std::move(cmdBuffer),
             vertices.size() * sizeof(Vertex), vertices.data(), std::move(allocator));
-        vertexBuffer->setVertexCount(core::countof(vertices));
+        vertexBuffer->setVertexCount(magma::core::countof(vertices));
         return vertexBuffer;
     }
 } // namespace utilities
