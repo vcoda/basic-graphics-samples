@@ -48,11 +48,11 @@ class SpecializationApp : public VulkanApp
     std::unique_ptr<quadric::Knot> mesh;
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
-    std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> sharedLayout;
     std::unique_ptr<magma::GraphicsPipelineBatch> pipelineBatch;
-    std::vector<std::unique_ptr<magma::CommandBuffer>> commandBuffers[2];
+    std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers[2];
 
     rapid::matrix view;
     rapid::matrix proj;
@@ -133,7 +133,7 @@ public:
         const rapid::matrix pitch = rapid::rotationX(rapid::radians(spinY/2.f));
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix world = pitch * yaw;
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [this, &world](auto *block)
             {
                 block->worldView = world * view;
@@ -161,13 +161,13 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<UniformBlock>>(device, false);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<UniformBlock>>(device, false);
     }
 
     void setupDescriptorSet()
     {
         setTable.transforms = uniformBuffer;
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "transform");
         sharedLayout = std::make_shared<magma::PipelineLayout>(descriptorSet->getLayout());
@@ -178,12 +178,12 @@ public:
         Constants constants;
         constants.colorFill = MAGMA_BOOLEAN(ShadingType::Albedo == shadingType);
         constants.shadingType = static_cast<int>(shadingType);
-        std::shared_ptr<magma::Specialization> specialization(std::make_shared<magma::Specialization>(constants,
+        std::shared_ptr<magma::Specialization> specialization = std::make_shared<magma::Specialization>(constants,
             std::initializer_list<magma::SpecializationEntry>{
                 magma::SpecializationEntry(0, &Constants::colorFill),
                 magma::SpecializationEntry(1, &Constants::shadingType)
-            }));
-        return magma::FragmentShaderStage(fragmentShader, entrypoint, specialization);
+            });
+        return magma::FragmentShaderStage(fragmentShader, entrypoint, std::move(specialization));
     }
 
     void buildPipelines()

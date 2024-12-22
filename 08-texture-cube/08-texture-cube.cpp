@@ -22,12 +22,12 @@ class TextureCubeApp : public VulkanApp
     } setTable;
 
     std::unique_ptr<quadric::Teapot> mesh;
-    std::shared_ptr<magma::ImageView> diffuse;
-    std::shared_ptr<magma::ImageView> specular;
-    std::shared_ptr<magma::Sampler> anisotropicSampler;
-    std::shared_ptr<magma::UniformBuffer<TransformMatrices>> uniformTransforms;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::ImageView> diffuse;
+    std::unique_ptr<magma::ImageView> specular;
+    std::unique_ptr<magma::Sampler> anisotropicSampler;
+    std::unique_ptr<magma::UniformBuffer<TransformMatrices>> uniformTransforms;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     rapid::matrix view;
     rapid::matrix proj;
@@ -72,7 +72,7 @@ public:
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix trans = rapid::translation(0.f, -1.25f, 0.f);
         const rapid::matrix world = trans * pitch * yaw;
-        magma::helpers::mapScoped(uniformTransforms,
+        magma::map(uniformTransforms,
             [this, &world](auto *block)
             {
                 block->worldView = world * view;
@@ -87,7 +87,7 @@ public:
         mesh = std::make_unique<quadric::Teapot>(subdivisionDegree, cmdBufferCopy);
     }
 
-    std::shared_ptr<magma::ImageView> loadCubeMap(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
+    std::unique_ptr<magma::ImageView> loadCubeMap(const std::string& filename, const std::unique_ptr<magma::SrcTransferBuffer>& buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -98,7 +98,7 @@ public:
         ctx.enable_dxt(true);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
         VkDeviceSize baseMipOffset = 0;
-        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+        magma::mapRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data from file
                 file.read(reinterpret_cast<char *>(data), size);
@@ -129,13 +129,13 @@ public:
         std::unique_ptr<magma::ImageCube> image = std::make_unique<magma::ImageCube>(cmdImageCopy,
             format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for fragment shader
-        return std::make_shared<magma::UniqueImageView>(std::move(image));
+        return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
 
     void loadCubeMaps()
     {
         constexpr VkDeviceSize bufferSize = 1024 * 1024;
-        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
+        auto buffer = std::make_unique<magma::SrcTransferBuffer>(device, bufferSize);
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
             diffuse = loadCubeMap("diff.dds", buffer);
@@ -147,12 +147,12 @@ public:
 
     void createSampler()
     {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
+        anisotropicSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
     }
 
     void createUniformBuffer()
     {
-        uniformTransforms = std::make_shared<magma::UniformBuffer<TransformMatrices>>(device);
+        uniformTransforms = std::make_unique<magma::UniformBuffer<TransformMatrices>>(device);
     }
 
     void setupDescriptorSet()
@@ -160,7 +160,7 @@ public:
         setTable.transforms = uniformTransforms;
         setTable.diffuse = {diffuse, anisotropicSampler};
         setTable.specular = {specular, anisotropicSampler};
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "envmap");
     }
@@ -168,7 +168,7 @@ public:
     void setupPipeline()
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "envmap",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,

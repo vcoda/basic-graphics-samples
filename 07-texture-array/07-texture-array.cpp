@@ -20,12 +20,12 @@ class TextureArrayApp : public VulkanApp
     } setTable;
 
     std::unique_ptr<quadric::Cube> mesh;
-    std::shared_ptr<magma::ImageView> imageArrayView;
-    std::shared_ptr<magma::Sampler> anisotropicSampler;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
-    std::shared_ptr<magma::UniformBuffer<TexParameters>> uniformTexParameters;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::ImageView> imageArrayView;
+    std::unique_ptr<magma::Sampler> anisotropicSampler;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
+    std::unique_ptr<magma::UniformBuffer<TexParameters>> uniformTexParameters;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     rapid::matrix viewProj;
     float lod = 0.f;
@@ -98,7 +98,7 @@ public:
         const rapid::matrix yaw = rapid::rotationY(radians);
         const rapid::matrix roll = rapid::rotationZ(radians);
         const rapid::matrix world = pitch * yaw * roll;
-        magma::helpers::mapScoped(uniformWorldViewProj,
+        magma::map(uniformWorldViewProj,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;
@@ -107,7 +107,7 @@ public:
 
     void updateLod()
     {
-        magma::helpers::mapScoped<TexParameters>(uniformTexParameters,
+        magma::map<TexParameters>(uniformTexParameters,
             [this](auto *block)
             {
                 block->lod = lod;
@@ -132,9 +132,9 @@ public:
             totalSize += files.back().tellg();
         }
         std::list<gliml::context> ctxArray;
-        std::shared_ptr<magma::SrcTransferBuffer> buffer = std::make_shared<magma::SrcTransferBuffer>(device, totalSize);
+        std::unique_ptr<magma::SrcTransferBuffer> buffer = std::make_unique<magma::SrcTransferBuffer>(device, totalSize);
         VkDeviceSize baseMipOffset = 0ull;
-        magma::helpers::mapScoped<uint8_t>(buffer, [&](uint8_t *data)
+        magma::map<uint8_t>(buffer, [&](uint8_t *data)
         {   // Read all data to single buffer
             for (auto& file: files)
             {
@@ -189,18 +189,18 @@ public:
         cmdImageCopy->end();
         submitCopyImageCommands();
         // Create image view for fragment shader
-        imageArrayView = std::make_shared<magma::UniqueImageView>(std::move(imageArray));
+        imageArrayView = std::make_unique<magma::UniqueImageView>(std::move(imageArray));
     }
 
     void createSampler()
     {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
+        anisotropicSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
     }
 
     void createUniformBuffers()
     {
-        uniformWorldViewProj = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
-        uniformTexParameters = std::make_shared<magma::UniformBuffer<TexParameters>>(device);
+        uniformWorldViewProj = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformTexParameters = std::make_unique<magma::UniformBuffer<TexParameters>>(device);
         updateLod();
     }
 
@@ -209,7 +209,7 @@ public:
         setTable.worldViewProj = uniformWorldViewProj;
         setTable.texParameters = uniformTexParameters;
         setTable.imageArray = {imageArrayView, anisotropicSampler};
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "textureArray");
     }
@@ -217,7 +217,7 @@ public:
     void setupPipeline()
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "textureArray",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,

@@ -116,10 +116,10 @@ void VulkanApp::createInstance()
             enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     #endif
     }
-    MAGMA_STACK_ARRAY(char, appName, caption.length() + 1);
+    MAGMA_VLA(char, appName, caption.length() + 1);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     size_t count = 0;
-    wcstombs_s(&count, appName, appName.size(), caption.c_str(), appName.size());
+    wcstombs_s(&count, appName, appName.length(), caption.c_str(), appName.length());
 #else
     strcpy(appName, caption.c_str());
 #endif
@@ -320,7 +320,7 @@ void VulkanApp::createCommandBuffers()
     // Create draw command buffers
     commandBuffers = commandPools[0]->allocateCommandBuffers(static_cast<uint32_t>(framebuffers.size()), true);
     // Create image copy command buffer
-    cmdImageCopy = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[0]);
+    cmdImageCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
     try
     {
         transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
@@ -328,7 +328,7 @@ void VulkanApp::createCommandBuffers()
         {
             commandPools[1] = std::make_unique<magma::CommandPool>(device, transferQueue->getFamilyIndex());
             // Create buffer copy command buffer
-            cmdBufferCopy = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[1]);
+            cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
         }
     } catch (...) { std::cout << "transfer queue not present" << std::endl; }
 }

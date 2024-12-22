@@ -2,8 +2,8 @@
 #include <sstream>
 #include <iostream>
 
-#include "utilities.h"
 #include "magma/magma.h"
+#include "utilities.h"
 
 namespace utilities
 {

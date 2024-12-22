@@ -17,7 +17,7 @@ class RenderToMsaaTextureApp : public VulkanApp
         std::shared_ptr<magma::ImageView> depthMsaaView;
         std::shared_ptr<magma::SharedImageView> colorResolveView;
         std::shared_ptr<magma::RenderPass> renderPass;
-        std::shared_ptr<magma::Framebuffer> framebuffer;
+        std::unique_ptr<magma::Framebuffer> framebuffer;
         uint32_t sampleCount = 0;
     } fb;
 
@@ -33,15 +33,15 @@ class RenderToMsaaTextureApp : public VulkanApp
         MAGMA_REFLECT(texture)
     } setTableTx;
 
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::Sampler> nearestSampler;
+    std::unique_ptr<magma::VertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
+    std::unique_ptr<magma::Sampler> nearestSampler;
     std::unique_ptr<magma::CommandBuffer> rtCmdBuffer;
-    std::shared_ptr<magma::Semaphore> rtSemaphore;
-    std::shared_ptr<magma::DescriptorSet> rtDescriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> rtPipeline;
-    std::shared_ptr<magma::DescriptorSet> txDescriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> txPipeline;
+    std::unique_ptr<magma::Semaphore> rtSemaphore;
+    std::unique_ptr<magma::DescriptorSet> rtDescriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> rtPipeline;
+    std::unique_ptr<magma::DescriptorSet> txDescriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> txPipeline;
 
 public:
     RenderToMsaaTextureApp(const AppEntry& entry):
@@ -81,7 +81,7 @@ public:
         const float step = timer->millisecondsElapsed() * speed;
         angle += step;
         const rapid::matrix roll = rapid::rotationZ(rapid::radians(angle));
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [&roll](auto *world)
             {
                 *world = roll;
@@ -96,15 +96,15 @@ public:
         // Choose supported multisample level
         fb.sampleCount = utilities::getSupportedMultisampleLevel(physicalDevice, colorFormat);
         // Create multisample color attachment
-        std::shared_ptr<magma::Image> colorMsaa = std::make_shared<magma::ColorAttachment>(device, colorFormat, extent, 1, fb.sampleCount, dontSampled,
+        std::unique_ptr<magma::Image> colorMsaa = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, fb.sampleCount, dontSampled,
             nullptr, MSAA_EXPLICIT_RESOLVE);
-        fb.colorMsaaView = std::make_shared<magma::SharedImageView>(std::move(colorMsaa));
+        fb.colorMsaaView = std::make_unique<magma::SharedImageView>(std::move(colorMsaa));
         // Create multisample depth attachment
         const VkFormat depthFormat = utilities::getSupportedDepthFormat(physicalDevice, false, true);
         std::unique_ptr<magma::Image> depthMsaa = std::make_unique<magma::DepthStencilAttachment>(device, depthFormat, extent, 1, fb.sampleCount, dontSampled);
         fb.depthMsaaView = std::make_shared<magma::UniqueImageView>(std::move(depthMsaa));
         // Create color resolve attachment
-        std::shared_ptr<magma::Image> colorResolve = std::make_shared<magma::ColorAttachment>(device, colorFormat, extent, 1, 1, sampled,
+        std::unique_ptr<magma::Image> colorResolve = std::make_unique<magma::ColorAttachment>(device, colorFormat, extent, 1, 1, sampled,
             nullptr, MSAA_EXPLICIT_RESOLVE);
         fb.colorResolveView = std::make_shared<magma::SharedImageView>(std::move(colorResolve));
         // Don't care about initial layout
@@ -129,7 +129,7 @@ public:
         fb.renderPass = std::shared_ptr<magma::RenderPass>(new magma::RenderPass(
             device, {colorMsaaAttachment, depthMsaaAttachment}));
         // Framebuffer defines render pass, color/depth/stencil image views and dimensions
-        fb.framebuffer = std::shared_ptr<magma::Framebuffer>(new magma::Framebuffer(
+        fb.framebuffer = std::unique_ptr<magma::Framebuffer>(new magma::Framebuffer(
             fb.renderPass, {fb.colorMsaaView, fb.depthMsaaView}));
     #else
         // Define that resolve attachment doesn't care about clear and should be read-only image
@@ -142,7 +142,7 @@ public:
         fb.renderPass = std::shared_ptr<magma::RenderPass>(new magma::RenderPass(
             device, {colorMsaaAttachment, depthMsaaAttachment, colorResolveAttachment}));
         // Framebuffer defines render pass, color/depth/stencil image views and dimensions
-        fb.framebuffer = std::shared_ptr<magma::Framebuffer>(new magma::Framebuffer(
+        fb.framebuffer = std::unique_ptr<magma::Framebuffer>(new magma::Framebuffer(
             fb.renderPass, {fb.colorMsaaView, fb.depthMsaaView, fb.colorResolveView}));
     #endif // MSAA_EXPLICIT_RESOLVE
     }
@@ -162,27 +162,27 @@ public:
             { w, -h, 1.f, 0.f},
             { w,  h, 1.f, 1.f}
         };
-        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
+        vertexBuffer = utilities::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device, false);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device, false);
     }
 
     void createSampler()
     {
-        nearestSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinMipNearestClampToEdge);
+        nearestSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinMipNearestClampToEdge);
     }
 
     void setupDescriptorSet()
     {
         setTableRt.world = uniformBuffer;
-        rtDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        rtDescriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTableRt, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "triangle");
         setTableTx.texture = {fb.colorResolveView, nearestSampler};
-        txDescriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        txDescriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTableTx, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "tex");
     }
@@ -190,7 +190,7 @@ public:
     void setupPipelines()
     {
         std::unique_ptr<magma::PipelineLayout> rtLayout = std::make_unique<magma::PipelineLayout>(rtDescriptorSet->getLayout());
-        rtPipeline = std::make_shared<GraphicsPipeline>(device,
+        rtPipeline = std::make_unique<GraphicsPipeline>(device,
             "triangle", "fill",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleList,
@@ -202,7 +202,7 @@ public:
             fb.renderPass, 0,
             pipelineCache);
         std::unique_ptr<magma::PipelineLayout> txLayout = std::make_unique<magma::PipelineLayout>(txDescriptorSet->getLayout());
-        txPipeline = std::make_shared<GraphicsPipeline>(device,
+        txPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "tex",
             magma::renderstate::pos2fTex2f,
             magma::renderstate::triangleStrip,
@@ -256,7 +256,7 @@ public:
         #endif // MSAA_EXPLICIT_RESOLVE
         }
         rtCmdBuffer->end();
-        rtSemaphore = std::make_shared<magma::Semaphore>(device);
+        rtSemaphore = std::make_unique<magma::Semaphore>(device);
     }
 
     void recordCommandBuffer(uint32_t index)

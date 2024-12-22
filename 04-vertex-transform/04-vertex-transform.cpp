@@ -1,4 +1,5 @@
 #include "../framework/vulkanApp.h"
+#include "../framework/utilities.h"
 
 class VertexTransformApp : public VulkanApp
 {
@@ -13,10 +14,10 @@ class VertexTransformApp : public VulkanApp
         MAGMA_REFLECT(worldViewProj)
     } setTable;
 
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::VertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     rapid::matrix viewProj;
 
@@ -70,7 +71,7 @@ public:
         static float angle = 0.f;
         angle += rhs ? step : -step; // Preserve direction
         const rapid::matrix world = rapid::rotationY(rapid::radians(angle));
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;
@@ -91,18 +92,18 @@ public:
             {{-0.6f, 0.3f}, {0, 255, 0, 255}}, // left
             {{ 0.6f, 0.3f}, {0, 0, 255, 255}}  // right
         };
-        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
+        vertexBuffer = utilities::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void setupDescriptorSet()
     {
         setTable.worldViewProj = uniformBuffer;
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "transform");
     }
@@ -110,7 +111,7 @@ public:
     void setupPipeline()
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "frontFace",
             magma::renderstate::pos2fColor4ub,
             magma::renderstate::triangleList,

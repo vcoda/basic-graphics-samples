@@ -12,12 +12,12 @@ class AlphaBlendApp : public VulkanApp
     } setTable;
 
     std::unique_ptr<quadric::Cube> mesh;
-    std::shared_ptr<magma::ImageView> logo;
-    std::shared_ptr<magma::Sampler> anisotropicSampler;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> cullFrontPipeline;
-    std::shared_ptr<magma::GraphicsPipeline> cullBackPipeline;
+    std::unique_ptr<magma::ImageView> logo;
+    std::unique_ptr<magma::Sampler> anisotropicSampler;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformWorldViewProj;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> cullFrontPipeline;
+    std::unique_ptr<magma::GraphicsPipeline> cullBackPipeline;
 
     rapid::matrix viewProj;
 
@@ -68,7 +68,7 @@ public:
         const rapid::matrix yaw = rapid::rotationY(radians);
         const rapid::matrix roll = rapid::rotationZ(radians);
         const rapid::matrix world = pitch * yaw * roll;
-        magma::helpers::mapScoped(uniformWorldViewProj,
+        magma::map(uniformWorldViewProj,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;
@@ -80,7 +80,7 @@ public:
         mesh = std::make_unique<quadric::Cube>(cmdBufferCopy);
     }
 
-    std::shared_ptr<magma::ImageView> loadTexture(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
+    std::unique_ptr<magma::ImageView> loadTexture(const std::string& filename, const std::unique_ptr<magma::SrcTransferBuffer>& buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -91,7 +91,7 @@ public:
         ctx.enable_dxt(true);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
         VkDeviceSize baseMipOffset = 0;
-        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+        magma::mapRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);
@@ -120,13 +120,13 @@ public:
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::UniqueImageView>(std::move(image));
+        return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
 
     void loadTextures()
     {
         constexpr VkDeviceSize bufferSize = 1024 * 1024;
-        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
+        auto buffer = std::make_unique<magma::SrcTransferBuffer>(device, bufferSize);
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
             logo = loadTexture("logo.dds", buffer);
@@ -137,27 +137,27 @@ public:
 
     void createUniformBuffers()
     {
-        uniformWorldViewProj = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformWorldViewProj = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void createSampler()
     {
-        anisotropicSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
+        anisotropicSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
     }
 
     void setupDescriptorSet()
     {
         setTable.worldViewProj = uniformWorldViewProj;
         setTable.diffuse = {logo, anisotropicSampler};
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "texture");
     }
 
-    std::shared_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
+    std::unique_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        return std::make_shared<GraphicsPipeline>(device,
+        return std::make_unique<GraphicsPipeline>(device,
             "transform", "texture",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,

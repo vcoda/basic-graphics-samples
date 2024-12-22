@@ -1,4 +1,5 @@
 #include "../framework/vulkanApp.h"
+#include "../framework/utilities.h"
 
 class PushConstantsApp : public VulkanApp
 {
@@ -13,9 +14,9 @@ class PushConstantsApp : public VulkanApp
         MAGMA_REFLECT(pushConstants)
     } setTable;
 
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::VertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
 public:
     PushConstantsApp(const AppEntry& entry):
@@ -40,7 +41,7 @@ public:
             {
                 cmdBuffer->setViewport(0, 0, width, height);
                 cmdBuffer->setScissor(0, 0, width, height);
-                cmdBuffer->pushConstantBlock(*graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, pushConstants);
+                cmdBuffer->pushConstantBlock(graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, pushConstants);
                 cmdBuffer->bindPipeline(graphicsPipeline);
                 cmdBuffer->bindVertexBuffer(0, vertexBuffer);
                 cmdBuffer->draw(3, 0);
@@ -71,12 +72,12 @@ public:
             {-0.6f, 0.3f},
             { 0.6f, 0.3f}
         };
-        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
+        vertexBuffer = utilities::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void setupDescriptorSet()
     {
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT);
     }
 
@@ -86,7 +87,7 @@ public:
         constexpr magma::push::VertexConstantRange<PushConstants> pushConstantRange;
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(
             descriptorSet->getLayout(), pushConstantRange);
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "fill",
             magma::renderstate::pos2f,
             magma::renderstate::triangleList,

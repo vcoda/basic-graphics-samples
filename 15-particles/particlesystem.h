@@ -83,8 +83,8 @@ public:
     void initialize(std::shared_ptr<magma::Device> device);
     void update(float dt);
     void reset(void);
-    void draw(const std::unique_ptr<magma::CommandBuffer>& cmdBuffer,
-        std::shared_ptr<magma::Pipeline> pipeline) noexcept;
+    void draw(magma::lent_ptr<magma::CommandBuffer> cmdBuffer,
+        magma::lent_ptr<magma::Pipeline> pipeline) noexcept;
 
 private:
     rapid::float3 randomVector();
@@ -110,8 +110,8 @@ private:
     bool airResistence = true;
     float velocityScale = 1.f;
 
-    std::shared_ptr<magma::DynamicVertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::DrawIndirectBuffer> drawParams;
+    std::unique_ptr<magma::DynamicVertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::DrawIndirectBuffer> drawParams;
 };
 
 ClassifyPoint classifyPoint(const rapid::vector3& point, const ParticleSystem::Plane& plane);

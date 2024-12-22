@@ -14,14 +14,14 @@ class ComputeApp : public VulkanApp
         MAGMA_REFLECT(inputBuffer0, inputBuffer1, outputBuffer)
     } setTable;
 
-    std::shared_ptr<magma::StorageBuffer> inputBuffers[2];
-    std::shared_ptr<magma::StorageBuffer> outputBuffer;
-    std::shared_ptr<magma::DstTransferBuffer> readbackBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::ComputePipeline> computeSum;
-    std::shared_ptr<magma::ComputePipeline> computeMul;
-    std::shared_ptr<magma::ComputePipeline> computePower;
-    std::shared_ptr<magma::Fence> fence;
+    std::unique_ptr<magma::StorageBuffer> inputBuffers[2];
+    std::unique_ptr<magma::StorageBuffer> outputBuffer;
+    std::unique_ptr<magma::DstTransferBuffer> readbackBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::ComputePipeline> computeSum;
+    std::unique_ptr<magma::ComputePipeline> computeMul;
+    std::unique_ptr<magma::ComputePipeline> computePower;
+    std::unique_ptr<magma::Fence> fence;
 
 public:
     ComputeApp(const AppEntry& entry):
@@ -67,10 +67,10 @@ public:
     void createInputOutputBuffers()
     {
         const VkDeviceSize bufferSize = static_cast<VkDeviceSize>(numbers.size() * sizeof(float));
-        inputBuffers[0] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, bufferSize, numbers.data());
-        inputBuffers[1] = std::make_shared<magma::StorageBuffer>(cmdBufferCopy, bufferSize, numbers.data());
-        outputBuffer = std::make_shared<magma::StorageBuffer>(device, bufferSize);
-        readbackBuffer = std::make_shared<magma::DstTransferBuffer>(device, bufferSize);
+        inputBuffers[0] = std::make_unique<magma::StorageBuffer>(cmdBufferCopy, bufferSize, numbers.data());
+        inputBuffers[1] = std::make_unique<magma::StorageBuffer>(cmdBufferCopy, bufferSize, numbers.data());
+        outputBuffer = std::make_unique<magma::StorageBuffer>(device, bufferSize);
+        readbackBuffer = std::make_unique<magma::DstTransferBuffer>(device, bufferSize);
     }
 
     void setupDescriptorSet()
@@ -78,22 +78,22 @@ public:
         setTable.inputBuffer0 = inputBuffers[0];
         setTable.inputBuffer1 = inputBuffers[1];
         setTable.outputBuffer = outputBuffer;
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_COMPUTE_BIT,
             nullptr, 0, shaderReflectionFactory, "sum");
     }
 
-    std::shared_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
+    std::unique_ptr<magma::ComputePipeline> createComputePipeline(const char *filename, const char *entrypoint) const
     {
         const aligned_vector<char> bytecode = utilities::loadBinaryFile(filename + std::string(".o"));
         auto computeShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        return std::make_shared<magma::ComputePipeline>(device,
-            magma::ComputeShaderStage(computeShader, entrypoint),
+        return std::make_unique<magma::ComputePipeline>(device,
+            magma::ComputeShaderStage(std::move(computeShader), entrypoint),
             std::move(layout), nullptr, pipelineCache);
     }
 
-    void compute(std::shared_ptr<magma::ComputePipeline> pipeline, const char *description)
+    void compute(const std::unique_ptr<magma::ComputePipeline>& pipeline, const char *description)
     {   // Record command buffer
         auto& computeCmdBuffer = commandBuffers[0];
         computeCmdBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -142,7 +142,7 @@ public:
 
     void printOutputValues(const char *description)
     {
-        magma::helpers::mapScoped<float>(readbackBuffer,
+        magma::map<float>(readbackBuffer,
             [&](float *values)
             {
                 std::cout << std::setw(6) << std::left << description << ": ";

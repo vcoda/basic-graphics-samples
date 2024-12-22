@@ -2,7 +2,7 @@
 
 class TriangleApp : public VulkanApp
 {
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
 public:
     TriangleApp(const AppEntry& entry):
@@ -26,7 +26,7 @@ public:
 
     void setupPipeline()
     {
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "position", "fill",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleList,

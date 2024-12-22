@@ -28,13 +28,13 @@ class OcclusionQueryApp : public VulkanApp
 
     std::unique_ptr<quadric::Plane> plane;
     std::unique_ptr<quadric::Teapot> teapot;
-    std::shared_ptr<magma::OcclusionQuery> occlusionQuery;
-    std::shared_ptr<DynamicUniformBuffer<rapid::matrix>> transformUniforms;
-    std::shared_ptr<DynamicUniformBuffer<rapid::vector4>> colorUniforms;
-    std::shared_ptr<magma::DescriptorSet> descriptorSets[2];
+    std::unique_ptr<magma::OcclusionQuery> occlusionQuery;
+    std::unique_ptr<DynamicUniformBuffer<rapid::matrix>> transformUniforms;
+    std::unique_ptr<DynamicUniformBuffer<rapid::vector4>> colorUniforms;
+    std::unique_ptr<magma::DescriptorSet> descriptorSets[2];
     std::shared_ptr<magma::PipelineLayout> sharedLayout;
-    std::shared_ptr<magma::GraphicsPipeline> teapotPipeline;
-    std::shared_ptr<magma::GraphicsPipeline> planePipeline;
+    std::unique_ptr<magma::GraphicsPipeline> teapotPipeline;
+    std::unique_ptr<magma::GraphicsPipeline> planePipeline;
 
     rapid::matrix viewProj;
 
@@ -102,7 +102,7 @@ public:
         const rapid::matrix transMesh = rapid::translation(0.f, -2.f, 0.f);
         const rapid::matrix worldPlane = rapid::rotationX(rapid::radians(90.f)) * transPlane * pitch * yaw;
         const rapid::matrix worldMesh = transMesh * pitch * yaw;
-        magma::helpers::mapScoped<rapid::matrix>(transformUniforms,
+        magma::map<rapid::matrix>(transformUniforms,
             [this, &worldPlane, &worldMesh](auto& transforms)
             {
                 transforms[0] = worldPlane * viewProj;
@@ -118,7 +118,7 @@ public:
           In this case, some implementations may only return zero or one,
           indifferent to the actual number of samples passing the per-fragment tests. */
         constexpr bool precise = false;
-        occlusionQuery = std::make_shared<magma::OcclusionQuery>(device, 1, precise);
+        occlusionQuery = std::make_unique<magma::OcclusionQuery>(device, 1, precise);
     }
 
     void createMeshes()
@@ -136,9 +136,9 @@ public:
     #else
         const bool ubFlag = device->getFeatures()->supportsDeviceLocalHostVisibleMemory(); // stagedPool
     #endif
-        transformUniforms = std::make_shared<DynamicUniformBuffer<rapid::matrix>>(device, 2, ubFlag);
-        colorUniforms = std::make_shared<DynamicUniformBuffer<rapid::vector4>>(device, 2, ubFlag);
-        magma::helpers::mapScoped<rapid::vector4>(colorUniforms,
+        transformUniforms = std::make_unique<DynamicUniformBuffer<rapid::matrix>>(device, 2, ubFlag);
+        colorUniforms = std::make_unique<DynamicUniformBuffer<rapid::vector4>>(device, 2, ubFlag);
+        magma::map<rapid::vector4>(colorUniforms,
             [](auto& colors)
             {   // Update only once
                 colors[0] = rapid::vector4(0.f, 0.f, 1.f, 1.f);
@@ -150,11 +150,11 @@ public:
     void setupDescriptorSet()
     {
         setTable0.worldViewProj = transformUniforms;
-        descriptorSets[0] = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSets[0] = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable0, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "transform", 0);
         setTable1.color = colorUniforms;
-        descriptorSets[1] = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSets[1] = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable1, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "transform", 1);
     }
@@ -162,11 +162,11 @@ public:
     void setupPipeline()
     {
         sharedLayout = std::make_shared<magma::PipelineLayout>(
-            std::initializer_list<std::shared_ptr<const magma::DescriptorSetLayout>>{
+            std::initializer_list<magma::lent_ptr<const magma::DescriptorSetLayout>>{
                 descriptorSets[0]->getLayout(),
                 descriptorSets[1]->getLayout()
             });
-        teapotPipeline = std::make_shared<GraphicsPipeline>(device,
+        teapotPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "fill",
             teapot->getVertexInput(),
             magma::renderstate::triangleList,
@@ -178,7 +178,7 @@ public:
             sharedLayout,
             renderPass, 0,
             pipelineCache);
-        planePipeline = std::make_shared<GraphicsPipeline>(device,
+        planePipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "fill",
             plane->getVertexInput(),
             magma::renderstate::triangleList,

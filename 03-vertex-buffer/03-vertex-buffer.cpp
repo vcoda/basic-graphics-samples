@@ -1,9 +1,10 @@
 #include "../framework/vulkanApp.h"
+#include "../framework/utilities.h"
 
 class VertexBufferApp : public VulkanApp
 {
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::VertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
 public:
     VertexBufferApp(const AppEntry& entry):
@@ -35,12 +36,12 @@ public:
             {{-0.6f, 0.3f}, {0, 255, 0, 255}}, // left
             {{ 0.6f, 0.3f}, {0, 0, 255, 255}}  // right
         };
-        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
+        vertexBuffer = utilities::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void setupPipeline()
     {
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "fill",
             magma::renderstate::pos2fColor4ub,
             magma::renderstate::triangleList,

@@ -67,9 +67,9 @@ protected:
     std::shared_ptr<magma::Queue> graphicsQueue;
     std::shared_ptr<magma::Queue> transferQueue;
     std::unique_ptr<magma::CommandPool> commandPools[2];
-    std::vector<std::unique_ptr<magma::CommandBuffer>> commandBuffers;
-    std::unique_ptr<magma::CommandBuffer> cmdImageCopy;
-    std::unique_ptr<magma::CommandBuffer> cmdBufferCopy;
+    std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers;
+    std::shared_ptr<magma::CommandBuffer> cmdImageCopy;
+    std::shared_ptr<magma::CommandBuffer> cmdBufferCopy;
 
     std::shared_ptr<magma::Semaphore> presentFinished;
     std::shared_ptr<magma::Semaphore> renderFinished;

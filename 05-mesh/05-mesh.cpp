@@ -10,9 +10,9 @@ class MeshApp : public VulkanApp
     } setTable;
 
     std::unique_ptr<quadric::Teapot> mesh;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> wireframePipeline;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> wireframePipeline;
 
     rapid::matrix viewProj;
 
@@ -56,7 +56,7 @@ public:
         static float angle = 0.f;
         angle += timer->millisecondsElapsed() * speed;
         const rapid::matrix world = rapid::rotationY(rapid::radians(angle));
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;
@@ -71,13 +71,13 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void setupDescriptorSet()
     {
         setTable.worldViewProj = uniformBuffer;
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "transform");
     }
@@ -85,7 +85,7 @@ public:
     void setupPipeline()
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        wireframePipeline = std::make_shared<GraphicsPipeline>(device,
+        wireframePipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "normal",
             mesh->getVertexInput(),
             magma::renderstate::triangleList,

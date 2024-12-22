@@ -24,9 +24,9 @@ class ShaderToyApp : public VulkanApp
     std::unique_ptr<magma::aux::ShaderCompiler> glslCompiler;
     std::shared_ptr<magma::ShaderModule> vertexShader;
     std::shared_ptr<magma::ShaderModule> fragmentShader;
-    std::shared_ptr<magma::UniformBuffer<BuiltInUniforms>> builtinUniforms;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::UniformBuffer<BuiltInUniforms>> builtinUniforms;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     std::atomic<bool> rebuildCommandBuffers;
     int mouseX = 0;
@@ -85,7 +85,7 @@ public:
 
     void updateUniforms()
     {
-        magma::helpers::mapScoped(builtinUniforms,
+        magma::map(builtinUniforms,
             [this](auto *builtin)
             {
                 static float totalTime = 0.0f;
@@ -148,13 +148,13 @@ public:
 
     void createUniformBuffer()
     {
-        builtinUniforms = std::make_shared<magma::UniformBuffer<BuiltInUniforms>>(device);
+        builtinUniforms = std::make_unique<magma::UniformBuffer<BuiltInUniforms>>(device);
     }
 
     void setupDescriptorSet()
     {
         setTable.builtinUniforms = builtinUniforms;
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
@@ -165,7 +165,7 @@ public:
             magma::FragmentShaderStage(fragmentShader, "main")
         };
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        graphicsPipeline = std::make_shared<magma::GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<magma::GraphicsPipeline>(device,
             shaderStages,
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleStrip,

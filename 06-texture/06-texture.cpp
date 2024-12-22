@@ -24,13 +24,13 @@ class TextureApp : public VulkanApp
         MAGMA_REFLECT(texParameters, diffuseImage, lightmapImage)
     } setTable;
 
-    std::shared_ptr<magma::ImageView> diffuse;
-    std::shared_ptr<magma::ImageView> lightmap;
-    std::shared_ptr<magma::Sampler> bilinearSampler;
-    std::shared_ptr<magma::VertexBuffer> vertexBuffer;
-    std::shared_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::ImageView> diffuse;
+    std::unique_ptr<magma::ImageView> lightmap;
+    std::unique_ptr<magma::Sampler> bilinearSampler;
+    std::unique_ptr<magma::VertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     float lod = 0.f;
     bool multitexture = true;
@@ -83,7 +83,7 @@ public:
 
     void updateUniforms()
     {
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [this](auto *block)
             {
                 block->lod = lod;
@@ -91,7 +91,7 @@ public:
             });
     }
 
-    std::shared_ptr<magma::ImageView> loadTextureBatch(const std::string& filename, std::shared_ptr<magma::SrcTransferBuffer> buffer)
+    std::unique_ptr<magma::ImageView> loadTextureBatch(const std::string& filename, const std::unique_ptr<magma::SrcTransferBuffer>& buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -102,7 +102,7 @@ public:
         ctx.enable_dxt(true);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
         VkDeviceSize baseMipOffset = 0;
-        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+        magma::mapRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);
@@ -131,10 +131,10 @@ public:
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::UniqueImageView>(std::move(image));
+        return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
 
-    std::shared_ptr<magma::ImageView> loadTextureFromData(const std::string& filename)
+    std::unique_ptr<magma::ImageView> loadTextureFromData(const std::string& filename)
     {   // Simple, but suboptimal way to load texture from host memory
         auto buffer = utilities::loadBinaryFile(filename);
         gliml::context ctx;
@@ -158,14 +158,14 @@ public:
         std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, mipMaps,
             nullptr, magma::Image::Initializer{}, magma::Sharing(), memcpy);
         // Create image view for shader
-        return std::make_shared<magma::UniqueImageView>(std::move(image));
+        return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
 
     void loadTextures()
     {
     #ifdef BATCH_LOAD
         constexpr VkDeviceSize bufferSize = 1024 * 1024;
-        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
+        auto buffer = std::make_unique<magma::SrcTransferBuffer>(device, bufferSize);
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
             diffuse = loadTextureBatch("brick.dds", buffer);
@@ -181,7 +181,7 @@ public:
 
     void createSampler()
     {
-        bilinearSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinLinearMipNearestClampToEdge);
+        bilinearSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinLinearMipNearestClampToEdge);
     }
 
     void createVertexBuffer()
@@ -202,12 +202,12 @@ public:
             { w, -h, 1.f, 0.f},
             { w,  h, 1.f, 1.f}
         };
-        vertexBuffer = magma::helpers::makeVertexBuffer(vertices, cmdBufferCopy);
+        vertexBuffer = utilities::makeVertexBuffer(vertices, cmdBufferCopy);
     }
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<UniformBlock>>(device);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<UniformBlock>>(device);
         updateUniforms();
     }
 
@@ -216,7 +216,7 @@ public:
         setTable.texParameters = uniformBuffer;
         setTable.diffuseImage = {diffuse, bilinearSampler};
         setTable.lightmapImage = {lightmap, bilinearSampler};
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "multitexture");
     }
@@ -224,7 +224,7 @@ public:
     void setupPipeline()
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "multitexture",
             magma::renderstate::pos2fTex2f,
             magma::renderstate::triangleStrip,

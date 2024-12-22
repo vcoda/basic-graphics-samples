@@ -11,9 +11,9 @@ class ParticlesApp : public VulkanApp
     } setTable;
 
     std::unique_ptr<ParticleSystem> particles;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     static constexpr float fov = rapid::radians(60.f);
     rapid::matrix viewProj;
@@ -88,7 +88,7 @@ public:
         static float angle = 0.f;
         angle += timer->millisecondsElapsed() * speed;
         const rapid::matrix world = rapid::rotationY(rapid::radians(spinX/2.f));
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [this, &world](auto *worldViewProj)
             {
                 *worldViewProj = world * viewProj;
@@ -97,13 +97,13 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device, false);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device, false);
     }
 
     void setupDescriptorSet()
     {
         setTable.viewProj = uniformBuffer;
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_VERTEX_BIT,
             nullptr, 0, shaderReflectionFactory, "pointSize");
     }
@@ -115,7 +115,7 @@ public:
             {1, &ParticleSystem::ParticleVertex::color}});
         constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "pointSize","particle",
             vertexInput,
             magma::renderstate::pointList,

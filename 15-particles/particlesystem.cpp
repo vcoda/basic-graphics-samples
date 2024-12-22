@@ -54,8 +54,8 @@ void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const r
 void ParticleSystem::initialize(std::shared_ptr<magma::Device> device)
 {
     const bool stagedPool = device->getFeatures()->supportsDeviceLocalHostVisibleMemory();
-    vertexBuffer = std::make_shared<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), stagedPool);
-    drawParams = std::make_shared<magma::DrawIndirectBuffer>(device, 1);
+    vertexBuffer = std::make_unique<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), stagedPool);
+    drawParams = std::make_unique<magma::DrawIndirectBuffer>(device, 1);
     drawParams->writeDrawCommand(0, 0); // Submit stub draw call to command buffer
 }
 
@@ -148,7 +148,7 @@ void ParticleSystem::update(float dt)
     // Update vertex buffer
     if (!activeList.empty())
     {
-        magma::helpers::mapScoped<ParticleVertex>(vertexBuffer,
+        magma::map<ParticleVertex>(vertexBuffer,
             [this](auto *pv)
             {
                 for (auto const& particle: activeList)
@@ -168,10 +168,10 @@ void ParticleSystem::reset()
     freeList.splice(freeList.end(), activeList);
 }
 
-void ParticleSystem::draw(const std::unique_ptr<magma::CommandBuffer>& cmdBuffer, std::shared_ptr<magma::Pipeline> pipeline) noexcept
+void ParticleSystem::draw(magma::lent_ptr<magma::CommandBuffer> cmdBuffer, magma::lent_ptr<magma::Pipeline> pipeline) noexcept
 {
-    cmdBuffer->pushConstantBlock(*pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, constants);
-    cmdBuffer->bindPipeline(pipeline);
+    cmdBuffer->pushConstantBlock(pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, constants);
+    cmdBuffer->bindPipeline(std::move(pipeline));
     cmdBuffer->bindVertexBuffer(0, vertexBuffer);
     cmdBuffer->drawIndirect(drawParams);
 }

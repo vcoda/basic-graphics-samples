@@ -18,14 +18,14 @@ class TextureVolumeApp : public VulkanApp
         MAGMA_REFLECT(normalMatrix, integrationParameters, volume, lookup)
     } setTable;
 
-    std::shared_ptr<magma::ImageView> volume;
-    std::shared_ptr<magma::ImageView> lookup;
-    std::shared_ptr<magma::Sampler> nearestSampler;
-    std::shared_ptr<magma::Sampler> trilinearSampler;
-    std::shared_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::shared_ptr<magma::UniformBuffer<IntegrationParameters>> uniformParameters;
-    std::shared_ptr<magma::DescriptorSet> descriptorSet;
-    std::shared_ptr<magma::GraphicsPipeline> graphicsPipeline;
+    std::unique_ptr<magma::ImageView> volume;
+    std::unique_ptr<magma::ImageView> lookup;
+    std::unique_ptr<magma::Sampler> nearestSampler;
+    std::unique_ptr<magma::Sampler> trilinearSampler;
+    std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
+    std::unique_ptr<magma::UniformBuffer<IntegrationParameters>> uniformParameters;
+    std::unique_ptr<magma::DescriptorSet> descriptorSet;
+    std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
     float power = 0.4f;
 
@@ -78,8 +78,7 @@ public:
         const rapid::matrix pitch = rapid::rotationX(rapid::radians(-spinY/2.f));
         const rapid::matrix yaw = rapid::rotationY(rapid::radians(spinX/2.f));
         const rapid::matrix world = pitch * yaw;
-
-        magma::helpers::mapScoped(uniformBuffer,
+        magma::map(uniformBuffer,
             [this, &world](auto *normal)
             {
                 *normal = rapid::transpose(rapid::inverse(world));
@@ -88,7 +87,7 @@ public:
 
     void updatePower()
     {
-        magma::helpers::mapScoped(uniformParameters,
+        magma::map(uniformParameters,
             [this](auto *block)
             {
                 block->power = power;
@@ -96,7 +95,7 @@ public:
         std::cout << "Power: " << power << "\n";
     }
 
-    std::shared_ptr<magma::ImageView> loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth, std::shared_ptr<magma::SrcTransferBuffer> buffer)
+    std::unique_ptr<magma::ImageView> loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth, const std::unique_ptr<magma::SrcTransferBuffer>& buffer)
     {
         std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
         if (!file.is_open())
@@ -111,7 +110,7 @@ public:
         MAGMA_ASSERT(size == width * height * depth);
         file.seekg(0, std::ios::beg);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
-        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
+        magma::mapRange<uint8_t>(buffer, bufferOffset, (VkDeviceSize)size,
             [&file, size](uint8_t *data)
             {   // Read data to buffer
                 file.read(reinterpret_cast<char *>(data), size);
@@ -127,17 +126,17 @@ public:
         // Upload volume data from buffer
         std::unique_ptr<magma::Image> image = std::make_unique<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::UniqueImageView>(std::move(image));
+        return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
 
-    std::shared_ptr<magma::ImageView> loadTransferFunctionTexture(const std::string& filename, uint32_t width, std::shared_ptr<magma::SrcTransferBuffer> buffer)
+    std::unique_ptr<magma::ImageView> loadTransferFunctionTexture(const std::string& filename, uint32_t width, const std::unique_ptr<magma::SrcTransferBuffer>& buffer)
     {
         std::ifstream file(filename, std::ifstream::in);
         if (!file.is_open())
             throw std::runtime_error("failed to open file \"" + filename + "\"");
         const VkDeviceSize size = width * sizeof(uint32_t);
         VkDeviceSize bufferOffset = buffer->getPrivateData();
-        magma::helpers::mapScopedRange<uint8_t>(buffer, bufferOffset, size,
+        magma::mapRange<uint8_t>(buffer, bufferOffset, size,
             [&file, size](uint8_t *data)
             {
                 memset(data, 0, size); // Clear first as not an entire buffer may be filled
@@ -153,13 +152,13 @@ public:
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
         std::unique_ptr<magma::Image> image = std::make_unique<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMaps, bufferLayout);
         // Create image view for shader
-        return std::make_shared<magma::UniqueImageView>(std::move(image));
+        return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
 
     void loadTextures()
     {
         constexpr VkDeviceSize bufferSize = 16 * 1024 * 1024;
-        auto buffer = std::make_shared<magma::SrcTransferBuffer>(device, bufferSize);
+        auto buffer = std::make_unique<magma::SrcTransferBuffer>(device, bufferSize);
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         {
             volume = loadVolumeTexture("head256.raw", 256, 256, 225, buffer);
@@ -171,14 +170,14 @@ public:
 
     void createSampler()
     {
-        nearestSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinMipNearestClampToEdge);
-        trilinearSampler = std::make_shared<magma::Sampler>(device, magma::sampler::magMinMipLinearClampToEdge);
+        nearestSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinMipNearestClampToEdge);
+        trilinearSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinMipLinearClampToEdge);
     }
 
     void createUniformBuffers()
     {
-        uniformBuffer = std::make_shared<magma::UniformBuffer<rapid::matrix>>(device);
-        uniformParameters = std::make_shared<magma::UniformBuffer<IntegrationParameters>>(device);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
+        uniformParameters = std::make_unique<magma::UniformBuffer<IntegrationParameters>>(device);
         updatePower();
     }
 
@@ -188,7 +187,7 @@ public:
         setTable.integrationParameters = uniformParameters;
         setTable.volume = {volume, trilinearSampler};
         setTable.lookup = {lookup, nearestSampler};
-        descriptorSet = std::make_shared<magma::DescriptorSet>(descriptorPool,
+        descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
             setTable, VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr, 0, shaderReflectionFactory, "raycast");
     }
@@ -196,7 +195,7 @@ public:
     void setupPipeline()
     {
         std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
-        graphicsPipeline = std::make_shared<GraphicsPipeline>(device,
+        graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "quad", "raycast",
             magma::renderstate::nullVertexInput,
             magma::renderstate::triangleStrip,
