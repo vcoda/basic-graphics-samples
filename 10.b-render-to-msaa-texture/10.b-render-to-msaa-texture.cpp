@@ -156,7 +156,7 @@ public:
         };
 
         constexpr float w = 0.75f, h = 0.75f;
-        alignas(MAGMA_ALIGNMENT) const Vertex vertices[] = {
+        const Vertex vertices[] = {
             {-w, -h, 0.f, 0.f},
             {-w,  h, 0.f, 1.f},
             { w, -h, 1.f, 0.f},

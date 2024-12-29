@@ -67,7 +67,7 @@ public:
 
     void createVertexBuffer()
     {
-        alignas(MAGMA_ALIGNMENT) rapid::float2 vertices[] = {
+        rapid::float2 vertices[] = {
             { 0.0f,-0.3f},
             {-0.6f, 0.3f},
             { 0.6f, 0.3f}
