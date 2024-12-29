@@ -89,9 +89,6 @@
     <ClCompile Include="utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="linearAllocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="graphicsPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

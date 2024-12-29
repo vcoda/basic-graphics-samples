@@ -1,5 +1,4 @@
 #include "vulkanApp.h"
-#include "linearAllocator.h"
 #include "utilities.h"
 
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
@@ -13,9 +12,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     bufferIndex(0),
     frameIndex(0),
     waitFence(&nullFence)
-{
-    magma::CxxAllocator::overrideDefaultAllocator(std::make_shared<LinearAllocator>());
-}
+{}
 
 VulkanApp::~VulkanApp()
 {

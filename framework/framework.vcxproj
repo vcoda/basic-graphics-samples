@@ -175,7 +175,6 @@
   <ItemGroup>
     <ClCompile Include="graphicsPipeline.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="linearAllocator.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="vulkanApp.cpp" />
     <ClCompile Include="winApp.cpp" />

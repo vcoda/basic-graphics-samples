@@ -22,7 +22,6 @@ LDFLAGS=$(LIB_DIR) -l$(MAGMA) -lpthread -lxcb -lvulkan
 FRAMEWORK=../framework
 FRAMEWORK_OBJS= \
 	$(FRAMEWORK)/graphicsPipeline.o \
-	$(FRAMEWORK)/linearAllocator.o \
 	$(FRAMEWORK)/main.o \
 	$(FRAMEWORK)/utilities.o \
 	$(FRAMEWORK)/vulkanApp.o \
