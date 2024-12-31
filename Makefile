@@ -28,7 +28,7 @@ basic-graphics-samples:
 magma:
 	$(MAKE) -C $(MAGMA)
 
-quadric:	
+quadric:
 	$(MAKE) -C $(QUADRIC)
 
 clean:
@@ -53,4 +53,3 @@ clean:
 	$(MAKE) -C 16-immediate-mode clean
 	$(MAKE) -C 17-shadertoy clean
 	$(MAKE) -C 18-compute clean
-

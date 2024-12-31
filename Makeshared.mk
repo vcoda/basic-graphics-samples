@@ -35,4 +35,3 @@ FRAMEWORK_OBJS= \
 
 %.o: %.frag
 	$(GLSLC) -V $*.frag -o $*.o
-
