@@ -235,10 +235,6 @@ Example fragment shader taken from https://www.shadertoy.com/view/4tl3z4 (writte
 Compute shaders are core part of Vulkan. This sample performs arithmetic computations on two set of numbers using GPU compute shader.
 <br><br>
 
-## Known issues
-
-* vkCreateSwapchainKHR() may fail on Linux due to unresolved issues with alignment.
-
 ## Credits
 This framework uses a few third-party libraries:
 
