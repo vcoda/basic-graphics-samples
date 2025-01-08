@@ -29,7 +29,11 @@ public:
     void flush()
     {
         buf[pos] = '\0';
+    #ifdef QT_CORE_LIB
+        qDebug() << buf;
+    #else
         OutputDebugStringA(buf);
+    #endif
         pos = 0;
     }
 
