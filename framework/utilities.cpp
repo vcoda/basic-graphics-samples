@@ -66,7 +66,10 @@ VkFormat getSupportedDepthFormat(std::shared_ptr<magma::PhysicalDevice> physical
 uint32_t getSupportedMultisampleLevel(std::shared_ptr<magma::PhysicalDevice> physicalDevice, VkFormat format)
 {
     const VkImageFormatProperties formatProperties = physicalDevice->getImageFormatProperties(
-        format, VK_IMAGE_TYPE_2D, true, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
+        format,
+        VK_IMAGE_TYPE_2D,
+        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        true); // optimal tiling
     for (VkSampleCountFlags bit : {
         VK_SAMPLE_COUNT_8_BIT,
         VK_SAMPLE_COUNT_4_BIT,
