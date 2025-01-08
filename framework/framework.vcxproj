@@ -163,7 +163,6 @@
     <ClInclude Include="alignedAllocator.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="graphicsPipeline.h" />
-    <ClInclude Include="linearAllocator.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="shaderReflectionFactory.h" />
     <ClInclude Include="timer.h" />
