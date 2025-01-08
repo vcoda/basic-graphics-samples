@@ -4,14 +4,14 @@
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
     NativeApp(entry, caption, width, height),
+    waitFence(&nullFence),
     timer(std::make_unique<Timer>()),
     vSync(false),
     depthBuffer(depthBuffer),
     negateViewport(false),
     presentWait(PresentationWait::Fence),
     bufferIndex(0),
-    frameIndex(0),
-    waitFence(&nullFence)
+    frameIndex(0)
 {}
 
 VulkanApp::~VulkanApp() {}
