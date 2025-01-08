@@ -65,7 +65,7 @@ void XcbApp::setWindowCaption(const std::tstring& caption)
         sizeof(char) * 8, caption.length(), caption.c_str());
 }
 
-void XcbApp::show() const
+void XcbApp::show()
 {
     uint32_t coords[2] = {0, 0};
     if (width < screen->width_in_pixels &&

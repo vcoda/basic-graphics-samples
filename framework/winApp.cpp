@@ -51,7 +51,7 @@ void Win32App::setWindowCaption(const std::tstring& caption)
     SetWindowText(hWnd, caption.c_str());
 }
 
-void Win32App::show() const
+void Win32App::show()
 {
     // Get desktop resolution
     const HWND hDesktopWnd = GetDesktopWindow();

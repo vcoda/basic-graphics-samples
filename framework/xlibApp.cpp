@@ -70,7 +70,7 @@ void XlibApp::setWindowCaption(const std::tstring& caption)
     XStoreName(dpy, window, caption.c_str());
 }
 
-void XlibApp::show() const
+void XlibApp::show()
 {
     const Screen *screen = DefaultScreenOfDisplay(dpy);
     XWindowChanges changes = {};

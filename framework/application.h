@@ -16,7 +16,7 @@ class IApplication : public AlignAs<16>,
 {
 public:
     virtual void setWindowCaption(const std::tstring& caption) = 0;
-    virtual void show() const = 0;
+    virtual void show() = 0;
     virtual void run() = 0;
     virtual void close() = 0;
     virtual void onIdle() = 0;
