@@ -14,11 +14,7 @@ VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_
     waitFence(&nullFence)
 {}
 
-VulkanApp::~VulkanApp()
-{
-    if (commandPools[0])
-        commandPools[0]->freeCommandBuffers(commandBuffers);
-}
+VulkanApp::~VulkanApp() {}
 
 void VulkanApp::close()
 {
@@ -315,9 +311,9 @@ void VulkanApp::createCommandBuffers()
     graphicsQueue = device->getQueue(VK_QUEUE_GRAPHICS_BIT, 0);
     commandPools[0] = std::make_unique<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
     // Create draw command buffers
-    commandBuffers = commandPools[0]->allocateCommandBuffers(static_cast<uint32_t>(framebuffers.size()), true);
+    commandBuffers = commandPools[0]->allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY, magma::core::countof(framebuffers));
     // Create image copy command buffer
-    cmdImageCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[0]);
+    cmdImageCopy = commandPools[0]->allocateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     try
     {
         transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
@@ -325,7 +321,7 @@ void VulkanApp::createCommandBuffers()
         {
             commandPools[1] = std::make_unique<magma::CommandPool>(device, transferQueue->getFamilyIndex());
             // Create buffer copy command buffer
-            cmdBufferCopy = std::make_shared<magma::PrimaryCommandBuffer>(commandPools[1]);
+            cmdBufferCopy = commandPools[1]->allocateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
         }
     } catch (...) { std::cout << "transfer queue not present" << std::endl; }
 }

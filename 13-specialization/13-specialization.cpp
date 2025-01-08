@@ -112,8 +112,8 @@ public:
     void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
-        commandBuffers[Buffer::Front] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
-        commandBuffers[Buffer::Back] = commandPools[0]->allocateCommandBuffers(ShadingType::MaxPermutations, true);
+        commandBuffers[Buffer::Front] = commandPools[0]->allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY, ShadingType::MaxPermutations);
+        commandBuffers[Buffer::Back] = commandPools[0]->allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY, ShadingType::MaxPermutations);
     }
 
     void setupView()

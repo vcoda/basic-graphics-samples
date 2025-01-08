@@ -58,10 +58,10 @@ public:
     {
         graphicsQueue = device->getQueue(VK_QUEUE_COMPUTE_BIT, 0);
         commandPools[0] = std::make_unique<magma::CommandPool>(device, graphicsQueue->getFamilyIndex());
-        commandBuffers = commandPools[0]->allocateCommandBuffers(1, true);
+        commandBuffers.push_back(commandPools[0]->allocateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
         transferQueue = device->getQueue(VK_QUEUE_TRANSFER_BIT, 0);
         commandPools[1] = std::make_unique<magma::CommandPool>(device, transferQueue->getFamilyIndex());
-        cmdBufferCopy = std::make_unique<magma::PrimaryCommandBuffer>(commandPools[1]);
+        cmdBufferCopy = commandPools[1]->allocateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     }
 
     void createInputOutputBuffers()
