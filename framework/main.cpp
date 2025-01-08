@@ -90,14 +90,14 @@ catch (const std::exception& exc)
 }
 #endif // MAGMA_NO_EXCEPTIONS
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(QT_CORE_LIB)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 #else
 int main(int argc, char *argv[])
 #endif
 {
     AppEntry entry;
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(QT_CORE_LIB)
     entry.hInstance = hInstance;
     entry.hPrevInstance = hPrevInstance;
     entry.lpCmdLine = pCmdLine;

@@ -40,7 +40,7 @@ enum AppKey { Null = '\0', Tab = '\t', Enter = '\r', Escape = '\033', Space = ' 
 
 struct AppEntry
 {
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(_WIN32) && !defined(QT_CORE_LIB)
     HINSTANCE hInstance;
     HINSTANCE hPrevInstance;
     LPSTR lpCmdLine;
@@ -48,7 +48,7 @@ struct AppEntry
 #else
     int argc;
     char **argv;
-#endif
+#endif // _WIN32 || !QT_CORE_LIB
 };
 
 class BaseApp : public IApplication
