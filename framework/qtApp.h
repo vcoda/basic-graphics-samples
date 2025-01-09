@@ -14,12 +14,12 @@ public:
     virtual void run() override;
     virtual void close() override;
     virtual void onKeyDown(char key, int repeat, uint32_t flags) override;
-    virtual void onKeyUp(char /* key */, int /* repeat */, uint32_t /* flags */) {}
+    virtual void onKeyUp(char /* key */, int /* repeat */, uint32_t /* flags */) override {}
     virtual void onMouseMove(int x, int y) override;
     virtual void onMouseLButton(bool down, int x, int y) override;
-    virtual void onMouseRButton(bool /* down */, int /* x */, int /* y */) {}
-    virtual void onMouseMButton(bool /* down */, int /* x */, int /* y */) {}
-    virtual void onMouseWheel(float /* delta */) {}
+    virtual void onMouseRButton(bool /* down */, int /* x */, int /* y */) override  {}
+    virtual void onMouseMButton(bool /* down */, int /* x */, int /* y */) override  {}
+    virtual void onMouseWheel(float /* delta */) override  {}
     virtual char translateKey(int code) const override;
 
 protected:
