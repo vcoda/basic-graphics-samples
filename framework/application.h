@@ -3,9 +3,15 @@
 #include <iostream>
 #include <memory>
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-#define WIN32_LEAN_AND_MEAN
-#define NOGDI
-#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOGID
+    #define NOGDI
+#endif
+#ifndef NOMINMAX
+    #define NOMINMAX
+#endif
 #include <windows.h>
 #endif
 #include "platform.h"
