@@ -64,7 +64,9 @@ void VulkanApp::onPaint()
     }
     if (!vSync)
     {   // Cap fps
+    #if !defined(__MINGW32__)
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    #endif
     }
     ++frameIndex;
 }
