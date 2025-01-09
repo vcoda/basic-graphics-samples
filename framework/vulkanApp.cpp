@@ -229,6 +229,8 @@ void VulkanApp::createSwapchain()
         std::cout << "Surface extents: " <<
             surfaceCaps.currentExtent.width << ", " <<
             surfaceCaps.currentExtent.height << std::endl;
+        width = surfaceCaps.currentExtent.width;
+        height = surfaceCaps.currentExtent.height;
     }
     // Find supported transform flags
     VkSurfaceTransformFlagBitsKHR preTransform;
