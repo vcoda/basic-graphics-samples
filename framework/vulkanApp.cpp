@@ -1,3 +1,10 @@
+#ifdef QT_CORE_LIB
+#include <QWindow>
+    #if defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
+    #include <QX11Info>
+    #endif
+#endif // QT_CORE_LIB
+
 #include "vulkanApp.h"
 #include "utilities.h"
 
@@ -19,7 +26,7 @@ VulkanApp::~VulkanApp() {}
 void VulkanApp::close()
 {
     device->waitIdle();
-    quit = true;
+    NativeApp::close();
 }
 
 void VulkanApp::onIdle()
@@ -190,6 +197,17 @@ void VulkanApp::createLogicalDevice()
 
 void VulkanApp::createSwapchain()
 {
+#if defined(QT_CORE_LIB)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    HINSTANCE hInstance = GetModuleHandle(nullptr);
+    HWND hWnd = (HWND)window->winId();
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+    Display *dpy = QX11Info::display();
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+    xcb_connection_t *connection = QX11Info::connection();
+#endif
+#endif // QT_CORE_LIB
+
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     surface = std::make_unique<magma::Win32Surface>(instance, hInstance, hWnd);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)

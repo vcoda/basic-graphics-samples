@@ -1,24 +1,29 @@
 #pragma once
-#ifdef VK_USE_PLATFORM_WIN32_KHR
+#if defined(QT_CORE_LIB)
+#include "qtApp.h"
+#elif defined(VK_USE_PLATFORM_WIN32_KHR)
 #include "winApp.h"
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
 #include "xlibApp.h"
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
 #include "xcbApp.h"
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // QT_CORE_LIB
+
 #include "magma/magma.h"
 #include "rapid/rapid.h"
 #include "graphicsPipeline.h"
 #include "shaderReflectionFactory.h"
 #include "timer.h"
 
-#ifdef VK_USE_PLATFORM_WIN32_KHR
+#if defined(QT_CORE_LIB)
+typedef QtApp NativeApp;
+#elif defined(VK_USE_PLATFORM_WIN32_KHR)
 typedef Win32App NativeApp;
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
 typedef XlibApp NativeApp;
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
 typedef XcbApp NativeApp;
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // QT_CORE_LIB
 
 class VulkanApp : public NativeApp
 {
