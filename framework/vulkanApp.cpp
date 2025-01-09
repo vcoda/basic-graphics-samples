@@ -223,8 +223,13 @@ void VulkanApp::createSwapchain()
     // Get surface caps
     VkSurfaceCapabilitiesKHR surfaceCaps;
     surfaceCaps = physicalDevice->getSurfaceCapabilities(surface);
-    assert(surfaceCaps.currentExtent.width == width);
-    assert(surfaceCaps.currentExtent.height == height);
+    if (surfaceCaps.currentExtent.width != width ||
+        surfaceCaps.currentExtent.height != height)
+    {   // This may differs because of DPI scaling
+        std::cout << "Surface extents: " <<
+            surfaceCaps.currentExtent.width << ", " <<
+            surfaceCaps.currentExtent.height << std::endl;
+    }
     // Find supported transform flags
     VkSurfaceTransformFlagBitsKHR preTransform;
     if (surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
