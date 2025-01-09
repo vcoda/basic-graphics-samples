@@ -94,6 +94,12 @@ public:
         app->onMouseWheel(ev->angleDelta().y() / 120.f);
     }
 
+    void closeEvent(QCloseEvent *ev) override
+    {
+        timer.stop();
+        QWindow::closeEvent(ev);
+    }
+
 private slots:
     void onIdle()
     {
