@@ -13,7 +13,6 @@ public:
     virtual void show() override;
     virtual void run() override;
     virtual void close() override;
-    virtual void onKeyDown(char key, int repeat, uint32_t flags) override;
     virtual void onKeyUp(char /* key */, int /* repeat */, uint32_t /* flags */) override {}
     virtual void onMouseMove(int x, int y) override;
     virtual void onMouseLButton(bool down, int x, int y) override;

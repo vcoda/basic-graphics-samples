@@ -150,11 +150,6 @@ void QtApp::close()
     window->close();
 }
 
-void QtApp::onKeyDown(char key, int repeat, uint32_t flags)
-{
-    BaseApp::onKeyDown(key, repeat, flags);
-}
-
 void QtApp::onMouseMove(int x, int y)
 {
     currPos.x = x;

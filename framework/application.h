@@ -59,15 +59,17 @@ struct AppEntry
 
 class BaseApp : public IApplication
 {
-protected:
-    BaseApp(const std::tstring& caption, uint32_t width, uint32_t height):
-        caption(caption), width(width), height(height) {}
-    virtual void close() override { quit = true; }
+public:
     virtual void onKeyDown(char key, int /* repeat */, uint32_t /* flags */) override
     {
         if (AppKey::Escape == key)
             close();
     }
+
+protected:
+    BaseApp(const std::tstring& caption, uint32_t width, uint32_t height):
+        caption(caption), width(width), height(height) {}
+    virtual void close() override { quit = true; }
 
 protected:
     std::tstring caption;
