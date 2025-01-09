@@ -14,6 +14,7 @@ QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-unused-but-set-variable
 QMAKE_CXXFLAGS += -Wno-unknown-pragmas
 QMAKE_CXXFLAGS += -Wno-deprecated-copy
+QMAKE_CXXFLAGS += -Wno-strict-aliasing
 
 QMAKE_CXXFLAGS += -DQT_NO_FOREACH
 
