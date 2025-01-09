@@ -5,6 +5,25 @@ CONFIG += staticlib
 
 CONFIG += c++17
 
+SOURCES += \
+    graphicsPipeline.cpp \
+    main.cpp \
+    qtApp.cpp \
+    utilities.cpp \
+    vulkanApp.cpp
+
+HEADERS += \
+    alignedAllocator.h \
+    application.h \
+    debugOutputStream.h \
+    graphicsPipeline.h \
+    platform.h \
+    qtApp.h \
+    shaderReflectionFactory.h \
+    timer.h \
+    utilities.h \
+    vulkanApp.h
+
 INCLUDEPATH += $(VULKAN_SDK)/include
 INCLUDEPATH += ../third-party/
 
@@ -29,25 +48,6 @@ win32 {
 } else:ios {
     QMAKE_CXXFLAGS += -DVK_USE_PLATFORM_IOS_MVK
 }
-
-SOURCES += \
-    graphicsPipeline.cpp \
-    main.cpp \
-    qtApp.cpp \
-    utilities.cpp \
-    vulkanApp.cpp
-
-HEADERS += \
-    alignedAllocator.h \
-    application.h \
-    debugOutputStream.h \
-    graphicsPipeline.h \
-    platform.h \
-    qtApp.h \
-    shaderReflectionFactory.h \
-    timer.h \
-    utilities.h \
-    vulkanApp.h
 
 # Default rules for deployment.
 unix {

@@ -4,6 +4,9 @@ TEMPLATE = app
 CONFIG += console c++17
 CONFIG -= app_bundle
 
+SOURCES += \
+        01-clear.cpp
+
 INCLUDEPATH += $(VULKAN_SDK)/include
 INCLUDEPATH += ../third-party/
 
@@ -38,6 +41,3 @@ CONFIG(debug, debug|release) {
     LIBS += -L../third-party/magma/projects/qt/release
 }
 LIBS += -lframework -lmagma -lvulkan-1
-
-SOURCES += \
-        01-clear.cpp
