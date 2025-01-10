@@ -37,7 +37,7 @@ public:
         {    // construct from a related allocator (do nothing)
         }
 
-    void deallocate(_Ty * const _Ptr, const size_t _Count)
+    void deallocate(_Ty * const _Ptr, const size_t /* _Count */)
         {    // deallocate object at _Ptr
         _mm_free(_Ptr);
         }

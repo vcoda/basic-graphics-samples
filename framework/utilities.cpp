@@ -82,8 +82,8 @@ uint32_t getSupportedMultisampleLevel(std::shared_ptr<magma::PhysicalDevice> phy
 }
 
 VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT /* objectType */,
-    uint64_t /* object */, size_t location, int32_t messageCode,
-    const char *pLayerPrefix, const char *pMessage, void */* pUserData */)
+    uint64_t /* object */, size_t /* location */, int32_t /* messageCode */,
+    const char *pLayerPrefix, const char *pMessage, void * /* pUserData */)
 {
     if (strstr(pMessage, "Extension"))
         return VK_FALSE;
