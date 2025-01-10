@@ -28,12 +28,10 @@ INCLUDEPATH += $(VULKAN_SDK)/include
 INCLUDEPATH += ../third-party/
 
 QMAKE_CXXFLAGS += -std=c++17 -msse4 -ftemplate-depth=2048 -fconstexpr-depth=2048
-
-QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-unused-but-set-variable
 QMAKE_CXXFLAGS += -Wno-unknown-pragmas
 QMAKE_CXXFLAGS += -Wno-deprecated-copy
-QMAKE_CXXFLAGS += -Wno-strict-aliasing
+QMAKE_CXXFLAGS += -Wno-unused-but-set-variable
+QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 
 QMAKE_CXXFLAGS += -DQT_NO_FOREACH
 
