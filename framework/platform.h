@@ -1,6 +1,24 @@
 #pragma once
-#include <xmmintrin.h>
 #include <string>
+
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+    #ifndef NOGID
+        #define NOGDI
+    #endif
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+#include <windows.h>
+#endif
+
+#ifdef QT_CORE_LIB
+    #include <QtGlobal>
+#endif
+
+#include <xmmintrin.h>
 
 template<size_t alignment>
 class alignas(alignment) AlignAs
