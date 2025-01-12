@@ -276,11 +276,11 @@ void VulkanApp::createRenderPass()
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         const std::initializer_list<magma::AttachmentDescription> attachments = {colorAttachment, depthStencilAttachment};
-        renderPass = std::make_shared<magma::RenderPass>(device, attachments);
+        renderPass = std::make_unique<magma::RenderPass>(device, attachments);
     }
     else
     {
-        renderPass = std::make_shared<magma::RenderPass>(device, colorAttachment);
+        renderPass = std::make_unique<magma::RenderPass>(device, colorAttachment);
     }
 }
 
@@ -298,11 +298,11 @@ void VulkanApp::createFramebuffer()
     {
         std::vector<std::shared_ptr<magma::ImageView>> attachments;
         std::shared_ptr<magma::SharedImageView> colorView = std::make_shared<magma::SharedImageView>(std::move(image));
-        attachments.push_back(colorView);
+        attachments.emplace_back(std::move(colorView));
         if (depthBuffer)
             attachments.push_back(depthStencilView);
-        std::shared_ptr<magma::Framebuffer> framebuffer(std::make_shared<magma::Framebuffer>(renderPass, attachments));
-        framebuffers.push_back(framebuffer);
+        std::unique_ptr<magma::Framebuffer> framebuffer = std::make_unique<magma::Framebuffer>(renderPass, attachments);
+        framebuffers.emplace_back(std::move(framebuffer));
     }
 }
 

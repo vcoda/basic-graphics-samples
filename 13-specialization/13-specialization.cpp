@@ -51,6 +51,7 @@ class SpecializationApp : public VulkanApp
     std::unique_ptr<magma::UniformBuffer<UniformBlock>> uniformBuffer;
     std::unique_ptr<magma::DescriptorSet> descriptorSet;
     std::shared_ptr<magma::PipelineLayout> sharedLayout;
+    std::shared_ptr<magma::RenderPass> sharedRenderPass;
     std::unique_ptr<magma::GraphicsPipelineBatch> pipelineBatch;
     std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers[2];
 
@@ -193,6 +194,7 @@ public:
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
         };
+        sharedRenderPass = std::move(renderPass);
         pipelineBatch = std::make_unique<magma::GraphicsPipelineBatch>(device);
         for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
         {
@@ -210,7 +212,7 @@ public:
                 magma::renderstate::dontBlendRgb,
                 dynamicStates,
                 sharedLayout,
-                renderPass, 0);
+                sharedRenderPass, 0);
         }
         std::future<void> buildResult = pipelineBatch->buildPipelinesAsync(pipelineCache);
         std::future_status status;
@@ -226,7 +228,7 @@ public:
         auto& cmdBuffer = commandBuffers[bufferIndex][pipelineIndex];
         cmdBuffer->begin();
         {
-            cmdBuffer->beginRenderPass(renderPass, framebuffers[bufferIndex],
+            cmdBuffer->beginRenderPass(sharedRenderPass, framebuffers[bufferIndex],
                 {
                     magma::clear::gray,
                     magma::clear::depthOne

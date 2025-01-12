@@ -60,9 +60,9 @@ protected:
     std::unique_ptr<magma::InstanceExtensions> instanceExtensions;
     std::unique_ptr<magma::DeviceExtensions> extensions;
 
-    std::shared_ptr<magma::RenderPass> renderPass;
+    std::unique_ptr<magma::RenderPass> renderPass;
     std::shared_ptr<magma::ImageView> depthStencilView;
-    std::vector<std::shared_ptr<magma::Framebuffer>> framebuffers;
+    std::vector<std::unique_ptr<magma::Framebuffer>> framebuffers;
 
     std::shared_ptr<magma::Queue> graphicsQueue;
     std::shared_ptr<magma::Queue> transferQueue;

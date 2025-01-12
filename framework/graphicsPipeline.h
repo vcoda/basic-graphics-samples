@@ -14,7 +14,7 @@ public:
         const magma::DepthStencilState& depthStencilState,
         const magma::ColorBlendState& colorBlendState,
         magma::variant_ptr<magma::PipelineLayout> layout,
-        std::shared_ptr<magma::RenderPass> renderPass,
+        magma::lent_ptr<const magma::RenderPass> renderPass,
         uint32_t subpass = 0,
         const std::unique_ptr<magma::PipelineCache>& pipelineCache = nullptr);
 
