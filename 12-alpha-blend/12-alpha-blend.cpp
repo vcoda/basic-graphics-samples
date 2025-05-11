@@ -4,11 +4,10 @@
 
 class AlphaBlendApp : public VulkanApp
 {
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer worldViewProj = 0;
         magma::descriptor::CombinedImageSampler diffuse = 1;
-        MAGMA_REFLECT(worldViewProj, diffuse)
     } setTable;
 
     std::unique_ptr<quadric::Cube> mesh;

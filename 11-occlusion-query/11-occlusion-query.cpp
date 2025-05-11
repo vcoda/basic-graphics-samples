@@ -14,16 +14,14 @@ template<class Type> using DynamicUniformBuffer =
 // Use L button + mouse to rotate scene
 class OcclusionQueryApp : public VulkanApp
 {
-    struct TransformSetTable : magma::DescriptorSetTable
+    struct TransformSetTable
     {
         magma::descriptor::DynamicUniformBuffer worldViewProj = 0;
-        MAGMA_REFLECT(worldViewProj)
     } setTable0;
 
-    struct ColorSetTable : magma::DescriptorSetTable
+    struct ColorSetTable
     {
         magma::descriptor::DynamicUniformBuffer color = 0;
-        MAGMA_REFLECT(color)
     } setTable1;
 
     std::unique_ptr<quadric::Plane> plane;
@@ -134,7 +132,7 @@ public:
     #if NON_COHERENT_UNIFORM_BUFFER
         constexpr bool ubFlag = true; // mappedPersistently
     #else
-        const bool ubFlag = device->getFeatures()->supportsDeviceLocalHostVisibleMemory(); // stagedPool
+        const bool ubFlag = physicalDevice->features()->supportsDeviceLocalHostVisibleMemory(); // stagedPool
     #endif
         transformUniforms = std::make_unique<DynamicUniformBuffer<rapid::matrix>>(device, 2, ubFlag);
         colorUniforms = std::make_unique<DynamicUniformBuffer<rapid::vector4>>(device, 2, ubFlag);

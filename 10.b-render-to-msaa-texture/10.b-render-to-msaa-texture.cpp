@@ -21,16 +21,14 @@ class RenderToMsaaTextureApp : public VulkanApp
         uint32_t sampleCount = 0;
     } fb;
 
-    struct RtDescriptorSetTable : magma::DescriptorSetTable
+    struct RtDescriptorSetTable
     {
         magma::descriptor::UniformBuffer world = 0;
-        MAGMA_REFLECT(world)
     } setTableRt;
 
-    struct TxDescriptorSetTable : magma::DescriptorSetTable
+    struct TxDescriptorSetTable
     {
         magma::descriptor::CombinedImageSampler texture = 0;
-        MAGMA_REFLECT(texture)
     } setTableTx;
 
     std::unique_ptr<magma::VertexBuffer> vertexBuffer;

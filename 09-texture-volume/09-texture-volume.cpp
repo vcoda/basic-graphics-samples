@@ -9,13 +9,12 @@ class TextureVolumeApp : public VulkanApp
         float power;
     };
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer normalMatrix = 0;
         magma::descriptor::UniformBuffer integrationParameters = 1;
         magma::descriptor::CombinedImageSampler volume = 2;
         magma::descriptor::CombinedImageSampler lookup = 3;
-        MAGMA_REFLECT(normalMatrix, integrationParameters, volume, lookup)
     } setTable;
 
     std::unique_ptr<magma::ImageView> volume;

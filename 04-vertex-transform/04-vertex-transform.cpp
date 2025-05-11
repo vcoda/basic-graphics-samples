@@ -8,10 +8,9 @@ class VertexTransformApp : public VulkanApp
     // https://msdn.microsoft.com/en-us/library/windows/desktop/bb204853(v=vs.85).aspx
     constexpr static bool rhs = true;
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer worldViewProj = 0;
-        MAGMA_REFLECT(worldViewProj)
     } setTable;
 
     std::unique_ptr<magma::VertexBuffer> vertexBuffer;

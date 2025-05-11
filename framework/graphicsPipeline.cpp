@@ -27,9 +27,13 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     std::move(layout),
     std::move(renderPass),
     subpass,
-    nullptr,
+    nullptr, // allocator
     pipelineCache,
-    nullptr, 0)
+#ifdef VK_KHR_pipeline_library
+    nullptr, // pipelineLibrary
+#endif
+    nullptr, // basePipeline
+    0) // flags
 {}
 
 magma::PipelineShaderStage GraphicsPipeline::loadShader(

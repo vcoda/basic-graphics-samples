@@ -8,10 +8,9 @@ class PushConstantsApp : public VulkanApp
         rapid::float4 vertexColors[3];
     } pushConstants;
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer pushConstants = 0;
-        MAGMA_REFLECT(pushConstants)
     } setTable;
 
     std::unique_ptr<magma::VertexBuffer> vertexBuffer;

@@ -8,9 +8,9 @@ public:
         device(std::move(device))
     {}
 
-    const std::unique_ptr<const magma::ShaderReflection>& getReflection(const std::string& fileName) override
+    const std::unique_ptr<const magma::ShaderReflection>& getReflection(std::string_view fileName) override
     {
-        const std::string shaderFileName = fileName + std::string(".o");
+        const std::string shaderFileName = std::string(fileName) + ".o";
         std::ifstream file(shaderFileName, std::ios::in | std::ios::binary);
         if (!file.is_open())
             throw std::runtime_error("file \"" + shaderFileName + "\" not found");

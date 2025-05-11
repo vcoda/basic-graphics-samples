@@ -16,12 +16,11 @@ class TextureApp : public VulkanApp
         bool multitexture;
     };
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer texParameters = 0;
         magma::descriptor::CombinedImageSampler diffuseImage = 1;
         magma::descriptor::CombinedImageSampler lightmapImage = 2;
-        MAGMA_REFLECT(texParameters, diffuseImage, lightmapImage)
     } setTable;
 
     std::unique_ptr<magma::ImageView> diffuse;

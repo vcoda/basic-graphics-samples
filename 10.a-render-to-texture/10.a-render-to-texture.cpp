@@ -14,16 +14,14 @@ class RenderToTextureApp : public VulkanApp
         std::unique_ptr<magma::Framebuffer> framebuffer;
     } fb;
 
-    struct RtDescriptorSetTable : magma::DescriptorSetTable
+    struct RtDescriptorSetTable
     {
         magma::descriptor::UniformBuffer world = 0;
-        MAGMA_REFLECT(world)
     } setTableRt;
 
-    struct TxDescriptorSetTable : magma::DescriptorSetTable
+    struct TxDescriptorSetTable
     {
         magma::descriptor::CombinedImageSampler texture = 0;
-        MAGMA_REFLECT(texture)
     } setTableTx;
 
     std::unique_ptr<magma::VertexBuffer> vertexBuffer;

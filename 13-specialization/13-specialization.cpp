@@ -30,10 +30,9 @@ class SpecializationApp : public VulkanApp
         rapid::matrix normalMatrix;
     };
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer transforms = 0;
-        MAGMA_REFLECT(transforms)
     } setTable;
 
     const std::unordered_map<ShadingType, std::tstring> captions = {

@@ -13,12 +13,11 @@ class TextureCubeApp : public VulkanApp
         rapid::matrix normal;
     };
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer transforms = 0;
         magma::descriptor::CombinedImageSampler diffuse = 1;
         magma::descriptor::CombinedImageSampler specular = 2;
-        MAGMA_REFLECT(transforms, diffuse, specular)
     } setTable;
 
     std::unique_ptr<quadric::Teapot> mesh;

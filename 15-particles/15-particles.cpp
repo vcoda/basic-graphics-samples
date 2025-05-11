@@ -4,10 +4,9 @@
 // Use Space to reset particles + mouse to rotate scene
 class ParticlesApp : public VulkanApp
 {
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer viewProj = 0;
-        MAGMA_REFLECT(viewProj)
     } setTable;
 
     std::unique_ptr<ParticleSystem> particles;

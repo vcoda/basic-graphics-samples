@@ -14,10 +14,9 @@ class ShaderToyApp : public VulkanApp
         float iTime;
     };
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer builtinUniforms = 0;
-        MAGMA_REFLECT(builtinUniforms)
     } setTable;
 
     std::unique_ptr<FileWatchdog> watchdog;

@@ -53,7 +53,7 @@ void ParticleSystem::setCollisionPlane(const rapid::float3& planeNormal, const r
 
 void ParticleSystem::initialize(std::shared_ptr<magma::Device> device)
 {
-    const bool stagedPool = device->getFeatures()->supportsDeviceLocalHostVisibleMemory();
+    const bool stagedPool = device->getPhysicalDevice()->features()->supportsDeviceLocalHostVisibleMemory();
     vertexBuffer = std::make_unique<magma::DynamicVertexBuffer>(device, maxParticles * sizeof(ParticleVertex), stagedPool);
     drawParams = std::make_unique<magma::DrawIndirectBuffer>(device, 1);
     drawParams->writeDrawCommand(0, 0); // Submit stub draw call to command buffer

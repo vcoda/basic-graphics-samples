@@ -3,10 +3,9 @@
 
 class MeshApp : public VulkanApp
 {
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer worldViewProj = 0;
-        MAGMA_REFLECT(worldViewProj)
     } setTable;
 
     std::unique_ptr<quadric::Teapot> mesh;

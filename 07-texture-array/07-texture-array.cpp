@@ -11,12 +11,11 @@ class TextureArrayApp : public VulkanApp
         float lod;
     };
 
-    struct DescriptorSetTable : magma::DescriptorSetTable
+    struct DescriptorSetTable
     {
         magma::descriptor::UniformBuffer worldViewProj = 0;
         magma::descriptor::UniformBuffer texParameters = 1;
         magma::descriptor::CombinedImageSampler imageArray = 2;
-        MAGMA_REFLECT(worldViewProj, texParameters, imageArray)
     } setTable;
 
     std::unique_ptr<quadric::Cube> mesh;
