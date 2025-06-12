@@ -52,7 +52,7 @@ class SpecializationApp : public VulkanApp
     std::shared_ptr<magma::PipelineLayout> sharedLayout;
     std::shared_ptr<magma::RenderPass> sharedRenderPass;
     std::unique_ptr<magma::GraphicsPipelineBatch> pipelineBatch;
-    std::vector<std::shared_ptr<magma::CommandBuffer>> commandBuffers[2];
+    std::vector<std::vector<std::shared_ptr<magma::CommandBuffer>>> commandBuffers;
 
     rapid::matrix view;
     rapid::matrix proj;
@@ -71,10 +71,10 @@ public:
         createUniformBuffer();
         setupDescriptorSet();
         buildPipelines();
-        for (uint32_t i = 0; i < ShadingType::MaxPermutations; ++i)
+        for (uint32_t pipelineIndex = 0; pipelineIndex < ShadingType::MaxPermutations; ++pipelineIndex)
         {
-            recordCommandBuffer(Buffer::Front, i);
-            recordCommandBuffer(Buffer::Back, i);
+            for (uint32_t bufferIndex = 0; bufferIndex < (uint32_t)commandBuffers.size(); ++bufferIndex)
+                recordCommandBuffer(bufferIndex, pipelineIndex);
         }
     }
 
@@ -112,8 +112,11 @@ public:
     void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
-        commandBuffers[Buffer::Front] = commandPools[0]->allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY, ShadingType::MaxPermutations);
-        commandBuffers[Buffer::Back] = commandPools[0]->allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY, ShadingType::MaxPermutations);
+        for (size_t i = 0; i < framebuffers.size(); ++i)
+        {
+            std::vector<std::shared_ptr<magma::CommandBuffer>> forEachPermutationCmdBuffers = commandPools[0]->allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY, ShadingType::MaxPermutations);
+            commandBuffers.emplace_back(std::move(forEachPermutationCmdBuffers));
+        }
     }
 
     void setupView()

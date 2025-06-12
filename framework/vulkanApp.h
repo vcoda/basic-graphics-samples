@@ -23,7 +23,6 @@ typedef XcbApp NativeApp;
 class VulkanApp : public NativeApp
 {
 protected:
-    enum Buffer : uint8_t;
     enum class PresentationWait : uint8_t;
 
 public:
@@ -88,11 +87,6 @@ protected:
     PresentationWait presentWait;
     uint32_t bufferIndex;
     uint32_t frameIndex;
-};
-
-enum VulkanApp::Buffer : uint8_t
-{
-    Front, Back
 };
 
 enum class VulkanApp::PresentationWait : uint8_t

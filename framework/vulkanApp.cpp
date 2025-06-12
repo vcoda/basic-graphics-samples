@@ -254,7 +254,7 @@ void VulkanApp::createSwapchain()
     magma::Swapchain::Initializer initializer;
     initializer.debugReportCallback = debugReportCallback.get();
     swapchain = std::make_unique<magma::Swapchain>(device, surface,
-        std::min(2U, surfaceCaps.maxImageCount),
+        std::max(surfaceCaps.minImageCount, 2U),
         surfaceFormats[0], surfaceCaps.currentExtent, 1,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
         preTransform, compositeAlpha, presentMode, initializer);

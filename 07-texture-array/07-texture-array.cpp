@@ -41,8 +41,8 @@ public:
         createUniformBuffers();
         setupDescriptorSet();
         setupPipeline();
-        recordCommandBuffer(Buffer::Front);
-        recordCommandBuffer(Buffer::Back);
+        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
+            recordCommandBuffer(i);
         timer->run();
     }
 
