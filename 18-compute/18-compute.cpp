@@ -42,8 +42,8 @@ public:
 
     void createLogicalDevice() override
     {
-        const magma::DeviceQueueDescriptor computeQueueDesc(physicalDevice, VK_QUEUE_COMPUTE_BIT, magma::QueuePriorityHighest);
-        const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice, VK_QUEUE_TRANSFER_BIT, magma::QueuePriorityDefault);
+        const magma::DeviceQueueDescriptor computeQueueDesc(physicalDevice.get(), VK_QUEUE_COMPUTE_BIT, magma::QueuePriorityHighest);
+        const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice.get(), VK_QUEUE_TRANSFER_BIT, magma::QueuePriorityDefault);
         std::set<magma::DeviceQueueDescriptor> queueDescriptors;
         queueDescriptors.insert(computeQueueDesc);
         queueDescriptors.insert(transferQueueDesc);

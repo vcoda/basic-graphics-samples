@@ -121,7 +121,7 @@ void VulkanApp::createInstance()
         "Magma", 1,
         VK_API_VERSION_1_0);
 
-    instance = std::make_shared<magma::Instance>(layerNames, enabledExtensions, nullptr, &appInfo, 0,
+    instance = std::make_unique<magma::Instance>(layerNames, enabledExtensions, nullptr, &appInfo, 0,
     #ifdef VK_EXT_debug_report
         utilities::reportCallback,
     #endif
@@ -133,7 +133,7 @@ void VulkanApp::createInstance()
     if (instanceExtensions->EXT_debug_report)
     {
         debugReportCallback = std::make_unique<magma::DebugReportCallback>(
-            instance, utilities::reportCallback);
+            instance.get(), utilities::reportCallback);
     }
 #endif // VK_EXT_debug_report
 
@@ -152,8 +152,8 @@ void VulkanApp::createInstance()
 
 void VulkanApp::createLogicalDevice()
 {
-    const magma::DeviceQueueDescriptor graphicsQueueDesc(physicalDevice, VK_QUEUE_GRAPHICS_BIT, magma::QueuePriorityHighest);
-    const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice, VK_QUEUE_TRANSFER_BIT, magma::QueuePriorityDefault);
+    const magma::DeviceQueueDescriptor graphicsQueueDesc(physicalDevice.get(), VK_QUEUE_GRAPHICS_BIT, magma::QueuePriorityHighest);
+    const magma::DeviceQueueDescriptor transferQueueDesc(physicalDevice.get(), VK_QUEUE_TRANSFER_BIT, magma::QueuePriorityDefault);
     std::set<magma::DeviceQueueDescriptor> queueDescriptors;
     queueDescriptors.insert(graphicsQueueDesc);
     queueDescriptors.insert(transferQueueDesc);
@@ -191,13 +191,13 @@ void VulkanApp::createLogicalDevice()
 void VulkanApp::createSwapchain()
 {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-    surface = std::make_unique<magma::Win32Surface>(instance, hInstance, hWnd);
+    surface = std::make_unique<magma::Win32Surface>(instance.get(), hInstance, hWnd);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
-    surface = std::make_unique<magma::XlibSurface>(instance, dpy, window);
+    surface = std::make_unique<magma::XlibSurface>(instance.get(), dpy, window);
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-    surface = std::make_unique<magma::XcbSurface>(instance, connection, window);
+    surface = std::make_unique<magma::XcbSurface>(instance.get(), connection, window);
 #endif // VK_USE_PLATFORM_XCB_KHR
-    const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice, VK_QUEUE_GRAPHICS_BIT, {1.f});
+    const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice.get(), VK_QUEUE_GRAPHICS_BIT, {1.f});
     if (!physicalDevice->getSurfaceSupport(surface, graphicsQueue.queueFamilyIndex))
         throw std::runtime_error("surface not supported");
     // Get surface caps

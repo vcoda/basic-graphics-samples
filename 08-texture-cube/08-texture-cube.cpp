@@ -146,7 +146,7 @@ public:
 
     void createSampler()
     {
-        anisotropicSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdgeX8);
+        anisotropicSampler = std::make_unique<magma::Sampler>(device, magma::sampler::magMinLinearMipAnisotropicClampToEdge8x);
     }
 
     void createUniformBuffer()

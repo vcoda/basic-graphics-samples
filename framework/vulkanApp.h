@@ -50,7 +50,7 @@ protected:
     void submitCopyImageCommands();
     void submitCopyBufferCommands();
 
-    std::shared_ptr<magma::Instance> instance;
+    std::unique_ptr<magma::Instance> instance;
     std::unique_ptr<magma::DebugReportCallback> debugReportCallback;
     std::unique_ptr<magma::Surface> surface;
     std::shared_ptr<magma::PhysicalDevice> physicalDevice;
