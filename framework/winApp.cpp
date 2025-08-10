@@ -1,7 +1,5 @@
 #include "winApp.h"
 
-DebugOutputStream Win32App::dostream;
-
 Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height):
     BaseApp(caption, width, height),
     hInstance(entry.hInstance),
