@@ -1,6 +1,5 @@
 #include "winApp.h"
 
-Win32App *Win32App::self;
 DebugOutputStream Win32App::dostream;
 
 Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height):
@@ -8,7 +7,6 @@ Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t 
     hInstance(entry.hInstance),
     hWnd(NULL)
 {
-    Win32App::self = this;
     HICON icon = (HICON)LoadImage(NULL, TEXT("..\\framework\\resources\\vulkan.ico"),
         IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
 
@@ -31,6 +29,7 @@ Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t 
     hWnd = CreateWindow(wc.lpszClassName, caption.c_str(), style,
         0, 0, width, height,
         NULL, NULL, wc.hInstance, NULL);
+    SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
     // Adjust window size according to style
     RECT rc = {0L, 0L, (LONG)width, (LONG)height};
@@ -136,48 +135,50 @@ char Win32App::translateKey(int code) const
 
 LRESULT WINAPI Win32App::wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    Win32App *app = reinterpret_cast<Win32App *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
     switch (msg)
     {
     case WM_KEYDOWN:
         {
-            const char key = self->translateKey((int)wParam);
-            self->onKeyDown(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
+            const char key = app->translateKey((int)wParam);
+            app->onKeyDown(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
         }
         break;
     case WM_KEYUP:
         {
-            const char key = self->translateKey((int)wParam);
-            self->onKeyUp(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
+            const char key = app->translateKey((int)wParam);
+            app->onKeyUp(key, (int)(short)LOWORD(lParam), (UINT)HIWORD(lParam));
         }
         break;
     case WM_MOUSEMOVE:
-        self->onMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam));
+        app->onMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
-        self->onMouseLButton((WM_LBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
+        app->onMouseLButton((WM_LBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONUP:
-        self->onMouseRButton((WM_RBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
+        app->onMouseRButton((WM_RBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONUP:
-        self->onMouseMButton((WM_MBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
+        app->onMouseMButton((WM_MBUTTONDOWN == msg), (int)LOWORD(lParam), (int)HIWORD(lParam));
         break;
     case WM_MOUSEWHEEL:
         {
             short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-            self->onMouseWheel(delta/(float)WHEEL_DELTA);
+            app->onMouseWheel(delta/(float)WHEEL_DELTA);
         }
         break;
 #ifndef _DEBUG
     case WM_PAINT:
-        Win32App::self->onPaint();
+        app->onPaint();
         break;
 #endif
     case WM_CLOSE:
-        self->close();
+        app->close();
         break;
     case WM_DESTROY:
         return 0;
