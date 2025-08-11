@@ -96,6 +96,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 int main(int argc, char *argv[])
 #endif
 {
+#if defined(_MSC_VER) && defined(_DEBUG)
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
     AppEntry entry;
 #ifdef _WIN32
     entry.hInstance = hInstance;
