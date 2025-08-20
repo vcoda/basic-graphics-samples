@@ -331,10 +331,11 @@ void VulkanApp::createCommandBuffers()
 void VulkanApp::createSyncPrimitives()
 {
     presentFinished = std::make_shared<magma::Semaphore>(device);
-    for (int i = 0; i < (int)swapchain->getImageCount(); ++i)
-        renderFinishedSemaphores.push_back(std::make_shared<magma::Semaphore>(device));
     for (int i = 0; i < (int)commandBuffers.size(); ++i)
+    {
+        renderFinishedSemaphores.push_back(std::make_shared<magma::Semaphore>(device));
         waitFences.push_back(std::make_unique<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
+    }
 }
 
 void VulkanApp::createDescriptorPool()
