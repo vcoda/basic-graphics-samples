@@ -4,6 +4,7 @@
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
     NativeApp(entry, caption, width, height),
+    renderFinished(&nullSemaphore),
     waitFence(&nullFence),
     timer(std::make_unique<Timer>()),
     vSync(false),
@@ -30,13 +31,14 @@ void VulkanApp::onIdle()
 void VulkanApp::onPaint()
 {
     bufferIndex = swapchain->acquireNextImage(presentFinished);
+    renderFinished = &renderFinishedSemaphores[bufferIndex];
     if (PresentationWait::Fence == presentWait)
     {   // Fence to be signaled when command buffer completed execution
         waitFences[bufferIndex]->reset();
         waitFence = &waitFences[bufferIndex];
     }
     render(bufferIndex);
-    graphicsQueue->present(swapchain, bufferIndex, renderFinished);
+    graphicsQueue->present(swapchain, bufferIndex, *renderFinished);
     switch (presentWait)
     {
     case PresentationWait::Fence:
@@ -329,7 +331,8 @@ void VulkanApp::createCommandBuffers()
 void VulkanApp::createSyncPrimitives()
 {
     presentFinished = std::make_shared<magma::Semaphore>(device);
-    renderFinished = std::make_shared<magma::Semaphore>(device);
+    for (int i = 0; i < (int)swapchain->getImageCount(); ++i)
+        renderFinishedSemaphores.push_back(std::make_shared<magma::Semaphore>(device));
     for (int i = 0; i < (int)commandBuffers.size(); ++i)
         waitFences.push_back(std::make_unique<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
 }
@@ -360,7 +363,7 @@ void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
     graphicsQueue->submit(commandBuffers[bufferIndex],
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
         presentFinished, // Wait for swapchain
-        renderFinished, // Semaphore to be signaled when command buffer completed execution
+        *renderFinished, // Semaphore to be signaled when command buffer completed execution
         *waitFence); // Fence to be signaled when command buffer completed execution
 }
 

@@ -68,7 +68,7 @@ public:
             nullptr);
         graphicsQueue->submit(commandBuffers[bufferIndex], stageMask,
             rtSemaphore, // Wait for render-to-texture
-            renderFinished, // Semaphore to be signaled when command buffer completed execution
+            *renderFinished, // Semaphore to be signaled when command buffer completed execution
             *waitFence); // Fence to be signaled when command buffer completed execution
     }
 

@@ -85,7 +85,7 @@ public:
             commandBuffers[bufferIndex][pipelineIndex],
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             presentFinished,
-            renderFinished,
+            *renderFinished,
             *waitFence);
     }
 
