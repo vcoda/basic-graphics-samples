@@ -4,14 +4,14 @@
 VulkanApp::VulkanApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height,
     bool depthBuffer /* false */):
     NativeApp(entry, caption, width, height),
-    waitFence(&nullFence),
     timer(std::make_unique<Timer>()),
     vSync(false),
     depthBuffer(depthBuffer),
     negateViewport(false),
-    presentWait(PresentationWait::Fence),
+    presentWait(PresentationWait::Device),
+    frameIndex(0),
     bufferIndex(0),
-    frameIndex(0)
+    frameCount(0)
 {}
 
 VulkanApp::~VulkanApp() {}
@@ -29,22 +29,16 @@ void VulkanApp::onIdle()
 
 void VulkanApp::onPaint()
 {
-    bufferIndex = swapchain->acquireNextImage(presentFinished);
+    // Buffer index isn't guaranteed to be ordered, the sequence [0, 1, 2, 0, 2, 1...] is legal
+    bufferIndex = swapchain->acquireNextImage(presentFinished[frameIndex]);
     if (PresentationWait::Fence == presentWait)
-    {   // Fence to be signaled when command buffer completed execution
-        waitFences[bufferIndex]->reset();
-        waitFence = &waitFences[bufferIndex];
-    }
+        waitFences[frameIndex]->reset(); // Fence to be signaled when command buffer completed execution
     render(bufferIndex);
-    graphicsQueue->present(swapchain, bufferIndex, renderFinished);
+    graphicsQueue->present(swapchain, bufferIndex, renderFinished[frameIndex]);
     switch (presentWait)
     {
     case PresentationWait::Fence:
-        if (waitFence)
-        {
-            (*waitFence)->wait();
-            graphicsQueue->onIdle();
-        }
+        waitFences[frameIndex]->wait();
         break;
     case PresentationWait::Queue:
         graphicsQueue->waitIdle();
@@ -59,7 +53,9 @@ void VulkanApp::onPaint()
     {   // Cap fps
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    ++frameIndex;
+    // Round robin frame-in-flight
+    frameIndex = (frameIndex + 1) % swapchain->getImageCount();
+    ++frameCount;
 }
 
 void VulkanApp::initialize()
@@ -328,10 +324,12 @@ void VulkanApp::createCommandBuffers()
 
 void VulkanApp::createSyncPrimitives()
 {
-    presentFinished = std::make_shared<magma::Semaphore>(device);
-    renderFinished = std::make_shared<magma::Semaphore>(device);
-    for (int i = 0; i < (int)commandBuffers.size(); ++i)
+    for (uint32_t i = 0; i < swapchain->getImageCount(); ++i)
+    {
+        presentFinished.push_back(std::make_shared<magma::Semaphore>(device));
+        renderFinished.push_back(std::make_shared<magma::Semaphore>(device));
         waitFences.push_back(std::make_unique<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
+    }
 }
 
 void VulkanApp::createDescriptorPool()
@@ -357,11 +355,12 @@ void VulkanApp::imageLayoutTransition(std::shared_ptr<magma::Image> image, VkIma
 
 void VulkanApp::submitCommandBuffer(uint32_t bufferIndex)
 {
+    const std::unique_ptr<magma::Fence>& frameFence = (PresentationWait::Fence == presentWait) ? waitFences[frameIndex] : nullFence;
     graphicsQueue->submit(commandBuffers[bufferIndex],
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        presentFinished, // Wait for swapchain
-        renderFinished, // Semaphore to be signaled when command buffer completed execution
-        *waitFence); // Fence to be signaled when command buffer completed execution
+        presentFinished[frameIndex], // Wait for swapchain
+        renderFinished[frameIndex], // Semaphore to be signaled when command buffer completed execution
+        frameFence); // Fence to be signaled when command buffer completed execution
 }
 
 void VulkanApp::submitCopyImageCommands()
@@ -369,7 +368,6 @@ void VulkanApp::submitCopyImageCommands()
     waitFences[0]->reset();
     graphicsQueue->submit(cmdImageCopy, 0, nullptr, nullptr, waitFences[0]);
     waitFences[0]->wait();
-    graphicsQueue->onIdle();
 }
 
 void VulkanApp::submitCopyBufferCommands()
@@ -377,5 +375,4 @@ void VulkanApp::submitCopyBufferCommands()
     waitFences[1]->reset();
     transferQueue->submit(cmdBufferCopy, 0, nullptr, nullptr, waitFences[1]);
     waitFences[1]->wait();
-    transferQueue->onIdle();
 }

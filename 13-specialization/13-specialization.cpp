@@ -81,12 +81,13 @@ public:
     void render(uint32_t bufferIndex) override
     {
         updatePerspectiveTransform();
+        const std::unique_ptr<magma::Fence>& frameFence = (PresentationWait::Fence == presentWait) ? waitFences[frameIndex] : nullFence;
         graphicsQueue->submit(
             commandBuffers[bufferIndex][pipelineIndex],
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            presentFinished,
-            renderFinished,
-            *waitFence);
+            presentFinished[frameIndex], // Wait for swapchain
+            renderFinished[frameIndex], // Semaphore to be signaled when command buffer completed execution
+            frameFence);
     }
 
     void onKeyDown(char key, int repeat, uint32_t flags) override

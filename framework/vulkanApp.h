@@ -70,11 +70,10 @@ protected:
     std::shared_ptr<magma::CommandBuffer> cmdImageCopy;
     std::shared_ptr<magma::CommandBuffer> cmdBufferCopy;
 
-    std::shared_ptr<magma::Semaphore> presentFinished;
-    std::shared_ptr<magma::Semaphore> renderFinished;
+    std::vector<std::shared_ptr<magma::Semaphore>> presentFinished;
+    std::vector<std::shared_ptr<magma::Semaphore>> renderFinished;
     std::vector<std::unique_ptr<magma::Fence>> waitFences;
     const std::unique_ptr<magma::Fence> nullFence;
-    const std::unique_ptr<magma::Fence> *waitFence;
 
     std::shared_ptr<magma::DescriptorPool> descriptorPool;
     std::unique_ptr<magma::PipelineCache> pipelineCache;
@@ -85,8 +84,9 @@ protected:
     bool depthBuffer;
     bool negateViewport;
     PresentationWait presentWait;
-    uint32_t bufferIndex;
     uint32_t frameIndex;
+    uint32_t bufferIndex;
+    uint32_t frameCount;
 };
 
 enum class VulkanApp::PresentationWait : uint8_t

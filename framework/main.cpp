@@ -67,14 +67,14 @@ void runAppWithExceptionHandling(const AppEntry& entry) try
     app->show();
     app->run();
 }
-catch (const magma::exception::ErrorResult& exc)
+catch (const magma::exception::Error& exc)
 {
-    std::string message = formatError(exc.error(), exc.what(), exc.where());
+    std::string message = formatError(exc.result(), exc.what(), exc.where());
     onError(message, "Vulkan");
 }
-catch (const magma::exception::ReflectionErrorResult& exc)
+catch (const magma::exception::ReflectionError& exc)
 {
-    std::string message = formatError(exc.error(), exc.what(), exc.where());
+    std::string message = formatError(exc.result(), exc.what(), exc.where());
     onError(message, "SPIRV-Reflect");
 }
 catch (const magma::exception::Exception& exc)

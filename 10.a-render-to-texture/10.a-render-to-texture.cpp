@@ -56,13 +56,14 @@ public:
         updateWorldTransform();
         constexpr VkPipelineStageFlags stageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         graphicsQueue->submit(rtCmdBuffer, stageMask,
-            presentFinished, // Wait for swapchain
+            presentFinished[frameIndex], // Wait for swapchain
             rtSemaphore, // Signal when render-to-texture finished
             nullptr);
+        const std::unique_ptr<magma::Fence>& frameFence = (PresentationWait::Fence == presentWait) ? waitFences[frameIndex] : nullFence;
         graphicsQueue->submit(commandBuffers[bufferIndex], stageMask,
             rtSemaphore, // Wait for render-to-texture
-            renderFinished, // Semaphore to be signaled when command buffer completed execution
-            *waitFence); // Fence to be signaled when command buffer completed execution
+            renderFinished[frameIndex], // Semaphore to be signaled when command buffer completed execution
+            frameFence); // Fence to be signaled when command buffer completed execution
     }
 
     void updateWorldTransform()
