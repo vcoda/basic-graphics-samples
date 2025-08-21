@@ -101,7 +101,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party;..\third-party\magma\src\third-party\pfr\include</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4100;4146;4305;4324;4348;4458;4838</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4065;4100;4324;4458</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -118,7 +118,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party;..\third-party\magma\src\third-party\pfr\include</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4100;4146;4305;4324;4348;4458;4838</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4065;4100;4324;4458</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -137,7 +137,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party;..\third-party\magma\src\third-party\pfr\include</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4100;4146;4305;4324;4348;4458;4838</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4065;4100;4324;4458</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -160,7 +160,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;..\third-party;..\third-party\magma\src\third-party\pfr\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <DisableSpecificWarnings>4100;4146;4305;4324;4348;4458;4838</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4065;4100;4324;4458</DisableSpecificWarnings>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
