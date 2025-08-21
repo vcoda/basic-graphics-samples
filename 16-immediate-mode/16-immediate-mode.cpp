@@ -141,7 +141,7 @@ public:
         ir->beginPrimitive(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
         {
             ir->color(0.f, 0.5f, 0.5f);
-            ir->vertex(-0.277, 0.277f);
+            ir->vertex(-0.277f, 0.277f);
             ir->vertex(-0.211f, 0.477f);
             ir->vertex(-0.063f, 0.477f);
             ir->vertex(0.094f, 0.277f);
