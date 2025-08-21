@@ -266,7 +266,7 @@ public:
         {
             cmdBuffer->beginRenderPass(ir->getRenderPass(), framebuffers[index], {magma::clear::gray});
             {
-                cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
+                cmdBuffer->setViewport(0, 0, width, negateViewport ? -int32_t(height) : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 ir->commitPrimitives(cmdBuffer, false);
             }

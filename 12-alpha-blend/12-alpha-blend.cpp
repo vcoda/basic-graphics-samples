@@ -179,7 +179,7 @@ public:
                     magma::ClearColor(0.35f, 0.53f, 0.7f, 1.f)
                 });
             {
-                cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
+                cmdBuffer->setViewport(0, 0, width, negateViewport ? -int32_t(height) : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(cullFrontPipeline, 0, descriptorSet);
                 // Draw back faced triangles

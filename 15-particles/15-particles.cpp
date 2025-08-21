@@ -53,7 +53,7 @@ public:
     void initParticleSystem()
     {
         particles = std::unique_ptr<ParticleSystem>(new ParticleSystem());
-        particles->setResolution(width, negateViewport ? -height : height);
+        particles->setResolution(width, negateViewport ? -int32_t(height) : height);
         particles->setFieldOfView(fov);
         particles->setPointSize(1.f/3.f);
         particles->setMaxParticles(200);
@@ -138,7 +138,7 @@ public:
                     magma::clear::depthOne
                 });
             {
-                cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
+                cmdBuffer->setViewport(0, 0, width, negateViewport ? -int32_t(height) : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 particles->draw(cmdBuffer, graphicsPipeline);

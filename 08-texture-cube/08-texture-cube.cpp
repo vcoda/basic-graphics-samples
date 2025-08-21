@@ -192,7 +192,7 @@ public:
                     magma::clear::depthOne
                 });
             {
-                cmdBuffer->setViewport(0, 0, width, negateViewport ? -height : height);
+                cmdBuffer->setViewport(0, 0, width, negateViewport ? -int32_t(height) : height);
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
