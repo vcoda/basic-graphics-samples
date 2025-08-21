@@ -5,10 +5,15 @@
 class DebugOutputStream : public std::streambuf
 {
 public:
-    DebugOutputStream()
+    DebugOutputStream():
+        cout(std::cout.rdbuf(this)),
+        cerr(std::cerr.rdbuf(this))
+    {}
+
+    ~DebugOutputStream()
     {
-        std::cout.rdbuf(this);
-        std::cerr.rdbuf(this);
+        std::cout.rdbuf(cout);
+        std::cerr.rdbuf(cerr);
     }
 
     int_type overflow(int_type n) override
@@ -34,6 +39,7 @@ public:
     }
 
 private:
+    std::streambuf *cout, *cerr;
     char buf[4096 + 1];
     size_t pos = 0;
     std::mutex mtx;
