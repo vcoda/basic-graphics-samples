@@ -47,6 +47,7 @@ sudo apt install libxcb-icccm4-dev
 For Xlib, install X11 headers and libraries (optional):
 ```
 sudo apt install libx11-dev
+sudo apt install libxrandr-dev
 ```
 
 * [LunarG Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)<br>
