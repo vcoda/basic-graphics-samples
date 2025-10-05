@@ -76,9 +76,7 @@ void XlibApp::show() const
     int screenWidth = 0;
     int screenHeight = 0;
     int numMonitors = 0;
-    XVisualInfo infoTemplate = {};
-    infoTemplate.screen = XDefaultScreen(dpy);
-    const Window rootWindow = RootWindow(dpy, infoTemplate.screen);
+    const Window rootWindow = RootWindow(dpy, XDefaultScreen(dpy));
     XRRMonitorInfo *monitors = XRRGetMonitors(dpy, rootWindow, True, &numMonitors);
     if (monitors)
     {
@@ -93,6 +91,7 @@ void XlibApp::show() const
                 screenHeight = monitorInfo.height;
            }
        }
+       XRRFreeMonitors(monitors);
     }
 
     if (!screenWidth || !screenHeight)
