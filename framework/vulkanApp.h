@@ -70,8 +70,8 @@ protected:
     std::shared_ptr<magma::CommandBuffer> cmdImageCopy;
     std::shared_ptr<magma::CommandBuffer> cmdBufferCopy;
 
-    std::vector<std::shared_ptr<magma::Semaphore>> presentFinished;
-    std::vector<std::shared_ptr<magma::Semaphore>> renderFinished;
+    std::vector<std::unique_ptr<magma::Semaphore>> presentFinished;
+    std::vector<std::unique_ptr<magma::Semaphore>> renderFinished;
     std::vector<std::unique_ptr<magma::Fence>> waitFences;
     const std::unique_ptr<magma::Fence> nullFence;
 

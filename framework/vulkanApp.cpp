@@ -326,8 +326,8 @@ void VulkanApp::createSyncPrimitives()
 {
     for (uint32_t i = 0; i < swapchain->getImageCount(); ++i)
     {
-        presentFinished.push_back(std::make_shared<magma::Semaphore>(device));
-        renderFinished.push_back(std::make_shared<magma::Semaphore>(device));
+        presentFinished.push_back(std::make_unique<magma::Semaphore>(device));
+        renderFinished.push_back(std::make_unique<magma::Semaphore>(device));
         waitFences.push_back(std::make_unique<magma::Fence>(device, nullptr, VK_FENCE_CREATE_SIGNALED_BIT));
     }
 }
