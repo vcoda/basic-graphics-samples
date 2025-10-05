@@ -1,4 +1,5 @@
 #include "xlibApp.h"
+#include <X11/extensions/Xrandr.h> // libxrandr-dev
 
 XlibApp::XlibApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height):
     BaseApp(caption, width, height)
@@ -72,14 +73,42 @@ void XlibApp::setWindowCaption(const std::tstring& caption)
 
 void XlibApp::show() const
 {
-    const Screen *screen = DefaultScreenOfDisplay(dpy);
+    int screenWidth = 0;
+    int screenHeight = 0;
+    int numMonitors = 0;
+    XVisualInfo infoTemplate = {};
+    infoTemplate.screen = XDefaultScreen(dpy);
+    const Window rootWindow = RootWindow(dpy, infoTemplate.screen);
+    XRRMonitorInfo *monitors = XRRGetMonitors(dpy, rootWindow, True, &numMonitors);
+    if (monitors)
+    {
+       for (int i = 0; i < numMonitors; ++i)
+       {
+           const XRRMonitorInfo& monitorInfo = monitors[i];
+           std::cout << "Display #" << i << " x: " << monitorInfo.x << ", y: " << monitorInfo.y <<
+             ", width: " << monitorInfo.width << ", height: " << monitorInfo.height << std::endl;
+           if (!monitorInfo.x && !monitorInfo.y)
+           {    // Prefer display in top-left corner
+                screenWidth = monitorInfo.width;
+                screenHeight = monitorInfo.height;
+           }
+       }
+    }
+
+    if (!screenWidth || !screenHeight)
+    {
+        const Screen *screen = DefaultScreenOfDisplay(dpy);
+        screenWidth = screen->width;
+        screenHeight = screen->height;
+    }
+
     XWindowChanges changes = {};
     changes.x = 0;
     changes.y = 0;
-    if (width < screen->width && height < screen->height)
+    if ((width < screenWidth) && (height < screenHeight))
     {   // Place window in the center of the desktop
-        changes.x = (screen->width - width) / 2;
-        changes.y = (screen->height - height) / 2;
+        changes.x = (screenWidth - width) / 2;
+        changes.y = (screenHeight - height) / 2;
     }
     XMapRaised(dpy, window);
     XConfigureWindow(dpy, window, CWX | CWY, &changes);
