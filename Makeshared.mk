@@ -2,6 +2,7 @@ CC=g++
 GLSLC=$(VULKAN_SDK)/bin/glslangValidator
 
 PLATFORM=VK_USE_PLATFORM_XCB_KHR
+#PLATFORM=VK_USE_PLATFORM_XLIB_KHR
 THIRD_PARTY=../third-party
 INCLUDE_DIR=-I$(VULKAN_SDK)/include -I$(THIRD_PARTY) -I$(THIRD_PARTY)/magma/src/third-party/pfr/include -I$(THIRD_PARTY)/rapid
 LIB_DIR=-L$(VULKAN_SDK)/lib -L$(THIRD_PARTY)/magma -L$(THIRD_PARTY)/quadric
@@ -18,6 +19,7 @@ else
 	QUADRIC=quadric
 endif
 LDFLAGS=$(LIB_DIR) -l$(MAGMA) -lpthread -lxcb -lxcb-randr -lvulkan
+#LDFLAGS=$(LIB_DIR) -l$(MAGMA) -lpthread -lX11 -lXrandr -lvulkan
 
 FRAMEWORK=../framework
 FRAMEWORK_OBJS= \
@@ -26,6 +28,7 @@ FRAMEWORK_OBJS= \
 	$(FRAMEWORK)/utilities.o \
 	$(FRAMEWORK)/vulkanApp.o \
 	$(FRAMEWORK)/xcbApp.o
+#$(FRAMEWORK)/xlibApp.o
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
