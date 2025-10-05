@@ -1,5 +1,6 @@
 #include <cstring>
 #include <cassert>
+#include <xcb/randr.h>
 #include <xcb/xcb_icccm.h> // libxcb-icccm4-dev
 #include "xcbApp.h"
 
@@ -67,12 +68,45 @@ void XcbApp::setWindowCaption(const std::tstring& caption)
 
 void XcbApp::show() const
 {
+    uint16_t screenWidth = 0;
+    uint16_t screenHeight = 0;
+    xcb_randr_get_screen_resources_cookie_t screenCookie = xcb_randr_get_screen_resources(connection, screen->root);
+    xcb_randr_get_screen_resources_reply_t *screenResources = xcb_randr_get_screen_resources_reply(connection, screenCookie, nullptr);
+
+    if (screenResources)
+    {   // Enumerate outputs
+        xcb_randr_crtc_t *crtcs = xcb_randr_get_screen_resources_crtcs(screenResources);
+        for (int i = 0; i < screenResources->num_crtcs; ++i)
+        {
+            xcb_randr_get_crtc_info_cookie_t crtcCookie = xcb_randr_get_crtc_info(connection, crtcs[i], 0);
+            xcb_randr_get_crtc_info_reply_t *crtcInfo = xcb_randr_get_crtc_info_reply(connection, crtcCookie, nullptr);
+            if (crtcInfo->width && crtcInfo->height)
+            {
+                std::cout << "Display #" << i << " x: " << crtcInfo->x << ", y: " << crtcInfo->y <<
+                  ", width: " << crtcInfo->width << ", height: " << crtcInfo->height << std::endl;
+                if (!crtcInfo->x && !crtcInfo->y)
+                {   // Prefer display in top-left corner
+                    screenWidth = crtcInfo->width;
+                    screenHeight = crtcInfo->height;
+                }
+            }
+            free(crtcInfo);
+        }
+    }
+    free(screenResources);
+
+    if (!screenWidth || !screenHeight)
+    {
+        screenWidth = screen->width_in_pixels;
+        screenHeight = screen->height_in_pixels;
+    }
+
     uint32_t coords[2] = {0, 0};
-    if (width < screen->width_in_pixels &&
-        height < screen->height_in_pixels)
+    if (width < screenWidth &&
+        height < screenHeight)
     {   // Place window in the center of the desktop
-        coords[0] = (screen->width_in_pixels - width) / 2;
-        coords[1] = (screen->height_in_pixels - height) / 2;
+        coords[0] = (screenWidth - width) / 2;
+        coords[1] = (screenHeight- height) / 2;
     }
     xcb_map_window(connection, window);
     xcb_configure_window(connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, coords);

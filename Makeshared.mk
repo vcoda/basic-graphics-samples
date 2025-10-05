@@ -17,7 +17,7 @@ else
 	MAGMA=magma
 	QUADRIC=quadric
 endif
-LDFLAGS=$(LIB_DIR) -l$(MAGMA) -lpthread -lxcb -lvulkan
+LDFLAGS=$(LIB_DIR) -l$(MAGMA) -lpthread -lxcb -lxcb-randr -lvulkan
 
 FRAMEWORK=../framework
 FRAMEWORK_OBJS= \
