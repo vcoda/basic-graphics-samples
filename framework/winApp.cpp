@@ -170,7 +170,7 @@ LRESULT WINAPI Win32App::wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
             app->onMouseWheel(delta/(float)WHEEL_DELTA);
         }
         break;
-#ifndef _DEBUG
+#ifndef MAGMA_DEBUG
     case WM_PAINT:
         app->onPaint();
         break;

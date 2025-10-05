@@ -15,12 +15,12 @@ std::string format(const char *what,
 {
     std::ostringstream oss;
     oss << what;
-#ifdef _DEBUG
+#ifdef MAGMA_DEBUG
     if (where.file_name())
         oss << std::endl << std::endl <<
         "file: " << where.file_name() << std::endl <<
         "line: " << where.line();
-#endif // _DEBUG
+#endif // MAGMA_DEBUG
     return oss.str();
 }
 
@@ -30,12 +30,12 @@ std::string formatError(Error error, const char *what,
 {
     std::ostringstream oss;
     oss << error << std::endl << what;
-#ifdef _DEBUG
+#ifdef MAGMA_DEBUG
     if (where.file_name())
         oss << std::endl << std::endl <<
         "file: " << where.file_name() << std::endl <<
         "line: " << where.line();
-#endif // _DEBUG
+#endif // MAGMA_DEBUG
     return oss.str();
 }
 
@@ -96,7 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 int main(int argc, char *argv[])
 #endif
 {
-#if defined(_MSC_VER) && defined(_DEBUG)
+#if defined(_MSC_VER) && defined(MAGMA_DEBUG)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
     AppEntry entry;

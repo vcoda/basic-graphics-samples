@@ -75,13 +75,13 @@ void VulkanApp::initialize()
 void VulkanApp::createInstance()
 {
     std::vector<const char*> layerNames;
-#ifdef _DEBUG
+#ifdef MAGMA_DEBUG
     std::unique_ptr<magma::InstanceLayers> instanceLayers = std::make_unique<magma::InstanceLayers>();
     if (instanceLayers->KHRONOS_validation)
         layerNames.push_back("VK_LAYER_KHRONOS_validation");
     else if (instanceLayers->LUNARG_standard_validation)
         layerNames.push_back("VK_LAYER_LUNARG_standard_validation");
-#endif // _DEBUG
+#endif // MAGMA_DEBUG
 
     magma::NullTerminatedStringArray enabledExtensions = {
         VK_KHR_SURFACE_EXTENSION_NAME,
