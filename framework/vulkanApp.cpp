@@ -105,15 +105,15 @@ void VulkanApp::createInstance()
             enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     #endif
     }
-    MAGMA_VLA(char, appName, caption.length() + 1);
+    std::vector<char> appName(caption.length() + 1);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     size_t count = 0;
-    wcstombs_s(&count, appName, appName.length(), caption.c_str(), appName.length());
+    wcstombs_s(&count, appName.data(), appName.size(), caption.c_str(), appName.size());
 #else
-    strcpy(appName, caption.c_str());
+    strcpy(appName.data(), caption.c_str());
 #endif
     const magma::Application appInfo(
-        appName, 1,
+        appName.data(), 1,
         "Magma", 1,
         VK_API_VERSION_1_0);
 
