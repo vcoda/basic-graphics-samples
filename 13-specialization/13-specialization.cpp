@@ -165,7 +165,7 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_unique<magma::UniformBuffer<UniformBlock>>(device, false);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<UniformBlock>>(device);
     }
 
     void setupDescriptorSet()

@@ -116,14 +116,8 @@ public:
 
     void createVertexBuffer()
     {
-        struct Vertex
-        {
-            float x, y;
-            float u, v;
-        };
-
         constexpr float w = 0.75f, h = 0.75f;
-        const Vertex vertices[] = {
+        const magma::vt::Pos2fTex2f vertices[] = {
             {-w, -h, 0.f, 0.f},
             {-w,  h, 0.f, 1.f},
             { w, -h, 1.f, 0.f},
@@ -134,7 +128,7 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device, false);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void createSampler()

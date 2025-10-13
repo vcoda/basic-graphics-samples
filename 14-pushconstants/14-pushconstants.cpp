@@ -66,7 +66,7 @@ public:
 
     void createVertexBuffer()
     {
-        rapid::float2 vertices[] = {
+        magma::vt::Pos2f vertices[] = {
             { 0.0f,-0.3f},
             {-0.6f, 0.3f},
             { 0.6f, 0.3f}

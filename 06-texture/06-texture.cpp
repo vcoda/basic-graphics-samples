@@ -114,21 +114,20 @@ public:
         buffer->setPrivateData(bufferOffset + size);
         // Setup texture data description
         const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
-        std::vector<magma::Image::Mip> mipMaps;
-        mipMaps.reserve(ctx.num_mipmaps(0));
+        std::vector<magma::Image::Mip> mipMap;
+        mipMap.reserve(ctx.num_mipmaps(0));
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {
-            magma::Image::Mip mip;
-            mip.extent.width = ctx.image_width(0, level);
-            mip.extent.height = ctx.image_height(0, level);
-            mip.extent.depth = 1;
-            mip.bufferOffset = (const uint8_t *)ctx.image_data(0, level) - firstMipData;
-            mipMaps.push_back(mip);
+            const ptrdiff_t offset = (const uint8_t *)ctx.image_data(0, level) - firstMipData;
+            mipMap.emplace_back(
+                ctx.image_width(0, level),
+                ctx.image_height(0, level),
+                (VkDeviceSize)offset);
         }
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMap, bufferLayout);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
@@ -142,19 +141,18 @@ public:
             throw std::runtime_error("failed to open file \"" + filename + "\"");
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::vector<magma::Image::MipData> mipMaps;
+        std::vector<magma::Image::Mip> mipMap;
+        mipMap.reserve(ctx.num_mipmaps(0));
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {
-            magma::Image::MipData mip;
-            mip.extent.width = ctx.image_width(0, level);
-            mip.extent.height = ctx.image_height(0, level);
-            mip.extent.depth = 1;
-            mip.texels = ctx.image_data(0, level);
-            mip.size = ctx.image_size(0, level);
-            mipMaps.push_back(mip);
+             mipMap.emplace_back(
+                ctx.image_width(0, level),
+                ctx.image_height(0, level),
+                ctx.image_size(0, level),
+                ctx.image_data(0, level));
         }
         // Upload texture from host memory
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, mipMaps,
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, mipMap,
             nullptr, magma::Image::Initializer{}, magma::Sharing(), memcpy);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
@@ -185,17 +183,11 @@ public:
 
     void createVertexBuffer()
     {
-        struct Vertex
-        {
-            float x, y;
-            float u, v;
-        };
-
         const float width = static_cast<float>(diffuse->getImage()->getWidth());
         const float height = static_cast<float>(diffuse->getImage()->getHeight());
         constexpr float w = 0.5f;
         const float h = height/width * w; // Keep aspect ratio
-        const Vertex vertices[] = {
+        const magma::vt::Pos2fTex2f vertices[] = {
             {-w, -h, 0.f, 0.f},
             {-w,  h, 0.f, 1.f},
             { w, -h, 1.f, 0.f},

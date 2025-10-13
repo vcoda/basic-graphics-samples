@@ -166,25 +166,24 @@ public:
         }
         // Setup texture array data description
         const uint8_t *frontImageFirstMipData = (const uint8_t *)ctxArray.front().image_data(0, 0);
-        std::vector<magma::Image::Mip> mipMaps;
+        std::vector<magma::Image::Mip> mipMap;
         for (const auto& ctx: ctxArray)
         {
             for (int level = 0; level < ctx.num_mipmaps(0); ++level)
             {
-                magma::Image::Mip mip;
-                mip.extent.width = ctx.image_width(0, level);
-                mip.extent.height = ctx.image_height(0, level);
-                mip.extent.depth = 1;
-                mip.bufferOffset = (const uint8_t *)ctx.image_data(0, level) - frontImageFirstMipData;
-                MAGMA_ASSERT(mip.bufferOffset < (VkDeviceSize)totalSize);
-                mipMaps.push_back(mip);
+                const ptrdiff_t offset = (const uint8_t *)ctx.image_data(0, level) - frontImageFirstMipData;
+                MAGMA_ASSERT(offset < (VkDeviceSize)totalSize);
+                mipMap.emplace_back(
+                    ctx.image_width(0, level),
+                    ctx.image_height(0, level),
+                    (VkDeviceSize)offset);
             }
         }
         // Upload texture array data from buffer
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         const magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
         std::unique_ptr<magma::Image> imageArray = std::make_unique<magma::Image2DArray>(cmdImageCopy,
-            format, magma::core::countof(ctxArray), buffer, mipMaps, bufferLayout);
+            format, magma::core::countof(ctxArray), buffer, mipMap, bufferLayout);
         cmdImageCopy->end();
         submitCopyImageCommands();
         // Create image view for fragment shader

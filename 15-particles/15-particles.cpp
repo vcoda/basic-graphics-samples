@@ -96,7 +96,7 @@ public:
 
     void createUniformBuffer()
     {
-        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device, false);
+        uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
     }
 
     void setupDescriptorSet()

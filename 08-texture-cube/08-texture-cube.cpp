@@ -110,23 +110,21 @@ public:
         // Setup texture data description
         const uint32_t dimension = ctx.image_width(0, 0);
         const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
-        std::vector<magma::Image::Mip> mipMaps;
-        mipMaps.reserve(ctx.num_faces() * ctx.num_mipmaps(0));
+        std::vector<magma::Image::Mip> mipMap;
+        mipMap.reserve(ctx.num_faces() * ctx.num_mipmaps(0));
         for (int face = 0; face < ctx.num_faces(); ++face)
         {
             for (int level = 0; level < ctx.num_mipmaps(face); ++level)
             {
-                magma::Image::Mip mip;
-                mip.extent = VkExtent3D{dimension, dimension, 1};
-                mip.bufferOffset = (const uint8_t *)ctx.image_data(face, level) - firstMipData;
-                mipMaps.push_back(mip);
+                const ptrdiff_t offset = (const uint8_t *)ctx.image_data(face, level) - firstMipData;
+                mipMap.emplace_back(dimension, dimension, (VkDeviceSize)offset);
             }
         }
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
         std::unique_ptr<magma::ImageCube> image = std::make_unique<magma::ImageCube>(cmdImageCopy,
-            format, std::move(buffer), mipMaps, bufferLayout);
+            format, std::move(buffer), mipMap, bufferLayout);
         // Create image view for fragment shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
