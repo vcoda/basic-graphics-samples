@@ -106,14 +106,12 @@ public:
             std::string source((std::istreambuf_iterator<char>(file)),
                 std::istreambuf_iterator<char>());
             std::cout << "compiling shader \"" << filename << "\"" << std::endl;
-            shaderc_shader_kind shaderKind;
-            if (filename.find(".vert") != std::string::npos)
-                shaderKind = shaderc_glsl_default_vertex_shader;
-            else
-                shaderKind = shaderc_glsl_default_fragment_shader;
             if (!glslCompiler)
                 glslCompiler = std::make_unique<magma::aux::ShaderCompiler>(device, nullptr);
-            shaderModule = glslCompiler->compileShader(source, "main", shaderKind);
+            if (filename.find(".vert") != std::string::npos)
+                shaderModule = glslCompiler->compileShader(source, "main", VK_SHADER_STAGE_VERTEX_BIT);
+            else
+                shaderModule = glslCompiler->compileShader(source, "main", VK_SHADER_STAGE_FRAGMENT_BIT);
         }
         else
         {
