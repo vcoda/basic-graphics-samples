@@ -154,7 +154,7 @@ public:
 
     std::unique_ptr<magma::GraphicsPipeline> setupPipeline(const magma::RasterizationState& rasterizationState) const
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         return std::make_unique<GraphicsPipeline>(device,
             "transform", "texture",
             mesh->getVertexInput(),

@@ -103,7 +103,7 @@ public:
 
     void setupPipeline()
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "frontFace",
             magma::renderstate::pos2fColor4ub,

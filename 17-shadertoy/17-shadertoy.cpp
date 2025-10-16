@@ -160,10 +160,10 @@ public:
     void setupPipeline()
     {
         std::vector<magma::PipelineShaderStage> shaderStages = {
-            magma::VertexShaderStage(vertexShader, "main"),
-            magma::FragmentShaderStage(fragmentShader, "main")
+            magma::PipelineShaderStage(vertexShader),
+            magma::PipelineShaderStage(fragmentShader)
         };
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<magma::GraphicsPipeline>(device,
             shaderStages,
             magma::renderstate::nullVertexInput,

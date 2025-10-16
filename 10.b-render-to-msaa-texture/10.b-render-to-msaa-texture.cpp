@@ -182,7 +182,7 @@ public:
 
     void setupPipelines()
     {
-        std::unique_ptr<magma::PipelineLayout> rtLayout = std::make_unique<magma::PipelineLayout>(rtDescriptorSet->getLayout());
+        auto rtLayout = std::make_unique<magma::PipelineLayout>(rtDescriptorSet->getLayout());
         rtPipeline = std::make_unique<GraphicsPipeline>(device,
             "triangle", "fill",
             magma::renderstate::nullVertexInput,
@@ -194,7 +194,7 @@ public:
             std::move(rtLayout),
             fb.renderPass, 0,
             pipelineCache);
-        std::unique_ptr<magma::PipelineLayout> txLayout = std::make_unique<magma::PipelineLayout>(txDescriptorSet->getLayout());
+        auto txLayout = std::make_unique<magma::PipelineLayout>(txDescriptorSet->getLayout());
         txPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "tex",
             magma::renderstate::pos2fTex2f,

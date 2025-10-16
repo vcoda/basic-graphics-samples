@@ -84,8 +84,7 @@ public:
     {
         // Specify push constant range
         constexpr magma::push::VertexConstantRange<PushConstants> pushConstantRange;
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(
-            descriptorSet->getLayout(), pushConstantRange);
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "fill",
             magma::renderstate::pos2f,

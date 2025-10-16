@@ -131,7 +131,7 @@ public:
             totalSize += files.back().tellg();
         }
         std::list<gliml::context> ctxArray;
-        std::unique_ptr<magma::SrcTransferBuffer> buffer = std::make_unique<magma::SrcTransferBuffer>(device, totalSize);
+        auto buffer = std::make_unique<magma::SrcTransferBuffer>(device, totalSize);
         VkDeviceSize baseMipOffset = 0ull;
         magma::map<uint8_t>(buffer, [&](uint8_t *data)
         {   // Read all data to single buffer
@@ -182,7 +182,7 @@ public:
         // Upload texture array data from buffer
         cmdImageCopy->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         const magma::Image::CopyLayout bufferLayout{baseMipOffset, 0, 0};
-        std::unique_ptr<magma::Image> imageArray = std::make_unique<magma::Image2DArray>(cmdImageCopy,
+        auto imageArray = std::make_unique<magma::Image2DArray>(cmdImageCopy,
             format, magma::core::countof(ctxArray), buffer, mipMap, bufferLayout);
         cmdImageCopy->end();
         submitCopyImageCommands();
@@ -214,7 +214,7 @@ public:
 
     void setupPipeline()
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "textureArray",
             mesh->getVertexInput(),

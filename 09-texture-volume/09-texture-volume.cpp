@@ -123,7 +123,7 @@ public:
         const magma::Mipmap mipMap = {volumeMip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
         // Upload volume data from buffer
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMap, bufferLayout);
+        auto image = std::make_unique<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMap, bufferLayout);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
@@ -149,7 +149,7 @@ public:
         mip.bufferOffset = 0;
         const magma::Mipmap mipMap = {mip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMap, bufferLayout);
+        auto image = std::make_unique<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMap, bufferLayout);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
@@ -193,7 +193,7 @@ public:
 
     void setupPipeline()
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "quad", "raycast",
             magma::renderstate::nullVertexInput,

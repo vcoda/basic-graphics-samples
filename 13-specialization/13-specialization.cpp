@@ -182,7 +182,7 @@ public:
         Constants constants;
         constants.colorFill = MAGMA_BOOLEAN(ShadingType::Albedo == shadingType);
         constants.shadingType = static_cast<int>(shadingType);
-        std::shared_ptr<magma::Specialization> specialization = std::make_shared<magma::Specialization>(constants,
+        auto specialization = std::make_shared<magma::Specialization>(constants,
             std::initializer_list<magma::SpecializationEntry>{
                 magma::SpecializationEntry(0, &Constants::colorFill),
                 magma::SpecializationEntry(1, &Constants::shadingType)

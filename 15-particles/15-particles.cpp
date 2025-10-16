@@ -113,9 +113,9 @@ public:
             {0, &ParticleSystem::ParticleVertex::position},
             {1, &ParticleSystem::ParticleVertex::color}});
         constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
-            "pointSize","particle",
+            "pointSize", "particle",
             vertexInput,
             magma::renderstate::pointList,
             magma::renderstate::pointCullNoneCcw,

@@ -123,7 +123,7 @@ public:
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::unique_ptr<magma::ImageCube> image = std::make_unique<magma::ImageCube>(cmdImageCopy,
+        auto image = std::make_unique<magma::ImageCube>(cmdImageCopy,
             format, std::move(buffer), mipMap, bufferLayout);
         // Create image view for fragment shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
@@ -164,7 +164,7 @@ public:
 
     void setupPipeline()
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "envmap",
             mesh->getVertexInput(),

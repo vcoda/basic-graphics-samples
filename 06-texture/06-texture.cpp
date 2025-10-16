@@ -127,7 +127,7 @@ public:
         // Upload texture data from buffer
         const magma::Image::CopyLayout bufferLayout{bufferOffset + baseMipOffset, 0, 0};
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMap, bufferLayout);
+        auto image = std::make_unique<magma::Image2D>(cmdImageCopy, format, std::move(buffer), mipMap, bufferLayout);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
@@ -152,7 +152,7 @@ public:
                 ctx.image_data(0, level));
         }
         // Upload texture from host memory
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image2D>(cmdImageCopy, format, mipMap,
+        auto image = std::make_unique<magma::Image2D>(cmdImageCopy, format, mipMap,
             nullptr, magma::Image::Initializer{}, magma::Sharing(), memcpy);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
@@ -214,7 +214,7 @@ public:
 
     void setupPipeline()
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "passthrough", "multitexture",
             magma::renderstate::pos2fTex2f,

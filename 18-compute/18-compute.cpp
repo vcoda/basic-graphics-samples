@@ -86,7 +86,7 @@ public:
     {
         const aligned_vector<char> bytecode = utilities::loadBinaryFile(filename + std::string(".o"));
         auto computeShader = std::make_shared<magma::ShaderModule>(device, (const magma::SpirvWord *)bytecode.data(), bytecode.size());
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         return std::make_unique<magma::ComputePipeline>(device,
             magma::ComputeShaderStage(std::move(computeShader), entrypoint),
             std::move(layout), nullptr, pipelineCache);

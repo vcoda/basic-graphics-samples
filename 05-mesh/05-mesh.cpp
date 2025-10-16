@@ -83,7 +83,7 @@ public:
 
     void setupPipeline()
     {
-        std::unique_ptr<magma::PipelineLayout> layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
+        auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         wireframePipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "normal",
             mesh->getVertexInput(),
