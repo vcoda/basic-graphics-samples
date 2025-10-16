@@ -114,7 +114,7 @@ public:
         buffer->setPrivateData(bufferOffset + size);
         // Setup texture data description
         const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
-        std::vector<magma::Image::Mip> mipMap;
+        magma::Mipmap mipMap;
         mipMap.reserve(ctx.num_mipmaps(0));
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {
@@ -141,7 +141,7 @@ public:
             throw std::runtime_error("failed to open file \"" + filename + "\"");
         // Setup texture data description
         const VkFormat format = utilities::getBlockCompressedFormat(ctx);
-        std::vector<magma::Image::Mip> mipMap;
+        magma::Mipmap mipMap;
         mipMap.reserve(ctx.num_mipmaps(0));
         for (int level = 0; level < ctx.num_mipmaps(0); ++level)
         {

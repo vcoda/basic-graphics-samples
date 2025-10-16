@@ -120,10 +120,10 @@ public:
         magma::Image::Mip volumeMip;
         volumeMip.extent = VkExtent3D{width, height, depth};
         volumeMip.bufferOffset = 0;
-        const std::vector<magma::Image::Mip> mipMaps = {volumeMip};
+        const magma::Mipmap mipMap = {volumeMip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
         // Upload volume data from buffer
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image3D>(cmdImageCopy, VK_FORMAT_R8_UNORM, std::move(buffer), mipMap, bufferLayout);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }
@@ -147,9 +147,9 @@ public:
         magma::Image::Mip mip;
         mip.extent = {width, 1, 1};
         mip.bufferOffset = 0;
-        const std::vector<magma::Image::Mip> mipMaps = {mip};
+        const magma::Mipmap mipMap = {mip};
         const magma::Image::CopyLayout bufferLayout{bufferOffset, 0, 0};
-        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMaps, bufferLayout);
+        std::unique_ptr<magma::Image> image = std::make_unique<magma::Image1D>(cmdImageCopy, VK_FORMAT_R8G8B8A8_UNORM, std::move(buffer), mipMap, bufferLayout);
         // Create image view for shader
         return std::make_unique<magma::UniqueImageView>(std::move(image));
     }

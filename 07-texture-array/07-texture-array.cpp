@@ -166,7 +166,7 @@ public:
         }
         // Setup texture array data description
         const uint8_t *frontImageFirstMipData = (const uint8_t *)ctxArray.front().image_data(0, 0);
-        std::vector<magma::Image::Mip> mipMap;
+        magma::Mipmap mipMap;
         for (const auto& ctx: ctxArray)
         {
             for (int level = 0; level < ctx.num_mipmaps(0); ++level)

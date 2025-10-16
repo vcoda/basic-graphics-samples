@@ -110,7 +110,7 @@ public:
         // Setup texture data description
         const uint32_t dimension = ctx.image_width(0, 0);
         const uint8_t *firstMipData = (const uint8_t *)ctx.image_data(0, 0);
-        std::vector<magma::Image::Mip> mipMap;
+        magma::Mipmap mipMap;
         mipMap.reserve(ctx.num_faces() * ctx.num_mipmaps(0));
         for (int face = 0; face < ctx.num_faces(); ++face)
         {
