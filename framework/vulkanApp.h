@@ -44,6 +44,8 @@ protected:
     virtual void createCommandBuffers();
     virtual void createSyncPrimitives();
     virtual void createDescriptorPool();
+    virtual void enableExtensions(magma::NullTerminatedStringArray&) {}
+    virtual void enableFeatures(magma::StructureChain&) {}
 
     void imageLayoutTransition(std::shared_ptr<magma::Image> image, VkImageLayout newLayout);
     void submitCommandBuffer(uint32_t bufferIndex);

@@ -160,6 +160,8 @@ void VulkanApp::createLogicalDevice()
     features.samplerAnisotropy = VK_TRUE;
     features.textureCompressionBC = VK_TRUE;
     features.occlusionQueryPrecise = VK_TRUE;
+    magma::StructureChain extendedFeatures;
+    enableFeatures(extendedFeatures);
 
     magma::NullTerminatedStringArray enabledExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
@@ -179,9 +181,10 @@ void VulkanApp::createLogicalDevice()
     if (extensions->EXT_debug_marker)
         enabledExtensions.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
 #endif // VK_EXT_debug_marker
+    enableExtensions(enabledExtensions);
 
     const std::vector<const char*> noLayers;
-    device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features);
+    device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features, extendedFeatures);
 }
 
 void VulkanApp::createSwapchain()
