@@ -94,6 +94,10 @@ void VulkanApp::createInstance()
     #endif // VK_USE_PLATFORM_XCB_KHR
     };
     instanceExtensions = std::make_unique<magma::InstanceExtensions>();
+#ifdef VK_KHR_get_physical_device_properties2
+    if (instanceExtensions->KHR_get_physical_device_properties2)
+        enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+#endif
 #ifdef VK_EXT_debug_utils
     if (instanceExtensions->EXT_debug_utils)
         enabledExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
