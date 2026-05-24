@@ -28,4 +28,5 @@ private:
     DebugOutputStream dostream;
     POINT lastPos = {0L, 0L};
     POINT currPos = {0L, 0L};
+    bool resizing = false;
 };

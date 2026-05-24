@@ -24,7 +24,8 @@ XcbApp::XcbApp(const AppEntry& entry, const std::tstring& caption, uint32_t widt
     values[0] = screen->black_pixel;
     values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_KEY_RELEASE |
                 XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE |
-                XCB_EVENT_MASK_POINTER_MOTION | XCB_EVENT_MASK_EXPOSURE;
+                XCB_EVENT_MASK_POINTER_MOTION | XCB_EVENT_MASK_EXPOSURE |
+                XCB_EVENT_MASK_STRUCTURE_NOTIFY;
 
     // Create window
     window = xcb_generate_id(connection);
@@ -32,14 +33,6 @@ XcbApp::XcbApp(const AppEntry& entry, const std::tstring& caption, uint32_t widt
         0, 0, width, height, 0, // border width
         XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual,
         mask, values);
-
-    // Set fixed window size
-    xcb_size_hints_t hints = {};
-    hints.flags = XCB_ICCCM_SIZE_HINT_P_MIN_SIZE | XCB_ICCCM_SIZE_HINT_P_MAX_SIZE;
-    hints.min_width = hints.max_width = static_cast<int32_t>(width);
-    hints.min_height = hints.max_height = static_cast<int32_t>(height);
-    xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, XCB_ATOM_WM_NORMAL_HINTS, XCB_ATOM_WM_SIZE_HINTS,
-        sizeof(int32_t) * 8, sizeof(xcb_size_hints_t)/sizeof(int32_t), &hints);
 
     setWindowCaption(caption);
 
@@ -234,6 +227,16 @@ void XcbApp::handleEvent(const xcb_generic_event_t *event)
     case XCB_EXPOSE:
         {
             onPaint();
+        }
+        break;
+    case XCB_CONFIGURE_NOTIFY:
+        {
+            const xcb_configure_notify_event_t *configureNotify = reinterpret_cast<const xcb_configure_notify_event_t *>(event);
+            if ((configureNotify->width != width) || (configureNotify->height != height))
+            {
+                if (configureNotify->width && configureNotify->height)
+                    onResize(configureNotify->width, configureNotify->height);
+            }
         }
         break;
     case XCB_CLIENT_MESSAGE:

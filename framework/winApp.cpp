@@ -23,7 +23,7 @@ Win32App::Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t 
     RegisterClassEx(&wc);
 
     // Create window
-    const DWORD style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+    const DWORD style = WS_OVERLAPPEDWINDOW;
     hWnd = CreateWindow(wc.lpszClassName, caption.c_str(), style,
         0, 0, width, height,
         NULL, NULL, wc.hInstance, NULL);
@@ -175,6 +175,37 @@ LRESULT WINAPI Win32App::wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
         app->onPaint();
         break;
 #endif
+    case WM_ENTERSIZEMOVE:
+        app->resizing = true;
+        break;
+    case WM_SIZE:
+        if (app->resizing)
+            return 0;
+        if ((SIZE_MAXIMIZED == wParam) || (SIZE_RESTORED == wParam))
+        {
+            WORD width = LOWORD(lParam);
+            WORD height = HIWORD(lParam);
+            if ((width != app->width) || (height != app->height))
+            {
+                if (width && height)
+                    app->onResize(width, height);
+            }
+        }
+        break;
+    case WM_EXITSIZEMOVE:
+        {
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            uint32_t width = rc.right - rc.left;
+            uint32_t height = rc.bottom - rc.top;
+            app->resizing = false;
+            if ((width != app->width) || (height != app->height))
+            {
+                if (width && height)
+                    app->onResize(width, height);
+            }
+        }
+        break;
     case WM_CLOSE:
         app->close();
         break;
