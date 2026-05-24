@@ -344,11 +344,11 @@ void VulkanApp::createDescriptorPool()
     constexpr uint32_t maxDescriptorSets = 2;
     // Create descriptor pool enough for basic samples
     descriptorPool = std::make_shared<magma::DescriptorPool>(device, maxDescriptorSets,
-        std::vector<magma::descriptor::DescriptorPool>{
-            magma::descriptor::UniformBufferPool(4),
-            magma::descriptor::DynamicUniformBufferPool(4),
-            magma::descriptor::StorageBufferPool(4),
-            magma::descriptor::CombinedImageSamplerPool(4)
+        std::initializer_list<VkDescriptorPoolSize>{
+            magma::descriptor::UniformBufferPoolSize(4),
+            magma::descriptor::DynamicUniformBufferPoolSize(4),
+            magma::descriptor::StorageBufferPoolSize(4),
+            magma::descriptor::CombinedImageSamplerPoolSize(4)
         });
 }
 
