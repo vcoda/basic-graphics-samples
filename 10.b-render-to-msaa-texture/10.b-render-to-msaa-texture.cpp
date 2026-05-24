@@ -73,6 +73,13 @@ public:
             frameFence); // Fence to be signaled when command buffer completed execution
     }
 
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        VulkanApp::onResize(width, height);
+        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
+            recordCommandBuffer(i);
+    }
+
     void updateWorldTransform()
     {
         constexpr float speed = 0.02f;

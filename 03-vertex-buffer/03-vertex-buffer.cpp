@@ -22,6 +22,13 @@ public:
         submitCommandBuffer(bufferIndex);
     }
 
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        VulkanApp::onResize(width, height);
+        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
+            recordCommandBuffer(i);
+    }
+
     void createVertexBuffer()
     {
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen

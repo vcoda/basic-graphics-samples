@@ -82,6 +82,12 @@ public:
         }
     }
 
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        VulkanApp::onResize(width, height);
+        rebuildCommandBuffers = true;
+    }
+
     void updateUniforms()
     {
         magma::map(builtinUniforms,

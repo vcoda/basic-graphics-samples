@@ -110,6 +110,18 @@ public:
         VulkanApp::onKeyDown(key, repeat, flags);
     }
 
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        createRenderPass();
+        VulkanApp::onResize(width, height);
+        buildPipelines();
+        for (uint32_t pipelineIndex = 0; pipelineIndex < ShadingType::MaxPermutations; ++pipelineIndex)
+        {
+            for (uint32_t bufferIndex = 0; bufferIndex < (uint32_t)commandBuffers.size(); ++bufferIndex)
+                recordCommandBuffer(bufferIndex, pipelineIndex);
+        }
+    }
+
     void createCommandBuffers() override
     {
         VulkanApp::createCommandBuffers();
@@ -229,6 +241,7 @@ public:
     void recordCommandBuffer(uint32_t bufferIndex, uint32_t pipelineIndex)
     {
         auto& cmdBuffer = commandBuffers[bufferIndex][pipelineIndex];
+        cmdBuffer->reset();
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(sharedRenderPass, framebuffers[bufferIndex],

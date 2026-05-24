@@ -10,26 +10,7 @@ public:
     {
         initialize();
         createImmediateRender();
-        drawPoints();
-        drawLines();
-        drawLineStrip();
-        drawLineLoop();
-        drawPolygon();
-        drawQuads();
-        drawQuadStrip();
-        drawTriangles();
-        drawTriangleStrip();
-        drawTriangleFan();
-        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
-            recordCommandBuffer(i);
-        ir->reset();
-    }
-
-    void createImmediateRender()
-    {
-        constexpr uint32_t maxVertexCount = 1024;
-        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, std::move(renderPass), nullptr);
-        ir->setLineWidth(2.f);
+        drawImmediate();
     }
 
     void createLogicalDevice() override
@@ -37,6 +18,7 @@ public:
         VkPhysicalDeviceFeatures features = {VK_FALSE};
         features.fillModeNonSolid = VK_TRUE;
         features.wideLines = VK_TRUE;
+        features.largePoints = VK_TRUE;
 
         std::vector<const char*> enabledExtensions;
         enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -53,9 +35,41 @@ public:
         device = physicalDevice->createDevice({graphicsQueueDesc}, {}, enabledExtensions, features);
     }
 
+    void createImmediateRender()
+    {
+        constexpr uint32_t maxVertexCount = 1024;
+        ir = std::make_unique<magma::aux::ImmediateRender>(maxVertexCount, std::move(renderPass), nullptr);
+        ir->setLineWidth(2.f);
+    }
+
     void render(uint32_t bufferIndex) override
     {
         submitCommandBuffer(bufferIndex);
+    }
+
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        createRenderPass();
+        VulkanApp::onResize(width, height);
+        createImmediateRender();
+        drawImmediate();
+    }
+
+    void drawImmediate()
+    {
+        drawPoints();
+        drawLines();
+        drawLineStrip();
+        drawLineLoop();
+        drawPolygon();
+        drawQuads();
+        drawQuadStrip();
+        drawTriangles();
+        drawTriangleStrip();
+        drawTriangleFan();
+        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
+            recordCommandBuffer(i);
+        ir->reset();
     }
 
     void drawPoints()
@@ -262,6 +276,7 @@ public:
     void recordCommandBuffer(uint32_t index)
     {
         auto& cmdBuffer = commandBuffers[index];
+        cmdBuffer->reset();
         cmdBuffer->begin();
         {
             cmdBuffer->beginRenderPass(ir->getRenderPass(), framebuffers[index], {magma::clear::gray});

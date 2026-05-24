@@ -74,6 +74,13 @@ public:
         VulkanApp::onKeyDown(key, repeat, flags);
     }
 
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        VulkanApp::onResize(width, height);
+        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
+            recordCommandBuffer(i);
+    }
+
     void setupView()
     {
         const rapid::vector3 eye(0.f, 0.f, 7.f);

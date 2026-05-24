@@ -50,6 +50,14 @@ public:
         VulkanApp::onKeyDown(key, repeat, flags);
     }
 
+    void onResize(uint32_t width, uint32_t height) override
+    {
+        VulkanApp::onResize(width, height);
+        particles->setResolution(width, negateViewport ? -int32_t(height) : height);
+        for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
+            recordCommandBuffer(i);
+    }
+
     void initParticleSystem()
     {
         particles = std::unique_ptr<ParticleSystem>(new ParticleSystem());
