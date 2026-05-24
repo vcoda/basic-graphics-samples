@@ -38,6 +38,7 @@ protected:
     virtual void initialize();
     virtual void createInstance();
     virtual void createLogicalDevice();
+    virtual void createSurface();
     virtual void createSwapchain();
     virtual void createRenderPass();
     virtual void createFramebuffer();

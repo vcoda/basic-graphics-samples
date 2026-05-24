@@ -62,6 +62,7 @@ void VulkanApp::initialize()
 {
     createInstance();
     createLogicalDevice();
+    createSurface();
     createSwapchain();
     createRenderPass();
     createFramebuffer();
@@ -191,8 +192,19 @@ void VulkanApp::createLogicalDevice()
     device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features, extendedFeatures);
 }
 
-void VulkanApp::createSwapchain()
+void VulkanApp::createSurface()
 {
+#if defined(QT_CORE_LIB)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    HINSTANCE hInstance = GetModuleHandle(nullptr);
+    HWND hWnd = (HWND)window->winId();
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+    Display *dpy = QX11Info::display();
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+    xcb_connection_t *connection = QX11Info::connection();
+#endif
+#endif // QT_CORE_LIB
+
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     surface = std::make_unique<magma::Win32Surface>(instance.get(), hInstance, hWnd);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
@@ -200,14 +212,20 @@ void VulkanApp::createSwapchain()
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
     surface = std::make_unique<magma::XcbSurface>(instance.get(), connection, window);
 #endif // VK_USE_PLATFORM_XCB_KHR
+}
+
+void VulkanApp::createSwapchain()
+{
     const magma::DeviceQueueDescriptor graphicsQueue(physicalDevice.get(), VK_QUEUE_GRAPHICS_BIT, {1.f});
     if (!physicalDevice->getSurfaceSupport(surface, graphicsQueue.queueFamilyIndex))
         throw std::runtime_error("surface not supported");
     // Get surface caps
     VkSurfaceCapabilitiesKHR surfaceCaps;
     surfaceCaps = physicalDevice->getSurfaceCapabilities(surface);
-    assert(surfaceCaps.currentExtent.width == width);
-    assert(surfaceCaps.currentExtent.height == height);
+    if (surfaceCaps.currentExtent.width != width)
+        std::cout << "surface width not equal to window client width" << std::endl;
+    if (surfaceCaps.currentExtent.height != height)
+        std::cout << "surface height not equal to window client height" << std::endl;
     // Find supported transform flags
     VkSurfaceTransformFlagBitsKHR preTransform;
     if (surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
