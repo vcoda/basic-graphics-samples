@@ -58,6 +58,19 @@ void VulkanApp::onPaint()
     ++frameCount;
 }
 
+void VulkanApp::onResize(uint32_t width, uint32_t height)
+{
+    device->waitIdle();
+    for (auto& cmdBuffer: commandBuffers)
+        cmdBuffer->reset();
+    framebuffers.clear();
+    depthStencilView.reset();
+    this->width = width;
+    this->height = height;
+    createSwapchain();
+    createFramebuffer();
+}
+
 void VulkanApp::initialize()
 {
     createInstance();
@@ -278,7 +291,8 @@ void VulkanApp::createSwapchain()
         std::max(surfaceCaps.minImageCount, 2U),
         surfaceFormats[0], surfaceCaps.currentExtent, 1,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // Allow screenshots
-        preTransform, compositeAlpha, presentMode, initializer);
+        preTransform, compositeAlpha, presentMode, initializer,
+        nullptr, swapchain);
 }
 
 void VulkanApp::createRenderPass()

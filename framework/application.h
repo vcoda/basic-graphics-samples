@@ -21,6 +21,7 @@ public:
     virtual void close() = 0;
     virtual void onIdle() = 0;
     virtual void onPaint() = 0;
+    virtual void onResize(uint32_t width, uint32_t height) = 0;
     virtual void onKeyDown(char key, int repeat, uint32_t flags) = 0;
     virtual void onKeyUp(char key, int repeat, uint32_t flags) = 0;
     virtual void onMouseMove(int x, int y) = 0;
