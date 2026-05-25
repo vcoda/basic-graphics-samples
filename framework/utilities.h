@@ -29,9 +29,15 @@ namespace utilities
     uint32_t getSupportedMultisampleLevel(std::shared_ptr<magma::PhysicalDevice> physicalDevice,
         VkFormat format);
 
-    VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
+#ifdef VK_EXT_debug_report
+    VkBool32 VKAPI_PTR debugReportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
         uint64_t object, size_t location, int32_t messageCode,
         const char *pLayerPrefix, const char *pMessage, void *pUserData);
+#endif // VK_EXT_debug_report
+#ifdef VK_EXT_debug_utils
+    VkBool32 VKAPI_PTR debugMessageCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
+#endif // VK_EXT_debug_utils
 
     template<class Vertex, std::size_t Size>
     inline std::unique_ptr<magma::VertexBuffer> makeVertexBuffer(const Vertex (&vertices)[Size],

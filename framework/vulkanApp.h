@@ -55,7 +55,12 @@ protected:
     void submitCopyBufferCommands();
 
     std::unique_ptr<magma::Instance> instance;
+#ifdef VK_EXT_debug_report
     std::unique_ptr<magma::DebugReportCallback> debugReportCallback;
+#endif
+#ifdef VK_EXT_debug_utils
+    std::unique_ptr<magma::DebugUtilsMessenger> debugUtilsMessenger;
+#endif
     std::unique_ptr<magma::Surface> surface;
     std::shared_ptr<magma::PhysicalDevice> physicalDevice;
     std::shared_ptr<magma::Device> device;

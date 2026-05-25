@@ -137,19 +137,29 @@ void VulkanApp::createInstance()
 
     instance = std::make_unique<magma::Instance>(layerNames, enabledExtensions, nullptr, &appInfo, 0,
     #ifdef VK_EXT_debug_report
-        utilities::reportCallback,
+        utilities::debugReportCallback,
     #endif
     #ifdef VK_EXT_debug_utils
-        nullptr,
+        utilities::debugMessageCallback,
     #endif
         nullptr); // userData
-#ifdef VK_EXT_debug_report
-    if (instanceExtensions->EXT_debug_report)
+#ifdef VK_EXT_debug_utils
+    if (instanceExtensions->EXT_debug_utils)
     {
-        debugReportCallback = std::make_unique<magma::DebugReportCallback>(
-            instance.get(), utilities::reportCallback);
+        debugUtilsMessenger = std::make_unique<magma::DebugUtilsMessenger>(
+            instance, utilities::debugMessageCallback);
     }
-#endif // VK_EXT_debug_report
+    else
+#endif // VK_EXT_debug_utils
+    {
+    #ifdef VK_EXT_debug_report
+        if (instanceExtensions->EXT_debug_report)
+        {
+            debugReportCallback = std::make_unique<magma::DebugReportCallback>(
+                instance, utilities::debugReportCallback);
+        }
+    #endif // VK_EXT_debug_report
+    }
 
     physicalDevice = instance->getPhysicalDevice(0);
     const VkPhysicalDeviceProperties& properties = physicalDevice->getProperties();
@@ -286,7 +296,14 @@ void VulkanApp::createSwapchain()
         }
     }
     magma::Swapchain::Initializer initializer;
-    initializer.debugReportCallback = debugReportCallback.get();
+#ifdef VK_EXT_debug_utils
+    if (debugUtilsMessenger)
+        initializer.debugUtilsMessenger = debugUtilsMessenger.get();
+#endif
+#ifdef VK_EXT_debug_report
+    if (debugReportCallback)
+        initializer.debugReportCallback = debugReportCallback.get();
+#endif
     swapchain = std::make_unique<magma::Swapchain>(device, surface,
         std::max(surfaceCaps.minImageCount, 2U),
         surfaceFormats[0], surfaceCaps.currentExtent, 1,

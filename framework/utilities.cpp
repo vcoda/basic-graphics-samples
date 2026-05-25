@@ -81,7 +81,8 @@ uint32_t getSupportedMultisampleLevel(std::shared_ptr<magma::PhysicalDevice> phy
     return 1;
 }
 
-VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
+#ifdef VK_EXT_debug_report
+VkBool32 VKAPI_PTR debugReportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
     uint64_t object, size_t location, int32_t messageCode,
     const char *pLayerPrefix, const char *pMessage, void *pUserData)
 {
@@ -91,5 +92,23 @@ VkBool32 VKAPI_PTR reportCallback(VkDebugReportFlagsEXT flags, VkDebugReportObje
     cout << "[" << pLayerPrefix << "] " << pMessage << "\n";
     return VK_FALSE;
 }
+#endif // VK_EXT_debug_report
 
+#ifdef VK_EXT_debug_utils
+VkBool32 VKAPI_PTR debugMessageCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT /* messageTypes */, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+{
+    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+        return VK_FALSE;
+    std::cout << "[";
+    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+        std::cout << "Verbose";
+    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+        std::cout << "Warning";
+    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+        std::cout << "Error";
+    std::cout << "] " << pCallbackData->pMessage << std::endl;
+    return VK_FALSE;
+}
+#endif // VK_EXT_debug_utils
 } // namespace utilities
