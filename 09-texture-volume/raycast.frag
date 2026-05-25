@@ -1,14 +1,14 @@
 #version 450
 
 #define MAX_SAMPLES 1024.
-#define ASPECT_RATIO (1.)
 
 layout(binding = 0) uniform Transforms {
     mat4 normal;
 };
 
-layout(binding = 1) uniform IntegrationParameters {
+layout(binding = 1) uniform UniformParameters {
     float power;
+    float aspectRatio;
 };
 
 layout(binding = 2) uniform sampler3D volume;
@@ -68,7 +68,7 @@ void main()
 {
     Ray r;
     r.o = vec3(0., 0., -5.);
-    r.dir = normalize(vec3(pos.x * ASPECT_RATIO, pos.y, 3.));
+    r.dir = normalize(vec3(pos.x * aspectRatio, pos.y, 3.));
 
     // transform ray to local space
     r.o = mat3(normal) * r.o;

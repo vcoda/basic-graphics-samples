@@ -62,6 +62,7 @@ public:
     void onResize(uint32_t width, uint32_t height) override
     {
         VulkanApp::onResize(width, height);
+        setupView();
         for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
             recordCommandBuffer(i);
     }

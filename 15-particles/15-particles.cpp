@@ -54,6 +54,7 @@ public:
     {
         VulkanApp::onResize(width, height);
         particles->setResolution(width, negateViewport ? -int32_t(height) : height);
+        setupView();
         for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
             recordCommandBuffer(i);
     }

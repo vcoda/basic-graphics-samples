@@ -4,9 +4,10 @@
 // Use PgUp/PgDown to change accomodation power
 class TextureVolumeApp : public VulkanApp
 {
-    struct alignas(16) IntegrationParameters
+    struct alignas(16) UniformParameters
     {
         float power;
+        float aspectRatio;
     };
 
     struct DescriptorSetTable
@@ -22,7 +23,7 @@ class TextureVolumeApp : public VulkanApp
     std::unique_ptr<magma::Sampler> nearestSampler;
     std::unique_ptr<magma::Sampler> trilinearSampler;
     std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
-    std::unique_ptr<magma::UniformBuffer<IntegrationParameters>> uniformParameters;
+    std::unique_ptr<magma::UniformBuffer<UniformParameters>> uniformParameters;
     std::unique_ptr<magma::DescriptorSet> descriptorSet;
     std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
 
@@ -56,14 +57,14 @@ public:
             if (power < 1.f)
             {
                 power += 0.05f;
-                updatePower();
+                updateUniforms();
             }
             break;
         case AppKey::PgDn:
             if (power > 0.1f)
             {
                 power -= 0.05f;
-                updatePower();
+                updateUniforms();
             }
             break;
         case AppKey::Space:
@@ -75,6 +76,7 @@ public:
     void onResize(uint32_t width, uint32_t height) override
     {
         VulkanApp::onResize(width, height);
+        updateUniforms();
         for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
             recordCommandBuffer(i);
     }
@@ -91,14 +93,14 @@ public:
             });
     }
 
-    void updatePower()
+    void updateUniforms()
     {
         magma::map(uniformParameters,
             [this](auto *block)
             {
                 block->power = power;
+                block->aspectRatio = width/(float)height;
             });
-        std::cout << "Power: " << power << "\n";
     }
 
     std::unique_ptr<magma::ImageView> loadVolumeTexture(const std::string& filename, uint32_t width, uint32_t height, uint32_t depth, const std::unique_ptr<magma::SrcTransferBuffer>& buffer)
@@ -183,8 +185,8 @@ public:
     void createUniformBuffers()
     {
         uniformBuffer = std::make_unique<magma::UniformBuffer<rapid::matrix>>(device);
-        uniformParameters = std::make_unique<magma::UniformBuffer<IntegrationParameters>>(device);
-        updatePower();
+        uniformParameters = std::make_unique<magma::UniformBuffer<UniformParameters>>(device);
+        updateUniforms();
     }
 
     void setupDescriptorSet()

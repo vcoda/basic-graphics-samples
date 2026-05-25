@@ -114,6 +114,7 @@ public:
     {
         createRenderPass();
         VulkanApp::onResize(width, height);
+        setupView();
         buildPipelines();
         for (uint32_t pipelineIndex = 0; pipelineIndex < ShadingType::MaxPermutations; ++pipelineIndex)
         {
