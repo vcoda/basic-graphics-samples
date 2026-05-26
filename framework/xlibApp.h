@@ -7,7 +7,7 @@ class XlibApp : public BaseApp
 {
 public:
     XlibApp(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height);
-    virtual ~XlibApp();
+    ~XlibApp();
     virtual void setWindowCaption(const std::tstring& caption) override;
     virtual void show() const override;
     virtual void run() override;

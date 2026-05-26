@@ -6,7 +6,7 @@ class Win32App : public BaseApp
 {
 public:
     Win32App(const AppEntry& entry, const std::tstring& caption, uint32_t width, uint32_t height);
-    virtual ~Win32App();
+    ~Win32App();
     virtual void setWindowCaption(const std::tstring& caption) override;
     virtual void show() const override;
     virtual void run() override;
