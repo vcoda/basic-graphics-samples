@@ -11,10 +11,10 @@
 #include "platform.h"
 #include "magma/src/core/pch.h"
 
-class IApplication : public AlignAs<16>,
-    public magma::IClass
+class IApplication : public AlignAs<16>
 {
 public:
+    virtual ~IApplication() = default;
     virtual void setWindowCaption(const std::tstring& caption) = 0;
     virtual void show() const = 0;
     virtual void run() = 0;
@@ -57,7 +57,6 @@ class BaseApp : public IApplication
 protected:
     BaseApp(const std::tstring& caption, uint32_t width, uint32_t height):
         caption(caption), width(width), height(height) {}
-    virtual ~BaseApp() {}
     virtual void close() override { quit = true; }
     virtual void onKeyDown(char key, int /* repeat */, uint32_t /* flags */) override
     {
