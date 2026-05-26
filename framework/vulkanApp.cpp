@@ -24,6 +24,11 @@ void VulkanApp::close()
 
 void VulkanApp::onIdle()
 {
+    if (pendingWidth || pendingHeight)
+    {
+        onResize(pendingWidth, pendingHeight);
+        pendingWidth = pendingHeight = 0;
+    }
     onPaint();
 }
 
@@ -245,10 +250,13 @@ void VulkanApp::createSwapchain()
     // Get surface caps
     VkSurfaceCapabilitiesKHR surfaceCaps;
     surfaceCaps = physicalDevice->getSurfaceCapabilities(surface);
-    if (surfaceCaps.currentExtent.width != width)
-        std::cout << "surface width not equal to window client width" << std::endl;
-    if (surfaceCaps.currentExtent.height != height)
-        std::cout << "surface height not equal to window client height" << std::endl;
+    if (surfaceCaps.currentExtent.width != width || surfaceCaps.currentExtent.height != height)
+    {
+        std::cout << "surface/client rect mismath: (" <<
+            surfaceCaps.currentExtent.width << ", " <<
+            surfaceCaps.currentExtent.height << ") vs (" <<
+            width << ", " << height << ")" << std::endl;
+    }
     // Find supported transform flags
     VkSurfaceTransformFlagBitsKHR preTransform;
     if (surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)

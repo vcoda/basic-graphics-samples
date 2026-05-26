@@ -1,4 +1,4 @@
-#pragma once
+./#pragma once
 #include <cstdint>
 #include <iostream>
 #include <memory>
@@ -68,6 +68,8 @@ protected:
 protected:
     std::tstring caption;
     uint32_t width, height;
+    uint32_t pendingWidth = 0;
+    uint32_t pendingHeight = 0;
     bool mousing = false;
     float spinX = 0.f;
     float spinY = 0.f;

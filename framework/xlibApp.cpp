@@ -215,10 +215,13 @@ void XlibApp::handleEvent(const XEvent& event)
         }
         break;
     case ConfigureNotify:
-        if ((event.xconfigure.width != width) || (event.xconfigure.height != height))
+        if (event.xconfigure.width && event.xconfigure.height)
         {
-            if (event.xconfigure.width && event.xconfigure.height)
-                onResize(event.xconfigure.width, event.xconfigure.height);
+            if ((event.xconfigure.width != width) || (event.xconfigure.height != height))
+            {
+                pendingWidth = event.xconfigure.width;
+                pendingHeight = event.xconfigure.height;
+            }
         }
         break;
     case ClientMessage:

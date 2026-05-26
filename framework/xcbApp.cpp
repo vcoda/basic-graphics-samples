@@ -232,10 +232,13 @@ void XcbApp::handleEvent(const xcb_generic_event_t *event)
     case XCB_CONFIGURE_NOTIFY:
         {
             const xcb_configure_notify_event_t *configureNotify = reinterpret_cast<const xcb_configure_notify_event_t *>(event);
-            if ((configureNotify->width != width) || (configureNotify->height != height))
+            if (configureNotify->width && configureNotify->height)
             {
-                if (configureNotify->width && configureNotify->height)
-                    onResize(configureNotify->width, configureNotify->height);
+                if ((configureNotify->width != width) || (configureNotify->height != height))
+                {
+                    pendingWidth = configureNotify->width;
+                    pendingHeight = configureNotify->height;
+                }
             }
         }
         break;
