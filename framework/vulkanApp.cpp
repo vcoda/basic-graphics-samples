@@ -24,11 +24,13 @@ void VulkanApp::close()
 
 void VulkanApp::onIdle()
 {
+#if !defined(VK_USE_PLATFORM_WIN32_KHR)
     if (pendingWidth || pendingHeight)
-    {
+    {   // Use pending resize on X11
         onResize(pendingWidth, pendingHeight);
         pendingWidth = pendingHeight = 0;
     }
+#endif
     onPaint();
 }
 
