@@ -118,7 +118,7 @@ public:
 
     void setupPipeline()
     {
-        const magma::VertexInputStructure<ParticleSystem::ParticleVertex> vertexInput(0, {
+        const magma::VertexInputStructure<ParticleSystem::ParticleVertex, 2> vertexInput(0, {
             {0, &ParticleSystem::ParticleVertex::position},
             {1, &ParticleSystem::ParticleVertex::color}});
         constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
