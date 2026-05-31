@@ -14,6 +14,7 @@ class VertexTransformApp : public VulkanApp
     } setTable;
 
     std::unique_ptr<magma::VertexBuffer> vertexBuffer;
+    std::unique_ptr<magma::VertexBuffer> colorBuffer;
     std::unique_ptr<magma::UniformBuffer<rapid::matrix>> uniformBuffer;
     std::unique_ptr<magma::DescriptorSet> descriptorSet;
     std::unique_ptr<magma::GraphicsPipeline> graphicsPipeline;
@@ -26,7 +27,7 @@ public:
     {
         initialize();
         setupView();
-        createVertexBuffer();
+        createVertexBuffers();
         createUniformBuffer();
         setupDescriptorSet();
         setupPipeline();
@@ -85,15 +86,21 @@ public:
             });
     }
 
-    void createVertexBuffer()
+    void createVertexBuffers()
     {
         // Take into account that unlike OpenGL, Vulkan Y axis points down the screen
-        const magma::vt::Pos2fColor4ub vertices[] = {
-            {{ 0.0f,-0.3f}, {255, 0, 0, 255}}, // top
-            {{-0.6f, 0.3f}, {0, 255, 0, 255}}, // left
-            {{ 0.6f, 0.3f}, {0, 0, 255, 255}}  // right
+        const magma::Float2 vertices[] = {
+            { 0.0f,-0.3f}, // top
+            {-0.6f, 0.3f}, // left
+            { 0.6f, 0.3f} // right
+        };
+        const magma::UByteNorm4 colors[] = {
+            {255, 0, 0, 255},
+            {0, 255, 0, 255},
+            {0, 0, 255, 255}
         };
         vertexBuffer = utilities::makeVertexBuffer(vertices, cmdBufferCopy);
+        colorBuffer = utilities::makeVertexBuffer(colors, cmdBufferCopy);
     }
 
     void createUniformBuffer()
@@ -111,10 +118,15 @@ public:
 
     void setupPipeline()
     {
+        constexpr magma::VertexInputStructure<magma::vt::Pos2fColor4ub, 2> twoStreamVertexInput(
+            {
+                MAGMA_VERTEX_STREAM_ATTRIBUTE(magma::vt::Pos2fColor4ub, pos, 0, 0),
+                MAGMA_VERTEX_STREAM_ATTRIBUTE(magma::vt::Pos2fColor4ub, color, 1, 1),
+            });
         auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout());
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
             "transform", "frontFace",
-            magma::renderstate::pos2fColor4ub,
+            twoStreamVertexInput,
             magma::renderstate::triangleList,
             rhs ? magma::renderstate::fillCullNoneCcw
                 : magma::renderstate::fillCullNoneCw,
@@ -137,7 +149,7 @@ public:
                 cmdBuffer->setScissor(0, 0, width, height);
                 cmdBuffer->bindDescriptorSet(graphicsPipeline, 0, descriptorSet);
                 cmdBuffer->bindPipeline(graphicsPipeline);
-                cmdBuffer->bindVertexBuffer(0, vertexBuffer);
+                cmdBuffer->bindVertexBuffers(0, {vertexBuffer, colorBuffer}, {0, 0});
                 cmdBuffer->draw(3, 0);
             }
             cmdBuffer->endRenderPass();
