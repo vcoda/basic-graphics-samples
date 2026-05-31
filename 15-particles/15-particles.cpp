@@ -118,7 +118,7 @@ public:
 
     void setupPipeline()
     {
-        constexpr magma::VertexInputStructure<ParticleSystem::ParticleVertex, 2> vertexInput(0,
+        constexpr magma::VertexInputStructure<ParticleSystem::ParticleVertex, 2> vertexInput(
             {
                 MAGMA_VERTEX_ATTRIBUTE(ParticleSystem::ParticleVertex, position, 0),
                 MAGMA_VERTEX_ATTRIBUTE(ParticleSystem::ParticleVertex, color, 1),
