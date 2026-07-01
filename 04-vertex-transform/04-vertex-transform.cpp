@@ -118,7 +118,7 @@ public:
 
     void setupPipeline()
     {
-        constexpr magma::VertexInputStructure<magma::vt::Pos2fColor4ub, 2> twoStreamVertexInput(
+        static constexpr magma::VertexInputStructure<magma::vt::Pos2fColor4ub, 2> twoStreamVertexInput(
             {
                 MAGMA_VERTEX_STREAM_ATTRIBUTE(magma::vt::Pos2fColor4ub, pos, 0, 0),
                 MAGMA_VERTEX_STREAM_ATTRIBUTE(magma::vt::Pos2fColor4ub, color, 1, 1),
