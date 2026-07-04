@@ -20,6 +20,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="19-instancing.cpp" />
+    <ClCompile Include="19-instancing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
