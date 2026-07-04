@@ -132,6 +132,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "15-particles", "15-particle
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quadric", "third-party\quadric\projects\vs\quadric.vcxproj", "{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19-instancing", "C:\dev\basic-graphics-samples\19-instancing\19-instancing.vcxproj", "{5B036179-F37D-4CC4-866E-330EADE3F171}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8D9D4A3E-439A-4210-8879-259B20D992CA} = {8D9D4A3E-439A-4210-8879-259B20D992CA}
+		{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1} = {51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}
+		{D9B732E5-C6FC-4DBB-8CF9-6E880C260844} = {D9B732E5-C6FC-4DBB-8CF9-6E880C260844}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -314,6 +321,14 @@ Global
 		{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}.Release|x64.Build.0 = Release|x64
 		{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}.Release|x86.ActiveCfg = Release|Win32
 		{51CC36B3-921E-4853-ACD5-CB6CBC27FBA1}.Release|x86.Build.0 = Release|Win32
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Debug|x64.ActiveCfg = Debug|x64
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Debug|x64.Build.0 = Debug|x64
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Debug|x86.ActiveCfg = Debug|Win32
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Debug|x86.Build.0 = Debug|Win32
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Release|x64.ActiveCfg = Release|x64
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Release|x64.Build.0 = Release|x64
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Release|x86.ActiveCfg = Release|Win32
+		{5B036179-F37D-4CC4-866E-330EADE3F171}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
