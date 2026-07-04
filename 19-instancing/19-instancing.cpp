@@ -43,6 +43,7 @@ public:
         setupView();
         createMesh();
         createUniformBuffer();
+        //srand(time(nullptr));
         instanceCount = buildVulkanCity();
         setupDescriptorSet();
         setupPipeline();
