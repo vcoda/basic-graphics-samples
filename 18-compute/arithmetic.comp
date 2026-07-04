@@ -1,14 +1,14 @@
 #version 450
 
-layout(binding = 0) buffer b0 {
+layout(binding = 0) readonly buffer b0 {
    float a[];
 };
 
-layout(binding = 1) buffer b1 {
+layout(binding = 1) readonly buffer b1 {
    float b[];
 };
 
-layout(binding = 2) buffer b2 {
+layout(binding = 2) writeonly buffer b2 {
    float c[];
 };
 

@@ -5,7 +5,7 @@ layout(binding = 0) uniform ViewTransforms {
     mat4 viewProj;
 };
 
-layout(binding = 1) buffer InstanceTransforms {
+layout(binding = 1) readonly buffer InstanceTransforms {
    mat4 instanceTransforms[];
 };
 
