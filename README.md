@@ -237,10 +237,10 @@ Compute shaders are core part of Vulkan. This sample performs arithmetic computa
 <br><br>
 
 ### [19 - Instanced rendering](19-instancing/)
-<img src="./screenshots/19.png" width="300px" align="left">
+<img src="./screenshots/19.png" width="280px" align="left">
 Renders procedurally generated Vulkan city using instanced rendering in a single draw call. All building's transforms are stored as 4x4 matrices 
 in the storage buffer. Vertex shader loads each transform using gl_InstanceIndex built-in variable. Pixel shader calculates simple diffuse lighting in view space.
-<br><br><br><br><br>
+<br><br><br>
 
 ## Credits
 This framework uses a few third-party libraries:
