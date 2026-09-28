@@ -33,6 +33,7 @@ public:
     virtual void render(uint32_t bufferIndex) = 0;
     virtual void onIdle() override;
     virtual void onPaint() override;
+    virtual void onPresent() override {}
     virtual void onResize(uint32_t width, uint32_t height) override;
 
 protected:
