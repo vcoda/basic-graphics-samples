@@ -10,7 +10,7 @@ layout(binding = 1) readonly buffer InstanceTransforms {
 };
 
 layout(location = 0) in vec4 position;
-layout(location = 1) in vec4 normal;
+layout(location = 1) in vec3 normal;
 
 layout(location = 0) out vec3 oViewPos;
 layout(location = 1) out vec3 oViewNormal;
@@ -22,10 +22,10 @@ void main()
 {
     mat4 world = instanceTransforms[gl_InstanceIndex];
     mat4 worldView = view * world;
-    mat3 normalMatrix = transpose(inverse(mat3(worldView)));
     mat4 worldViewProj = viewProj * world;
+    mat3 normalMatrix = inverse(mat3(worldView));
 
     oViewPos = (worldView * position).xyz;
-    oViewNormal = normalize(normalMatrix * normal.xyz);
+    oViewNormal = normalize(normal * normalMatrix); // transposed mul
     gl_Position = worldViewProj * position;
 }
