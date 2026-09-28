@@ -15,9 +15,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     uint32_t subpass /* 0 */,
     const std::unique_ptr<magma::PipelineCache>& pipelineCache /* nullptr */):
     magma::GraphicsPipeline(device,
-    std::vector<magma::PipelineShaderStage>{
-        loadShader(device, vertexShaderFileName),
-        loadShader(device, fragmentShaderFileName)},
+    loadShaders(device, vertexShaderFileName, fragmentShaderFileName),
     vertexInputState,inputAssemblyState, rasterizationState,
     multisampleState, depthStencilState, colorBlendState,
     // Define dynamic states that are used by default
@@ -54,4 +52,18 @@ magma::PipelineShaderStage GraphicsPipeline::loadShader(
     const VkShaderStageFlagBits stage = module->getReflection()->getShaderStage();
     const char *const entrypoint = module->getReflection()->getEntryPointName(0);
     return magma::PipelineShaderStage(stage, std::move(module), entrypoint);
+}
+
+std::vector<magma::PipelineShaderStage> GraphicsPipeline::loadShaders(std::shared_ptr<magma::Device> device,
+    const char *vertexShaderFileName, const char *fragmentShaderFileName)
+{
+    std::vector<magma::PipelineShaderStage> shaderStages;
+    magma::PipelineShaderStage vertexShaderStage = loadShader(device, vertexShaderFileName);
+    shaderStages.push_back(vertexShaderStage);
+    if (fragmentShaderFileName)
+    {
+        magma::PipelineShaderStage fragmentShaderStage = loadShader(device, fragmentShaderFileName);
+        shaderStages.push_back(fragmentShaderStage);
+    }
+    return shaderStages;
 }

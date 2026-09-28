@@ -21,4 +21,7 @@ public:
 private:
     magma::PipelineShaderStage loadShader(std::shared_ptr<magma::Device> device,
         const char *fileName) const;
+    std::vector<magma::PipelineShaderStage> loadShaders(std::shared_ptr<magma::Device> device,
+        const char *vertexShaderFileName,
+        const char *fragmentShaderFileName);
 };
