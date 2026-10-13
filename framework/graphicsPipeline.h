@@ -17,11 +17,26 @@ public:
         magma::lent_ptr<const magma::RenderPass> renderPass,
         uint32_t subpass = 0,
         const std::unique_ptr<magma::PipelineCache>& pipelineCache = nullptr);
+    explicit GraphicsPipeline(std::shared_ptr<magma::Device> device,
+        const char *vertexShaderFileName,
+        const char *geometryShaderFileName,
+        const char *fragmentShaderFileName,
+        const magma::VertexInputState& vertexInputState,
+        const magma::InputAssemblyState& inputAssemblyState,
+        const magma::RasterizationState& rasterizationState,
+        const magma::MultisampleState& multisampleState,
+        const magma::DepthStencilState& depthStencilState,
+        const magma::ColorBlendState& colorBlendState,
+        magma::variant_ptr<magma::PipelineLayout> layout,
+        magma::lent_ptr<const magma::RenderPass> renderPass,
+        uint32_t subpass = 0,
+        const std::unique_ptr<magma::PipelineCache>& pipelineCache = nullptr);
 
 private:
     magma::PipelineShaderStage loadShader(std::shared_ptr<magma::Device> device,
         const char *fileName) const;
     std::vector<magma::PipelineShaderStage> loadShaders(std::shared_ptr<magma::Device> device,
         const char *vertexShaderFileName,
+        const char *geometryShaderFileName,
         const char *fragmentShaderFileName);
 };

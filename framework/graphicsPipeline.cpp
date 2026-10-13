@@ -15,7 +15,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     uint32_t subpass /* 0 */,
     const std::unique_ptr<magma::PipelineCache>& pipelineCache /* nullptr */):
     magma::GraphicsPipeline(device,
-    loadShaders(device, vertexShaderFileName, fragmentShaderFileName),
+    loadShaders(device, vertexShaderFileName, nullptr, fragmentShaderFileName),
     vertexInputState,inputAssemblyState, rasterizationState,
     multisampleState, depthStencilState, colorBlendState,
     // Define dynamic states that are used by default
@@ -34,8 +34,41 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
     0) // flags
 {}
 
-magma::PipelineShaderStage GraphicsPipeline::loadShader(
-    std::shared_ptr<magma::Device> device, const char *fileName) const
+GraphicsPipeline::GraphicsPipeline(std::shared_ptr<magma::Device> device,
+    const char *vertexShaderFileName,
+    const char *geometryShaderFileName,
+    const char *fragmentShaderFileName,
+    const magma::VertexInputState& vertexInputState,
+    const magma::InputAssemblyState& inputAssemblyState,
+    const magma::RasterizationState& rasterizationState,
+    const magma::MultisampleState& multisampleState,
+    const magma::DepthStencilState& depthStencilState,
+    const magma::ColorBlendState& colorBlendState,
+    magma::variant_ptr<magma::PipelineLayout> layout,
+    magma::lent_ptr<const magma::RenderPass> renderPass,
+    uint32_t subpass /* 0 */,
+    const std::unique_ptr<magma::PipelineCache>& pipelineCache /* nullptr */):
+    magma::GraphicsPipeline(device,
+    loadShaders(device, vertexShaderFileName, geometryShaderFileName, fragmentShaderFileName),
+    vertexInputState,inputAssemblyState, rasterizationState,
+    multisampleState, depthStencilState, colorBlendState,
+    // Define dynamic states that are used by default
+    std::initializer_list<VkDynamicState>{
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR},
+    std::move(layout),
+    std::move(renderPass),
+    subpass,
+    nullptr, // allocator
+    pipelineCache,
+#ifdef VK_KHR_pipeline_library
+    nullptr, // pipelineLibrary
+#endif
+    nullptr, // basePipeline
+    0) // flags
+{}
+
+magma::PipelineShaderStage GraphicsPipeline::loadShader(std::shared_ptr<magma::Device> device, const char *fileName) const
 {
     const std::string shaderFileName = fileName + std::string(".o");
     std::ifstream file(shaderFileName, std::ios::in | std::ios::binary);
@@ -55,15 +88,20 @@ magma::PipelineShaderStage GraphicsPipeline::loadShader(
 }
 
 std::vector<magma::PipelineShaderStage> GraphicsPipeline::loadShaders(std::shared_ptr<magma::Device> device,
-    const char *vertexShaderFileName, const char *fragmentShaderFileName)
+    const char *vertexShaderFileName, const char *geometryShaderFileName, const char *fragmentShaderFileName)
 {
     std::vector<magma::PipelineShaderStage> shaderStages;
-    magma::PipelineShaderStage vertexShaderStage = loadShader(device, vertexShaderFileName);
-    shaderStages.push_back(vertexShaderStage);
+    magma::PipelineShaderStage vsStage = loadShader(device, vertexShaderFileName);
+    shaderStages.push_back(vsStage);
+    if (geometryShaderFileName)
+    {
+        magma::PipelineShaderStage gsStage = loadShader(device, geometryShaderFileName);
+        shaderStages.push_back(gsStage);
+    }
     if (fragmentShaderFileName)
     {
-        magma::PipelineShaderStage fragmentShaderStage = loadShader(device, fragmentShaderFileName);
-        shaderStages.push_back(fragmentShaderStage);
+        magma::PipelineShaderStage fsStage = loadShader(std::move(device), fragmentShaderFileName);
+        shaderStages.push_back(fsStage);
     }
     return shaderStages;
 }
