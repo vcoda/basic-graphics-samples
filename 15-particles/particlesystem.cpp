@@ -70,8 +70,8 @@ void ParticleSystem::update(float dt)
         float timePassed  = currentTime - particle.startTime;
         if (timePassed >= lifeCycle)
         {   // Move particle to free list
-            freeList.splice(freeList.end(), activeList, it);
-            it = activeList.end();
+            auto expired = it++;
+            freeList.splice(freeList.end(), activeList, expired);
         }
         else
         {   // Update velocity with respect to Gravity (Constant Accelaration)
@@ -127,21 +127,23 @@ void ParticleSystem::update(float dt)
             else if (activeList.size() < maxParticles)
             {   // There are no free particles to recycle...
                 // We'll have to create a new one from scratch!
-                activeList.push_back(Particle());
+                activeList.emplace_back();
             }
-            if (activeList.size() < maxParticles)
-            {   // Set the attributes for our new particle...
-                Particle& particle = activeList.back();
-                particle.velocity = velocity;
-                if (velocityScale != 0.f)
-                {
-                    const rapid::vector3 randomVec = randomVector();
-                    particle.velocity += randomVec * velocityScale;
-                }
-                particle.startTime = currentTime;
-                particle.position = position;
-                particle.color = randomColor();
+            else
+            {
+                break;
             }
+            // Set the attributes for our new particle...
+            Particle& particle = activeList.back();
+            particle.velocity = velocity;
+            if (velocityScale != 0.f)
+            {
+                const rapid::vector3 randomVec = randomVector();
+                particle.velocity += randomVec * velocityScale;
+            }
+            particle.startTime = currentTime;
+            particle.position = position;
+            particle.color = randomColor();
         }
     }
 
