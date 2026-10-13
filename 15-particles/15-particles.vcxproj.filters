@@ -26,10 +26,18 @@
     <CustomBuild Include="pointSize.vert">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="billboard.geom">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="particlesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="transform.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

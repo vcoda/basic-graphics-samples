@@ -78,6 +78,7 @@ public:
     void setWind(const rapid::float3& wind) { this->wind = rapid::vector3(wind); }
     void setAirResistence(bool airResistence) { this->airResistence = airResistence; }
     void setVelocityScale(float scale) { this->velocityScale = scale; }
+    void setUseGeometryShader(bool useGs) { this->useGs = useGs; }
     void setCollisionPlane(const rapid::float3& planeNormal, const rapid::float3& point,
         float bounceFactor = 1.f, CollisionResult collisionResult = CollisionResult::Bounce);
     void initialize(std::shared_ptr<magma::Device> device);
@@ -109,6 +110,8 @@ private:
     rapid::vector3 position, velocity, gravity, wind;
     bool airResistence = true;
     float velocityScale = 1.f;
+
+    bool useGs = false;
 
     std::unique_ptr<magma::DynamicVertexBuffer> vertexBuffer;
     std::unique_ptr<magma::DrawIndirectBuffer> drawParams;

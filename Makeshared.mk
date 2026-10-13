@@ -36,5 +36,8 @@ FRAMEWORK_OBJS= \
 %.o: %.vert
 	$(GLSLC) -V $*.vert -o $*.o
 
+%.o: %.geom
+	$(GLSLC) -V $*.geom -o $*.o
+
 %.o: %.frag
 	$(GLSLC) -V $*.frag -o $*.o

@@ -1,6 +1,16 @@
 #include "../framework/vulkanApp.h"
 #include "particlesystem.h"
 
+// Use geometry stage to generate particle quads instead of large points
+//#define USE_GEOMETRY_SHADER
+#ifdef USE_GEOMETRY_SHADER
+    #define VS_FILE_NAME "transform"
+    #define GS_FILE_NAME "billboard"
+#else
+    #define VS_FILE_NAME "pointSize"
+    #define GS_FILE_NAME nullptr
+#endif
+
 // Use Space to reset particles + mouse to rotate scene
 class ParticlesApp : public VulkanApp
 {
@@ -30,6 +40,39 @@ public:
         for (uint32_t i = 0; i < (uint32_t)commandBuffers.size(); ++i)
             recordCommandBuffer(i);
         timer->run();
+    }
+
+    void createLogicalDevice() override
+    {
+        std::set<magma::DeviceQueueDescriptor> queueDescriptors;
+        queueDescriptors.emplace(physicalDevice.get(), VK_QUEUE_GRAPHICS_BIT, magma::QueuePriorityHighest);
+        VkPhysicalDeviceFeatures features = {};
+    #ifdef USE_GEOMETRY_SHADER
+        features.geometryShader = VK_TRUE;
+    #else
+        features.fillModeNonSolid = VK_TRUE;
+        features.largePoints = VK_TRUE;
+    #endif
+        magma::NullTerminatedStringArray enabledExtensions = {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+        };
+    #ifdef VK_KHR_maintenance1
+        if (extensions->KHR_maintenance1)
+            enabledExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
+        else
+    #endif // VK_KHR_maintenance1
+        {
+        #ifdef VK_AMD_negative_viewport_height
+            if (extensions->AMD_negative_viewport_height)
+                enabledExtensions.push_back(VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_EXTENSION_NAME);
+        #endif // VK_AMD_negative_viewport_height
+        }
+    #ifdef VK_EXT_debug_marker
+        if (extensions->EXT_debug_marker)
+            enabledExtensions.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
+    #endif // VK_EXT_debug_marker
+        const std::vector<const char*> noLayers;
+        device = physicalDevice->createDevice(queueDescriptors, noLayers, enabledExtensions, features);
     }
 
     void render(uint32_t bufferIndex) override
@@ -75,6 +118,9 @@ public:
         particles->setWind(rapid::float3(0.f, 0.f, 0.f));
         particles->setVelocityScale(20.f);
         particles->setCollisionPlane(rapid::float3(0.f, 1.f, 0.f), rapid::float3(0.f, 0.f, 0.f));
+    #ifdef USE_GEOMETRY_SHADER
+        particles->setUseGeometryShader(true);
+    #endif
         particles->initialize(device);
     }
 
@@ -112,8 +158,8 @@ public:
     {
         setTable.viewProj = uniformBuffer;
         descriptorSet = std::make_unique<magma::DescriptorSet>(descriptorPool,
-            setTable, VK_SHADER_STAGE_VERTEX_BIT,
-            nullptr, 0, shaderReflectionFactory, "pointSize");
+            setTable, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_GEOMETRY_BIT,
+            nullptr, 0, shaderReflectionFactory, VS_FILE_NAME);
     }
 
     void setupPipeline()
@@ -123,13 +169,21 @@ public:
                 MAGMA_VERTEX_ATTRIBUTE(ParticleSystem::ParticleVertex, position, 0),
                 MAGMA_VERTEX_ATTRIBUTE(ParticleSystem::ParticleVertex, color, 1),
             });
+    #ifdef USE_GEOMETRY_SHADER
+        constexpr magma::push::GeometryFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
+    #else
         constexpr magma::push::VertexFragmentConstantRange<ParticleSystem::Constants> pushConstantRange;
+    #endif
         auto layout = std::make_unique<magma::PipelineLayout>(descriptorSet->getLayout(), pushConstantRange);
         graphicsPipeline = std::make_unique<GraphicsPipeline>(device,
-            "pointSize", "particle",
+            VS_FILE_NAME, GS_FILE_NAME, "particle",
             vertexInput,
             magma::renderstate::pointList,
+        #ifdef USE_GEOMETRY_SHADER
+            magma::renderstate::fillCullNoneCcw,
+        #else
             magma::renderstate::pointCullNoneCcw,
+        #endif
             magma::renderstate::dontMultisample,
             magma::renderstate::depthAlwaysDontWrite,
             magma::renderstate::blendNormalRgb,
