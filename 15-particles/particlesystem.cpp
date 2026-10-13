@@ -158,9 +158,9 @@ void ParticleSystem::update(float dt)
                     ++pv;
                 }
             });
-        drawParams->reset();
-        drawParams->writeDrawCommand(magma::core::countof(activeList), 0);
     }
+    drawParams->reset();
+    drawParams->writeDrawCommand(magma::core::countof(activeList), 0);
 }
 
 void ParticleSystem::reset()
